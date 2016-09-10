@@ -1,7 +1,7 @@
+#!/usr/bin/env python
 from __future__ import division
 import numpy as np
 import numpy.linalg as linalg
-import sys
 from scipy.spatial import distance as dist
 import math
 
@@ -26,7 +26,7 @@ class EuclideanSpace(object):
     def magnitude(self):
         # Can't get condition number to work... but I think it uses svd anyway
         singular_values = linalg.svd(self.distance_matrix, compute_uv=False)
-        if singular_values[0] / singular_values[-1] < 1 / self.EPSILON:
+        if singular_values[-1] / singular_values[0] > self.EPSILON:  # Check for singular matrix
             mobius_inversion = linalg.inv(self.distance_matrix)
             return np.sum(mobius_inversion)
         else:
