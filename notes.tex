@@ -13,8 +13,10 @@
 \newcommand{\Nn}{\mathbb{N}}
 \newcommand{\Ff}{\mathbb{F}}
 \newcommand{\Qq}{\mathbb{Q}}
+\newcommand{\Aa}{\mathbb{A}}
 \newcommand{\fix}{\text{fix }}
 \newcommand{\cl}{\text{cl }}
+\DeclareMathOperator{\ob}{ob}
 
 \topmargin  18pt  	% 27pt
 \headheight 12pt  	% 12pt
@@ -37,7 +39,11 @@
 \rfoot{}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-
+\newtheorem{cc}{cc} % basis for counter
+\newtheorem{sumMobiusWeighting}[cc]{Lemma}
+\theoremstyle{definition}
+\newtheorem{defCatMobius}[cc]{Definition}
+\newtheorem{defWeighting}[cc]{Definition}
 
     
 \begin{document}
@@ -55,5 +61,33 @@ Mobius inversion:
 g(n) &= \sum_{d | n} f(d) \\
 \Rightarrow f(n) &= \sum_{d | n} \mu(\frac dn) g(n)
 \end{align*}
+
+\begin{defCatMobius}
+A category $\Aa$ has \textbf{Mobius Inversion} $\mu$ if $\mu$ satisfies
+\[
+\sum_b \mu(a,b)\zeta(b,c) = \delta(a,c) = \sum_b \zeta(a,b)\mu(b,c),
+\]
+with each equality implying the other by finite dimensionality (TODO: show)
+\end{defCatMobius}
+\begin{defWeighting}
+A \textbf{weighting} on a category $\Aa$ is a function $w_a$ on $\ob(\Aa)$ such that for all $a \in \Aa$,
+\[
+\sum_b \zeta(a,b)\omega_b = 1.
+\]
+\end{defWeighting}
+\begin{sumMobiusWeighting}
+If $\Aa$ has Mobius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
+\end{sumMobiusWeighting}
+\begin{proof} For all $a \in \Aa$,
+\begin{align*}
+\sum_b \zeta(a,b)\omega_b &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
+&=\sum_b\sum_c\zeta(a,b)\mu(b,c)\\
+&=\sum_c\left(\sum_b\zeta(a,b)\mu(b,c)\right)\\
+&=\sum_c \delta(a,c)\\
+&=1.
+\end{align*}
+\end{proof}
+
+
 
 \end{document}

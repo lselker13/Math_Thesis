@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Leo Selker, 2016
 from __future__ import division
 import numpy as np
 import numpy.linalg as linalg
