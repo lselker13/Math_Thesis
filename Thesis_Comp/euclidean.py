@@ -26,7 +26,7 @@ class EuclideanSpace(object):
         vector_inverse_exp = np.vectorize(lambda n: math.exp(-n))
         exp_distance_matrix = vector_inverse_exp(self.distance_matrix * scale_factor)
 
-        singular_values = linalg.svd(self.distance_matrix, compute_uv=False)
+        singular_values = linalg.svd(exp_distance_matrix, compute_uv=False)
         if singular_values[-1] / singular_values[0] > self.EPSILON:  # Check for singular matrix
             mobius_inversion = linalg.inv(exp_distance_matrix)
             return np.sum(mobius_inversion)
