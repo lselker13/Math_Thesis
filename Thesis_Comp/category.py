@@ -43,8 +43,22 @@ if __name__ == '__main__':
              [0,0,0,1,0,0],
              [0,0,0,0,1,0],
              [0,0,0,0,0,1]]
-    ),
+        ),
+        np.array(
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]]
+        ),
+        np.array(
+            [[1, 0, 0, 0, 1, 1, 0],
+             [0, 1, 0, 1, 0, 1, 0],
+             [0, 0, 1, 1, 1, 0, 0],
+             [0, 0, 0, 1, 0, 0, 1],
+             [0, 0, 0, 0, 1, 0, 1],
+             [0, 0, 0, 0, 0, 1, 1],
+             [0, 0, 0, 0, 0, 0, 1]]
+        )
     )
 
-    p_cat = PartialCategory(morphism_tables[0])
-    print(p_cat.mobius_matrix())
+    p_cat = PartialCategory(morphism_tables[2])
+    print(p_cat.mobius_matrix(), np.sum(p_cat.mobius_matrix()))

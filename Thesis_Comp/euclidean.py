@@ -5,6 +5,7 @@ import numpy as np
 import numpy.linalg as linalg
 from scipy.spatial import distance as dist
 import math
+from matplotlib import pyplot as plt
 
 
 class EuclideanSpace(object):
@@ -44,4 +45,7 @@ if __name__ == '__main__':
          [0, 4]]
     )
     euclidean_space = EuclideanSpace(test_array)
-    print(euclidean_space.multiscale_magnitude((2, 3)))
+    scale_factors = np.arange(0, 3, .2)
+    magnitudes = euclidean_space.multiscale_magnitude(scale_factors)
+    plt.plot(scale_factors, magnitudes)
+    plt.show()

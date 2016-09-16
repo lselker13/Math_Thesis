@@ -28,10 +28,11 @@ class SimplicialComplex(object):
                     morphism_table[j, i] = 1
         return cat.PartialCategory(morphism_table)
 
-
 if __name__ == '__main__':
-    # simplex_list = [{1},{2},{3},{1,2},{2,3},{3,1}]
-    simplex_list = [{1},{2},{3},{4},{1,2},{2,3},{3,4},{4,1},{2,4},{1,2,4}]
+    simplex_list = [{1},{2},{3},{1,2},{2,3},{3,1}, {1,2,3}]
+    # simplex_list = [{1},{2},{3},{4},{1,2},{2,3},{3,4},{4,1},{2,4},{1,2,4}]
     simplicial_complex = SimplicialComplex(simplex_list)
     print simplicial_complex.simplex_list
-    print simplicial_complex.to_partial_category().weights()
+    partial_category = simplicial_complex.to_partial_category()
+    print partial_category.morphism_table
+    print partial_category.mobius_matrix()
