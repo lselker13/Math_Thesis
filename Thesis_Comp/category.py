@@ -5,8 +5,8 @@ import numpy as np
 import numpy.linalg as linalg
 
 
-class PartialCategory(object):
-    # Objects and # of morphisms. Does not keep track of or enforce composition.
+class PartialEnrichedCategory(object):
+    # Objects and value of morphisms. Does not keep track of or enforce composition.
     EPSILON = 10**(-8)  # No real reason...
 
     def __init__(self,  morphism_table):
@@ -60,5 +60,5 @@ if __name__ == '__main__':
         )
     )
 
-    p_cat = PartialCategory(morphism_tables[2])
+    p_cat = PartialEnrichedCategory(morphism_tables[2])
     print(p_cat.mobius_matrix(), np.sum(p_cat.mobius_matrix()))

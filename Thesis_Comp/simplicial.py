@@ -26,7 +26,7 @@ class SimplicialComplex(object):
             for j, other in enumerate(self.simplex_list[:i]):
                 if other.issubset(simplex):
                     morphism_table[j, i] = 1
-        return cat.PartialCategory(morphism_table)
+        return cat.PartialEnrichedCategory(morphism_table)
 
 if __name__ == '__main__':
     simplex_list = [{1},{2},{3},{1,2},{2,3},{3,1}, {1,2,3}]
