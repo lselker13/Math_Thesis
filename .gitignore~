@@ -2,3 +2,5 @@ Thesis_Comp/.idea/
 *.aux
 *.log
 *.synctex.gz
+notes.*
+introduction.pdf

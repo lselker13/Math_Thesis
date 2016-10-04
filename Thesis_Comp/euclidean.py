@@ -48,15 +48,15 @@ if __name__ == '__main__':
     )
     euclidean_space = EuclideanSpace(test_arrays[0])
     two_space = EuclideanSpace(test_arrays[1])
-    scale_factors = np.arange(.05, 1000, .05)
+    scale_factors = np.arange(.05, 20, .05)
     magnitudes_euc = euclidean_space.multiscale_magnitude(scale_factors)
     magnitudes_two = two_space.multiscale_magnitude(scale_factors)
     scale_factors_log = map(lambda x: math.log(x, 10), scale_factors)
 
-    plt.subplot(211)
-    plt.plot(scale_factors_log, magnitudes_euc)
+    #plt.subplot(211)
+    #plt.plot(scale_factors_log, magnitudes_euc)
 
-    plt.subplot(212)
+    #plt.subplot(212)
     plt.plot(scale_factors_log, magnitudes_two)
 
     plt.show()
