@@ -1,0 +1,26 @@
+\documentclass[]{article}
+\input{commands_packages}
+%opening
+\title{Outline}
+\author{Leo Selker}
+\iffalse
+A list—done in LATEX—of the relevant sources, preceded by
+one or two paragraphs explaining which are the main sources and what you will be doing
+with each. 
+\fi
+
+\begin{document}
+\maketitle
+Hierarchical clustering is a way of expressing structure at a variety of levels within data. We can keep track of that structure using a \textit{persistent set}\cite{Carl1}. We can define clusters however we want using some scale factor. Generally we use single linkage, i.e. we partition under the equivalence relation define by whether there's a path between points involving no jumps of too long a distance.
+
+We can also define the magnitude of a finite metric space \cite{Lein2}. This definition captures the "effective number of points" in the space in some sense. This is based on the idea of the Euler characteristic of a metric space \cite{Lein1}. As we scale the space smaller, the magnitude approaches 1, and as we scale it larger it approaches the number of points in the space. In this sense, we have a "backwards" scale factor, where to zoom in we increase the factor. So in some ways it approximates hierarchical clustering results. We can say more in the case of positive definite metric spaces \cite{Meck1}. We'll investigate the possible connection(s) between these ideas.
+
+So far, we've spent the most time on \cite{Lein1}. We've worked through the details of the Euler characteristic definitions and motivations. I've also used code to observe how the magnitude behaves in certain cases.
+
+
+
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+\end{document}
