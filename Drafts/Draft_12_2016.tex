@@ -1,0 +1,214 @@
+\documentclass[12pt]{pom_thesis}
+\input{commands_packages}
+\author{Leo Selker}
+\advisor{Vin de Silva}
+\title{The Magnitude of a Metric Space: An Approach to Clustering}
+
+\newcommand{\fix}{\text{fix }}
+\newcommand{\cl}{\text{cl }}
+\DeclareMathOperator{\cat}{cat}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}Clustering is an important application of topology. Here we explore a method of counting clusters at various scales. We build the necessary framework using the idea of a M\"obius inversion, and then we define the magnitude of a metric space\cite{Lein2}. We investigate behaviors of positive definite metric spaces, as well as how the magnitude acts under the product of spaces.
+\end{abstract}
+
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\begin{chapter}{Outline}
+\section{Introduction}
+We will be investigating the magnitude of metric spaces along with related/foundational ideas. We investigate M\"obius inversion, a way of calculating the magnitude of a metric space. We motivate and define magnitude of a metric space using the Euler characteristic of a category. We investigate positive definite metric spaces and tensor products. It's still slightly early to say what our "goal" is.
+\section{M\"obius Inversion}
+We will start with Mobius inversion on the positive integers, generalize to posets, and again generalize to categories\cite{Lein1}. At each step we will justify the way we choose to generalize.
+
+Here we may also investigate the P\'olya Counting Formula/Burnside's Lemma. We're just starting on that, so we'll see where it goes.
+\section{Euler Characteristic of a Category}
+We define the Euler characteristic of a finite category as the sum of all values of its Mobius inversion\cite{Lein1}. We will justify this by showing that simplicial complexes behave well under this definition, and it coincides with the usual one in that case. We'll also investigate working the other way: Taking a poset and turning it into a simplicial complex of chains. Hopefully this will lead somewhere too.
+\section{Magnitude, Properties, and Examples}
+We will define the "induced category" of a metric space, and use it as a motivation for the definition of the \textbf{magnitude} of a finite metric space\cite{Lein2} (the magnitude is the Euler characteristic of the induces category). This definition captures the "effective number of points" in the space in some sense. As we scale the space smaller, the magnitude approaches 1, and as we scale it larger it approaches the number of points in the space. In this sense, we have a "backwards" scale factor, where to zoom in we increase the factor. 
+In some ways magnitudes over scales approximate hierarchical clustering results. In fact, the magnitude of the tensor product of two finite spaces is the product of the spaces' magnitudes (we proved this, but it is likely known). We can also say more in the case of positive definite metric spaces\cite{Meck1}. We will investigate approximation theorems for "almost-product" spaces, and other situations which are well behaved.
+
+Here we will also probably discuss results from code I am writing.
+\section{Magnitude and Persistence}
+Hierarchical clustering is a way of expressing structure at a variety of levels within data. We can keep track of that structure using a \textit{persistent set}\cite{Carl1}. We can define clusters however we want using some scale factor. Generally we use single linkage, i.e. we partition under the equivalence relation define by whether there's a path between points involving no jumps of too long a distance. 
+
+We will attempt to connect the magnitude of a space with its persistent set. Both offer scaled counts of the number of clusters in some sense - we have some basic connections but hope to find more.
+\end{chapter}
+\begin{chapter}{M\"obius Inversion}
+M\"obius inversion is a general construct. The most basic definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for all functions $f,g$ on the integers:
+
+\begin{align*}
+g(n) &= \sum_{d | n} f(d) \iff f(n) = \sum_{d | n} \mu\left(\frac dn\right) g(n)
+\end{align*}
+
+We will formally develop this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions:
+\begin{defn}
+A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a relation, denoted $\leq$, such that, for all $a,b,c \in X$:
+\begin{itemize}
+\item $a \leq a$ (reflexive)
+\item If $a \leq b$ and $b \leq a$ then $a = b$ (antisymmetric)
+\item If $a \leq b$ and $b \leq c$ then $a \leq c$ (transitive).
+\end{itemize}
+\end{defn}
+\begin{defn}
+The \emph{incidence algebra} on a finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
+\[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
+\]
+Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
+\[(f* g)(a,b) = \sum_{a \leq c \leq b}f(a,c)g(c,b).\]
+\end{defn}
+Note that the bounds on the sum are not necessary, because all other terms will go to zero anyway by the condition on elements. But I use them for clarity. Omitting the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
+\begin{lemma}\label{mat_eq}
+Let $X$ be a finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements of $X$ from $x_1$ to $x_n$, such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the $n\times n$ square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
+\begin{enumerate}[a)]
+\item $F$ and $G$ are upper triangular; and
+\item For any $i,j, (f * g)(x_i, x_j)=FG_{ij}$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+\begin{enumerate}[a)]
+\item If $i>j$, by how we defined $F$, $x_i \nleq x_j$. So $F_{ij} = f(x_i, x_j) = 0$. 
+\item
+The result follows directly from the definition of matrix multiplication. Let $i,j\leq n$ be given. Remember that we can omit the bounds from the sum in the definition of incidence algebra multiplication. Then:
+\begin{align*}
+(f * g)(x_i, x_j) &= \sum_{y \in X} f(x_i,y)g(y,x_j)\\
+&=FG_{ij}
+\end{align*}
+\end{enumerate}
+\end{proof}
+
+
+There are several important functions, present in any incidence algebra, which we will need. 
+The \textbf{identity function} $\delta$ is defined by 
+\[\delta(a,b) = \begin{cases} 1 & a = b \\ 0 & else. \end{cases}
+\]
+This is equivalent to the identity matrix, with 1's along the main diagonal.
+
+We also define another special function, $\zeta$ (the ``ones function''):
+\[
+\zeta(a,b) = \begin{cases} 1 & a \leq b \\ 0 & else. \end{cases}
+\]
+
+At this point, \ref{mat_eq} tells us several things about inverses. Since $\delta$ is equivalent to the identity matrix, inverses will coincide with the corresponding matrix inverses. This leads us to the following:
+\begin{cor}\label{cor_inv}
+Let $f,g$ be elements of the incidence algebra on $X$. Then:
+\begin{enumerate}[a)]
+\item $f*g = \delta \Rightarrow g*f = \delta$
+\item If $\forall x \in X, f(x,x) \neq 0$, then $f$ is uniquely invertible - in other words, $\exists! f^{-1}$ such that $f*f^{-1} = \delta = f^{-1} * f$.
+\end{enumerate}
+\end{cor}
+\begin{proof}
+Part a) is true of all square matrices. Part b) is true of all upper triangular matrices, since the determinant of such matrices is the product of the main diagonal elements. We use \ref{mat_eq} to transfer the results to $f$ and $g$.
+\end{proof}
+We will refer to this unique inverse, if it exists, as $f^{-1}$. We are now ready to define the M\"obius function on partially ordered sets.
+\begin{defn}\label{def_mob_pos}
+Let $X$ be a finite poset. Let $\zeta$ be the ones function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
+\end{defn}
+\begin{rmk}
+This inverse exists by \ref{cor_inv} part b. 
+\end{rmk}
+\begin{rmk}
+Another statement of the definition is that $\mu$ is the unique function such that, for all $x,y \in X$,
+\[
+\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y)
+\]
+\end{rmk}
+Note: Here I will add a summary of how the integer divisibility case follows from this definition.
+
+% % %
+\begin{defn}
+A category $\Aa$ has \emph{Mobius Inversion} $\mu$ if $\mu$ satisfies
+\[
+\sum_b \mu(a,b)\zeta(b,c) = \delta(a,c) = \sum_b \zeta(a,b)\mu(b,c),
+\]
+with each equality implying the other by finite dimensionality (this is the same argument as showing that one-sided square matrix inverses are two-sided).
+\end{defn}
+
+We now state a definition with no justification/explanation. This will be carefully developed in the chapter on magnitude - I'm not sure how I will end up choosing to organize it.
+\begin{defn}
+A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\ob(\Aa)$ such that for all $a \in \Aa$,
+\[
+\sum_b \zeta(a,b)\omega_b = 1.
+\]
+\end{defn}
+\begin{lemma}
+\label{mobius_is_weighting}
+If $\Aa$ has Mobius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
+\end{lemma}
+\begin{proof} For all $a \in \Aa$,
+\begin{align*}
+\sum_b \zeta(a,b)\omega_b &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
+&=\sum_b\sum_c\zeta(a,b)\mu(b,c)\\
+&=\sum_c\left(\sum_b\zeta(a,b)\mu(b,c)\right)\\
+&=\sum_c \delta(a,c)\\
+&=1.
+\end{align*}
+\end{proof}
+
+\begin{defn}
+Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
+\end{defn}
+\begin{lemma}
+\label{mu_lemma}
+Suppose $\alpha \subseteq \beta$ are cells of a simplicial complex. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$.
+\end{lemma}
+\begin{proof}
+We use induction. Base case: $\sigma = \beta$, \checkmark \\
+For any simplex $\sigma$, let $\sigma'$ be $\sigma \cup \emptyset$. Suppose that $|\beta - \alpha| = k+1$. We know that \begin{align*}
+\mu(\alpha, \beta) &=  - \sum_{\alpha \subseteq \sigma \subset \beta} \mu(\alpha, \sigma)\\
+&= - \sum_{\gamma \subset (\beta - \alpha)'} \mu(\alpha, \gamma \cup \alpha) 
+\end{align*}
+Note that the above unions are always disjoint. So, by the inductive hypothesis, we can rewrite it:
+\begin{align*}
+\mu(\alpha, \beta) &= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma \cup \alpha| - |\alpha|} \\ %& \text{inductive hypothesis}\\
+&= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma|}\\ % &\text{by disjointness}\\
+&= - \sum_{\gamma \subseteq (\beta - \alpha)} (-1)^{|\gamma|} + (-1)^{|\beta - \alpha|} - (-1)^0 \\ %&\text{Removing the empty simplex and including $\gamma = \beta - \alpha$}\\
+&= \chi(\beta - \alpha) + (-1)^{|\beta - \alpha|} - (-1)^0\\
+&= 1-1+ (-1)^{|\beta - \alpha|}\\
+&= (-1)^{|\beta - \alpha|}
+\end{align*}
+
+
+\end{proof}
+\begin{thm}
+\label{consistentEuler}
+Let $\sigma$ be a simplicial complex. Then 
+\[
+\sum_{\gamma \subseteq \sigma} \sum_{\alpha \subseteq \gamma} \mu(\alpha, \gamma) = \chi(\sigma).
+\]
+
+\end{thm}
+\begin{proof}
+Then:
+\begin{align*}
+\sum_{\gamma \in \sigma} \sum_{\alpha \subseteq \gamma} \mu(\alpha, \gamma) &= \sum_{\gamma \in \sigma} \sum_{\emptyset \subset \alpha \subseteq \gamma} \mu(\alpha, \gamma)\\
+&= \sum_{\gamma \in \sigma} \mu(\emptyset, \gamma)\\
+&= \sum_{\gamma \in \sigma} (-1)^{|\gamma|} &\text{by \ref{mu_lemma}}\\
+&= \chi(\sigma)
+\end{align*}
+\end{proof}
+By \ref{mobius_is_weighting}, weightings are a generalization of Mo\"bius inversion. This fact motivates the following definition, due to \cite{Lein1}.
+\begin{defn}
+Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler characteristic} of $A$, denoted (as usual) as $\chi(A)$, is defined by
+\[
+\chi(A) = \sum_{a \in A} \omega_a
+\]
+\end{defn}
+Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with \ref{mobius_is_weighting}, this implies the following:
+\begin{cor}
+If a finite category $A$ has a M\"obius inversion $\mu$, then
+\[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
+\]
+\end{cor}
+This provides the main motivation for exploring M\"obius inversion here. It provides a way in which we can write down weightings on many metric spaces, since the similarity matrix $\zeta$ is invertible in most cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
+\end{chapter}
+\bibliographystyle{apalike}
+\bibliography{bibliography.bib}
+
+
+\end{document}
+

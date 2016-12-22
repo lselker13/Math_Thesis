@@ -1,0 +1,109 @@
+\documentclass[12pt]{pom_thesis}
+
+\author{Leo Selker}
+\advisor{Vin de Silva}
+\title{Absolutely Fascinating Thesis Title}
+\iffalse
+\theoremstyle{plain}{
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+}
+
+\theoremstyle{definition}{
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{examp}[thm]{Example}
+\newtheorem{rmk}[thm]{Remark}
+}\fi
+\begin{document}
+
+\maketitle
+
+\begin{abstract}In this paper we don't really do much.  However, there are a lot of {\it real} theorems that still need to be proved. That is what you will probably do in your thesis.
+\end{abstract}
+
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+
+% EXAMPLE STUFF
+% this is how you begin a chapter:
+% the label is so that you can refer to it later
+\begin{chapter}{Boring Title for the First Chapter}
+\label{Intro}
+
+Let us do some math:
+% to start a new line in math mode
+% either write your equation inside $$ .... $$
+$$ \Delta(h) = h_{(1)} \otimes h_{(2)} $$
+% or inside \[ ... \]
+\[ \Delta(h) = h_{(1)} \otimes h_{(2)} \]
+% or:
+\begin{equation*}
+\Delta(h) = h_{(1)} \otimes h_{(2)}
+\end{equation*}
+
+Here is how you declare a theorem:
+
+\begin{thm}{A Big Fat Theorem.} \label{thm:BigFat}
+We assert that the following is true:
+\begin{equation} \label{eqn:Stupid}
+x = 1, y = 1 \Rightarrow x + y = 2
+\end{equation}
+\end{thm}
+
+Let us first consider:
+%Here is how you declare a lemma:
+\begin{lemma}{A Small but Important Lemma.} \label{lemma:LittleLem}
+If $x = a$, and $y = b$, then $x + y = a + b$.
+\end{lemma}
+
+We can then see that Lemma \ref{lemma:LittleLem} implies Theorem \ref{thm:BigFat} by letting $a = 1$ and $b = 1$ in Equation (\ref{eqn:Stupid}). See how we refer to a previously labeled item in the text?
+
+\section{A delightful new section}
+
+Some text for the section should go here. And let us look at footnotes.\footnote{This is one way to use a footnote.} \footnotemark
+
+\footnotetext{Here is a second way to introduce a footnote}
+
+
+\begin{thm}
+hmmm
+\end{thm}
+
+Here is how you call the proof environment:
+
+\begin{proof}
+hmmmm
+\end{proof}
+
+% you should close a chapter before beginning a new one!
+\end{chapter}
+
+\begin{chapter}{Cooler Title for the Second Chapter} As we saw in Chapter \ref{Intro}, everything can be
+made to be complicated. (See, for example,  Figure \ref{fig1}.) This is usually not a good idea unless you want to lose your audience.
+
+\begin{figure}
+\centering{
+\includegraphics[height=5cm, width=6cm]{templatefig1}
+}
+\caption{Graphics can really snaz it up!}
+\label{fig1} % label of the figure has to go after the caption to be accurate!
+\end{figure}
+
+Most importantly, \textcolor{red}{\bf NEVER DIVIDE BY ZERO} unless, of course, you are wearing your protective
+divide-by-zero suit (See \cite{Ab80} for the terrible consequences which might result. And this is how you cite multiple references: \cite{Ab80, BlTaWe, Bo1}. And if you wanted to, you could refer to specific pages: \cite[pages 567--569]{Bo2}).
+
+\section{Another fascinating section}
+
+Some text needs to go here.
+
+\subsection{And sometimes you will need subsections...}
+
+More text goes here.
+\end{chapter}
+\end{document}
