@@ -38,14 +38,17 @@ Hierarchical clustering is a way of expressing structure at a variety of levels 
 
 We will attempt to connect the magnitude of a space with its persistent set. Both offer scaled counts of the number of clusters in some sense - we have some basic connections but hope to find more.
 \end{chapter}
-\begin{chapter}{M\"obius Inversion}
-M\"obius inversion is a general construct. The most basic definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for all functions $f,g$ on the integers:
+\begin{chapter}{Introduction to M\"obius Inversion}
+\section{Initial Example}
+M\"obius inversion is a general construct. The most basic definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
 
-\begin{align*}
-g(n) &= \sum_{d | n} f(d) \iff f(n) = \sum_{d | n} \mu\left(\frac dn\right) g(n)
-\end{align*}
+\begin{equation}\label{init_mob} %TODO: Unify numbering
+g(n) = \sum_{d | n} f(d) \iff f(n) = \sum_{d | n} \mu\left(\frac dn\right) g(n)
+\end{equation}
 
-We will formally develop this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions:
+
+We will formally develop this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions.
+\section{Posets and Incidence Algebras}
 \begin{defn}
 A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a relation, denoted $\leq$, such that, for all $a,b,c \in X$:
 \begin{itemize}
@@ -55,13 +58,22 @@ A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ togeth
 \end{itemize}
 \end{defn}
 \begin{defn}
-The \emph{incidence algebra} on a finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
+A poset $X$ is \emph{locally finite} if, for any $a,b \in X$, the set $\{c \in X : a \leq c \leq b\}$ is finite.
+\end{defn}
+\begin{defn}
+The \emph{incidence algebra} on a locally finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
 \[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
 \]
 Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
-\[(f* g)(a,b) = \sum_{a \leq c \leq b}f(a,c)g(c,b).\]
+\[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) = \sum_{a \leq c \leq b}f(a,c)g(c,b).\]
 \end{defn}
-Note that the bounds on the sum are not necessary, because all other terms will go to zero anyway by the condition on elements. But I use them for clarity. Omitting the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
+\begin{rmk}
+The requirement that $X$ be locally finite ensures that the above sum has a finite number of terms.
+\end{rmk}
+\begin{rmk}
+We use $\Rr$ as the codomain of the functions in the incidence algebra. But this can be generalized to other commutative rings with identity.
+\end{rmk}
+I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without th bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
 \begin{lemma}\label{mat_eq}
 Let $X$ be a finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements of $X$ from $x_1$ to $x_n$, such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the $n\times n$ square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
 \begin{enumerate}[a)]
@@ -104,7 +116,10 @@ Let $f,g$ be elements of the incidence algebra on $X$. Then:
 \begin{proof}
 Part a) is true of all square matrices. Part b) is true of all upper triangular matrices, since the determinant of such matrices is the product of the main diagonal elements. We use \ref{mat_eq} to transfer the results to $f$ and $g$.
 \end{proof}
-We will refer to this unique inverse, if it exists, as $f^{-1}$. We are now ready to define the M\"obius function on partially ordered sets.
+We will refer to this unique inverse, if it exists, as $f^{-1}$. 
+
+\section{Definition of M\"obius Inversion}
+We are now ready to define the M\"obius function on partially ordered sets.
 \begin{defn}\label{def_mob_pos}
 Let $X$ be a finite poset. Let $\zeta$ be the ones function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
 \end{defn}
@@ -117,8 +132,12 @@ Another statement of the definition is that $\mu$ is the unique function such th
 \sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y)
 \]
 \end{rmk}
-Note: Here I will add a summary of how the integer divisibility case follows from this definition.
+\section{Integers with Divisibility Ordering}
+We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}. It is, of course, a type of M\"obius function. But the form in equation \ref{init_mob} uses functions of a single variable, while our construction uses functions of two variables. We must do some simple conversions to make the definitions line up.
 
+Let $X$ be the poset consisting of the positive integers, using $|$, or divisibility, as the ordering relation. Let $\zeta$, and therefore $\mu = \zeta^{-1}$, be defined as usual in the associated incidence algebra.
+%TODO: Finish this section (include intuition/direct proof)
+\end{chapter}
 % % %
 \begin{defn}
 A category $\Aa$ has \emph{Mobius Inversion} $\mu$ if $\mu$ satisfies
@@ -127,8 +146,44 @@ A category $\Aa$ has \emph{Mobius Inversion} $\mu$ if $\mu$ satisfies
 \]
 with each equality implying the other by finite dimensionality (this is the same argument as showing that one-sided square matrix inverses are two-sided).
 \end{defn}
+\begin{chapter}{Groups and Orbits}
+\end{chapter}
 
-We now state a definition with no justification/explanation. This will be carefully developed in the chapter on magnitude - I'm not sure how I will end up choosing to organize it.
+\begin{chapter}{Metric Space Magnitude}
+\section{Motivation: Clustering}
+The \emph{magnitude} of a metric space is a notion introduced in \cite{Lein2}. %TODO: Finish introduction
+\section{Important Definitions}
+A metric space is a space with a notion of distance between pairs of points. 
+\begin{defn}
+A \textit{metric space} $(M,d)$ is a set $M$ together with a function  $d:M \times M \rightarrow \Rr$ (the \emph{metric}), such that the following are satisfied for all $a,b,c \in M$:
+\begin{itemize}
+\item $d(a,b) \geq 0$, with equality $\iff a = b$;
+\item $d(a,b) = d(b,a)$; and
+\item $d(a,b) + d(b,c) \geq d(a,c)$.
+\end{itemize}
+We sometimes write just $M$ if the metric is unambiguous.
+\end{defn}
+A category is an algebraic structure which generalizes ``objects" and ``maps" (or ``morphisms"), with composition. There are several equivalent definitions, all somewhat technical, but the construct itself is quite intuitive once you get used to it.  
+\begin{defn}
+A \textit{category} $C$ consists of:
+\begin{itemize}
+\item A collection $C_0$ of \emph{objects};
+\item For each $a,b \in C_0$, a collection $C(a,b)$ of \emph{morphisms from $x$ to $y$};
+\item For each $a,b,c \in C_0$, a \emph{composition operator}: A function $\circ:C(a,b) \times C(b,c) \rightarrow C(a,c)$; and
+\item For each $a \in C_0$, an \emph{identity morphism} $1_a \in C(a,a)$,
+\end{itemize}
+such that the following axioms are satisfied:
+\begin{itemize}
+\item Composition is associative: If $a,b,c,d \in C_0$ and $f\in C(a,b), g \in C(b,c), h \in C(c,d)$, then $f \circ (g \circ h) = (f \circ g) \circ h$, and
+\item Composition respects identities: If $a,b \in C_0, f \in C(a,b)$, then $1_b \circ f = f = f \circ 1_a$.
+\end{itemize}
+
+\end{defn}
+\section{Euler Characteristic of a Category}
+\begin{defn}
+Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
+\end{defn}
+\section{Weightings}
 \begin{defn}
 A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\ob(\Aa)$ such that for all $a \in \Aa$,
 \[
@@ -148,10 +203,6 @@ If $\Aa$ has Mobius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting 
 &=1.
 \end{align*}
 \end{proof}
-
-\begin{defn}
-Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
-\end{defn}
 \begin{lemma}
 \label{mu_lemma}
 Suppose $\alpha \subseteq \beta$ are cells of a simplicial complex. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$.
