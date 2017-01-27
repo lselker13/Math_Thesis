@@ -1,5 +1,6 @@
 \documentclass[12pt]{pom_thesis}
 \input{commands_packages}
+\usetikzlibrary{decorations.pathreplacing,angles,quotes}
 \author{Leo Selker}
 \advisor{Vin de Silva}
 \title{The Magnitude of a Metric Space: An Approach to Clustering}
@@ -50,7 +51,7 @@ g(n) = \sum_{d | n} f(d) \iff f(n) = \sum_{d | n} \mu\left(\frac dn\right) g(n)
 We will formally develop this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions.
 \section{Posets and Incidence Algebras}
 \begin{defn}
-A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a relation, denoted $\leq$, such that, for all $a,b,c \in X$:
+A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a binary relation $\leq$, such that, for all $a,b,c \in X$:
 \begin{itemize}
 \item $a \leq a$ (reflexive)
 \item If $a \leq b$ and $b \leq a$ then $a = b$ (antisymmetric)
@@ -100,7 +101,7 @@ The \textbf{identity function} $\delta$ is defined by
 \]
 This is equivalent to the identity matrix, with 1's along the main diagonal.
 
-We also define another special function, $\zeta$ (the ``ones function''):
+We also define another special function, $\zeta$ (the ``indicator function''):
 \[
 \zeta(a,b) = \begin{cases} 1 & a \leq b \\ 0 & else. \end{cases}
 \]
@@ -121,7 +122,7 @@ We will refer to this unique inverse, if it exists, as $f^{-1}$.
 \section{Definition of M\"obius Inversion}
 We are now ready to define the M\"obius function on partially ordered sets.
 \begin{defn}\label{def_mob_pos}
-Let $X$ be a finite poset. Let $\zeta$ be the ones function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
+Let $X$ be a finite poset. Let $\zeta$ be the indicator function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
 \end{defn}
 \begin{rmk}
 This inverse exists by \ref{cor_inv} part b. 
@@ -146,13 +147,15 @@ A category $\Aa$ has \emph{Mobius Inversion} $\mu$ if $\mu$ satisfies
 \]
 with each equality implying the other by finite dimensionality (this is the same argument as showing that one-sided square matrix inverses are two-sided).
 \end{defn}
-\begin{chapter}{Groups and Orbits}
+\begin{chapter}{Groups and Orbits} 
+We want to apply M\"obius inversion to groups. So far, the most general construct to which we have applied M\"obius inversion is the partially ordered set (poset). Given a group $G$, 
+Suppose that a group $G$ acts on a set $\Omega$. 
 \end{chapter}
 
 \begin{chapter}{Metric Space Magnitude}
 \section{Motivation: Clustering}
 The \emph{magnitude} of a metric space is a notion introduced in \cite{Lein2}. %TODO: Finish introduction
-\section{Important Definitions}
+\section{Important Definitions} \label{mag_defs}
 A metric space is a space with a notion of distance between pairs of points. 
 \begin{defn}
 A \textit{metric space} $(M,d)$ is a set $M$ together with a function  $d:M \times M \rightarrow \Rr$ (the \emph{metric}), such that the following are satisfied for all $a,b,c \in M$:
@@ -197,18 +200,49 @@ Note that this is essentially the same as a metric space, but without the restri
 
 For those who are interested in the details, what we are doing is letting $\mathcal{V}$ be the monoidal category whose set of objects is $\Rr^{\geq 0}$, with a single morphism from $a$ to $b$ if and only if $a \leq b$, and with addition (+) as the monoid operator. Then a generalized metric space is a category enriched with $\mathcal{V}$. 
 
+We will soon be interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We will call this binary function $\zeta$, and define it on a category $C$ as follows: For $a,b \in C_0$, if $C$ is an ordinary category, then $\zeta(a,b) = |C(a,b)|$, or the size of the set of morphisms from $a$ to $b$. If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. 
 
+The definition for ordinary categories is fairly natural. The version for generalized metric spaces is less intuitive, but the definitions are surprisingly consistent. Consider three objects $a,b,c$ in an ordinary category. The numbers above the arrows indicate the number of morphisms between adjacent objects:
+
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+
+\node[label = below:{a}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[label = below:{b}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (3,0) {};
+\node[label = below:{c}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (6,0) {};                        
+
+\draw[-latex] (1) -- (2) node[midway, above = 3pt] {\textit{k}};
+\draw[-latex] (2) -- (3) node[midway, above = 3pt] {\textit{l}};
+
+\end{tikzpicture}\]
+Then, as a result of the composition axioms, there must be a morphism $g \circ f$ from $a$ to $c$ for each pair of morphisms $f \in C(a,b), g \in C(b,c)$. This means that there are $kl$ morphisms from $a$ to $c$ which are implied by the morphisms shown above. So $\zeta(a,c) \geq \zeta(a,b)  \zeta(b,c)$. 
+
+Now, consider the same situation in a generalized metric space. We know from one of the axioms that
+\[
+C(a,c) \leq C(a,b) + C(b,c).
+\]
+The inverse exponential function is monotonically decreasing. So we simply apply it to both sides and flip the inequality to get the same result, that $\zeta(a,c) \geq \zeta(a,b) \zeta(b,c)$.
+
+There is another way of looking at essentially the same property, which might make it slightly more clear why this works out. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. So it makes sense that we exponentiate in the generalized metric space case. Adding exponents becomes multiplication.
+\section{M\"obius Inversion on a Category}
+To define M\"obius inversion on a partially ordered set, we used an "indicator function" which was - not coincidentally - notated as $\zeta$. We will henceforth refer to this function as $\zeta'$, reserving $\zeta$ for the function we just defined on categories. Recall that for $a,b$ in a poset $X$, $\zeta'(a,b)$ was defined to be 1 if $a \leq b$, and 0 otherwise. We would like to generalize the construction of M\"obius inversion. The first step is to observe the following: Given a poset $X$, we can construct an "equivalent" category by letting $C_0=X$, and adding a single morphism from elements $a,b \in C_0$ if and only if $a \leq b \in X$. It is easily checked that this is in fact a category, and that for each triplet in $C_0$ there is only one possible composition operator (this is why we don't bother to explicitly define them). 
+
+The key fact here is that for $a,b \in C_0 = X, \zeta(a,b) = \zeta'(a,b)$. This motivates the following definition:
+\begin{defn}\label{cat_mob} %TODO: Check uniqueness
+Let $C$ be a category. Let $\zeta$ be as defined above. Then the \emph{M\"obius function} on $C$, if it exists, is a function $\mu$ which, for all $x,y \in C$, satisfies
+\[
+\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
+\]
+If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion}.
+\end{defn}
 \section{Euler Characteristic of a Category}
-\subsection{Weightings and Definition}
-We now turn to a new construction: category weightings. This idea is fully explored in \cite{Lein2}. We will immediately connect this to M\"obius inversion. This will lead to the initial definition of the Euler characteristic of a category, which in turn will directly lead to the definition of the magnitude of a metric space.
+\subsection{Definition}
+We are now ready to construct central definition of this section: the Euler characteristic of a category. The entire construction can be found in \cite{Lein1}, \cite{Lein2}, \cite{Lein4}. We will immediately connect this to M\"obius inversion. This will lead to the initial definition of the Euler characteristic of a category, which in turn will directly lead to the definition of the magnitude of a metric space.
 
-Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. 
-
-We are interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We will call this binary function $\zeta$, and define it on a category $C$ as follows: For $a,b \in C_0$, if $C$ is an ordinary category, then $\zeta(a,b) = |C(a,b)|$, or the size of the set of morphisms from $a$ to $b$. If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. The definition for ordinary categories is fairly natural. The more morphisms there are from $a$ to $b$, the closer together they are. In order to make sense of the definition for generalized metric spaces, consider three objects $a,b,c$ in an ordinary category:
-
-\begin{tikzpicture}
-\node[shape=circle,draw=black, fill=black] (a){a};
-\end{tikzpicture}
+Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. The definition of $\zeta$ from section \ref{mag_defs} will be assumed.
 
 \begin{defn}
 A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\ob(\Aa)$ such that for all $a \in \Aa$,
@@ -243,9 +277,9 @@ If a finite category $A$ has a M\"obius inversion $\mu$, then
 \[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
 \]
 \end{cor}
-This provides the main motivation for exploring M\"obius inversion here. It provides a way in which we can write down weightings on many metric spaces, since the similarity matrix $\zeta$ is invertible in most cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
+This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
 \subsection{Simplicial Complexes}
-This definition needs some intuitive justification. We will use a new construction, the simplicial complex, to show that calling this value an Euler characteristic is reasonable.
+This definition needs some intuitive justification. We will use a new construction, the simplicial complex, to show that calling this value an Euler characteristic is reasonable. 
 
 \begin{defn}
 Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
@@ -289,8 +323,10 @@ Let $\sigma$ be a simplicial complex. Then
 &= \chi(\sigma)
 \end{align*}
 \end{proof}
+\section{Metric Space Magnitude}
+
 \end{chapter}
-\bibliographystyle{apalike}
+\bibliographystyle{abbrv}
 \bibliography{bibliography.bib}
 
 
