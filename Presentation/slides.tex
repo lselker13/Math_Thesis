@@ -4,7 +4,8 @@
 \input{commands_packages}
 \graphicspath{{Figures/}}
 \newcommand{\Col}{\text{Col}}
-\usepackage{tabu, rotating, graphicx, color, multicol, empheq}
+\usepackage{tabu, rotating, graphicx, multicol, empheq}
+%\usepackage[dvipsnames]{color}
 \usepackage[framemethod=TikZ]{mdframed}
 
 \newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
@@ -54,10 +55,9 @@ f_n = g_n - g_{n-1}
 \]
 \only<3>{
 \color{purple}
-\begin{empheq}[box=\fbox]{align*} %TODO: Improve
-g_n &= \textcolor{blue}{f_1 + ... + f_{n-1}} + f_n\\
-- g_{n-1} &=\textcolor{blue}{f_ + ... + f_{n-1}}\\
-g_n - g_{n-1} &= f_n.
+\begin{empheq}[box=\fbox]{align*} 
+g_n - g_{n-1} &= \textcolor{blue}{f_1 + ... + f_{n-1}} + f_n\\
+ &-\textcolor{blue}{f_1 + ... + f_{n-1}}
 \end{empheq}
 }
 \only<4>{
@@ -382,35 +382,42 @@ Values of $g$:
 \begin{empheq}[box=\fbox]{align*}
 \textcolor{green}{f(60)}& = \textcolor{green}{g(\frac{60}{1})} \\
 &- \textcolor{blue}{g(\frac{60}{2}) - g(\frac{60}{3}) - g(\frac{60}{5})}\\
-&+ \textcolor{orange}{g(\frac{60}{6}) + \frac({60}{10}) + \frac({60}{15})}\\
-&- \textcolor{blue}{g(\frac{60}{30})}
+&+ \textcolor{orange}{g(\frac{60}{6}) + g(\frac{60}{10}) + g(\frac{60}{15})}\\
+&- \textcolor{purple}{g(\frac{60}{30})}
 \end{empheq}
 \end{multicols}
+And the pattern continues.
 }
 
 \frame{\frametitle{Euler's Totient}
-\begin{itemize}
-\item Recall that Euler's Totient Function, or $\phi(n)$, gives us how many numbers less than or equal to $n$ are relatively prime to $n$.
-\item Put another way: $\phi(n) = \#\{1 \leq m \leq n | \gcd(m,n) = 1\}$.
-\item So $\phi(10) = 4: \textcolor{red}{1} 2 \textcolor{red}{3} 4 5 6 \textcolor{red}{7} 8 \textcolor{red}{9}$ theorem
-\item Is there a way to write values of this function down without checking every number up to $n$?
-\end{itemize}
+\begin{align*}
+\phi(n) &= \text{ \# numbers $\leq n$ relatively prime to $n$}\\
+ &= \#\{1 \leq m \leq n | \gcd(m,n) = 1\}
+\end{align*}
+
+\begin{align*}
+\phi(10) &= 4: \textcolor{purple}{1}\ 2\ \textcolor{purple}{3}\ 4\ 5\ 6\ \textcolor{purple}{7}\ 8\ \textcolor{purple}{9}\ 10\\
+\phi(7) &= 6: \textcolor{purple}{1\ 2\ 3\ 4\ 5\ 6}\ 7
+\end{align*}
+
 }
 \frame{\frametitle{Setup for M\"obius Inversion}
 A fact we will start from:
 \[ n = \sum_{d|n} \phi(d).
 \]
+\onslide<2->
 Why? Consider $n=10$:
 \[
 \begin{tabu}{c|ccc}
 d & \phi(d) & k \text{ counted by } \phi & \{\frac nd k\}\\
 \hline
-1 & 1 & \{1\} & \color{orange}\{10\}\\
-2 & 1 & \{1\} &\color{green} \{5\}\\
-5 & 4 & \{1,2,3,4\} &\color{blue} \{2,4,6,8\}\\
-10 & 4 & \{1,3,7,9\} &\color{brown} \{1,3,7,9\}
+1 & 1 & 1 & \color{orange}10\\
+2 & 1 & 1 &\color{green} 5\\
+5 & 4 & 1,2,3,4 &\color{blue} 2,4,6,8\\
+10 & 4 & 1,3,7,9 &\color{brown} 1,3,7,9
 \end{tabu}
 \]
+\onslide<3->
 In the righthand column, we partitioned 10 numbers into four sets:
 \[
 \begin{tabu}{cccc}
@@ -418,91 +425,81 @@ In the righthand column, we partitioned 10 numbers into four sets:
 \end{tabu}
 \]
 and added up the partitions' sizes. So we got 10.
-\iffalse
+
 \[
 \color{brown}\textcolor{orange}{1} \textcolor{blue}{2} 3 \textcolor{blue}{4} \textcolor{green}{5} \textcolor{blue}{6} 7 \textcolor{blue}{8} 9 \textcolor{blue}{8}
 \]
-\fi
+
 }
 
 \frame{\frametitle{How to get $\phi(n)$?}
 \begin{itemize}
-\item We have \[ n = \sum_{d|n} \phi(d),
+\item<1-> Fact: \[ \colorize{1}{2-}{purple}{n = \sum_{d|n} \phi(d)}
 \]
-a fact about values of $\phi$ added up. But we want individual values of $\phi$. So we use M\"obius inversion!
-\item We follow the formula. Our poset is $\{1,\dots,10\}$, but using $|$ (divisibility) instead of the usual $\leq$ (see it in the sum).
-\[ \boldsymbol{\phi} = [\phi(1),\dots,\phi(10)]\hspace{1cm} \mathbf{f} = [1,2,\dots,10]
-\]
-\item We need $\zeta$ such that \[\zeta_{ij} = 
-\begin{cases}
-1 & i|j\\
-0 & else
-\end{cases}
-\]
-\end{itemize}}
+\item<2-> Remember:
 
-\frame{\frametitle{First $\zeta$}
-\[
-\zeta = \bordermatrix{
-  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \cr
-1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1  \cr
-2 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1  \cr
-3 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0  \cr
-4 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0  \cr
-5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 1  \cr
-6 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0  \cr
-7 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0  \cr
-8 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0  \cr
-9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0  \cr
-10& 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1  \cr
-}\]
-}
-\frame{\frametitle{Then $\mu$}
-\[
-\mu = \zeta^{-1} = \bordermatrix{ 
-  & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \cr
-1 & 1 & -1& -1& 0 & -1& 1 & -1& 0 & 0 & 1  \cr
-2 & 0 & 1 & 0 & -1& 0 &-1 & 0 & 0 & 0 & -1 \cr
-3 & 0 & 0 & 1 & 0 & 0 & -1& 0 & 0 & -1& 0  \cr
-4 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & -1& 0 & 0  \cr
-5 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & -1 \cr
-6 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0  \cr
-7 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0  \cr
-8 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0  \cr
-9 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0  \cr
-10& 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1  \cr
-}
+\begin{empheq}[box=\fbox]{align*}
+\textcolor{purple}{g(x) = \sum_{y \leq x}f(y)} \iff \textcolor{blue}{f(x) = \sum_{y \leq x}g(y)\mu(y,x)}
+\end{empheq}
+\item<3-> So \[\textcolor{blue}{ \phi(n) = \sum_{d|n} d\mu(d,n)}
 \]
-
-}
-\frame{\frametitle{Putting it together}
-\begin{itemize}
-\item We apply M\"obius inversion: We know that $\mathbf{f} = \boldsymbol{\phi}\zeta$, so it must be that $\boldsymbol{\phi} = \mathbf{f}\mu$. Recall that another way to write this is that 
-\[
-\phi(n) = \sum_{m|n}m\mu(m,n) \hspace{1cm} \text{(Here $f(m) = m$ so we don't write it)}
-\]
-\item It turns out that \[
-\mu(a,b) = \begin{cases}
-0 & a \nmid b \text{ or } \frac ab \text{ is divisible by a square}\\
-(-1)^{\text{\#prime factors of }\frac ab} & else
-\end{cases}
-\]
-\item We can now write down values of $\phi(n)$. For example:
-\begin{align*}
-\phi(10)& = 1\mu(1,10) + 2\mu(2,10) + 5\mu(5,10) + 10\mu(10,10)\\
-&= 1(1) + 2(-1) + 5(-1) + 10(1) = 4 \hspace{.5cm}(\textcolor{red}{1} 2 \textcolor{red}{3} 4 5 6 \textcolor{red}{7} 8 \textcolor{red}{9})
-\end{align*}
 \end{itemize}
 }
+
+
+\frame{\frametitle{Testing the Formula for $\phi(n)$}
+\begin{empheq}[box=\fbox]{align*}
+\phi(n) &= \sum_{d|n} d\mu(d,n)\\
+\mu(a,b) &= \begin{cases}
+0 & a \nmid b \text{ or } \frac ba \text{ is divisible by a square}\\
+(-1)^{\text{\#prime factors of }\frac ba} & else
+\end{cases}
+\end{empheq}
+\onslide<2->
+\begin{align*}
+\begin{tabu}{c|cc}
+&2^0 &2^1\\
+\hline
+5^0& \phi(1)  & \phi(2) \\
+5^1& \phi(5) & \after{green}{\phi(10)} \\
+\end{tabu}
+\hspace{1cm}\phi: 
+\begin{tabu}{c|cc}
+&2^0 &2^1\\
+\hline
+3^1& \colorize{1-5}{6-}{blue}{1} & \colorize{1-4}{5-}{brown}{2}\\
+3^2  & \colorize{1-3}{4-}{orange}{5} & \colorize{1-2}{3-}{purple}{10}
+\end{tabu}
+\end{align*}
+\begin{tikzpicture}[overlay]
+\only<3->{\draw[purple,thick,rounded corners] (3.4,.4) rectangle (5.6,1.3);}
+\only<4->{\draw[orange,thick,rounded corners] (3.4,.4) rectangle (4.3,1.3);}
+\only<5->{\draw[brown,thick,rounded corners] (3.4,.85) rectangle (5.6,1.3);}
+\only<6->{\draw[blue,thick,rounded corners] (3.4,.85) rectangle (4.3,1.3);}
+\end{tikzpicture}
+\[
+\onslide<2-> \textcolor{green}{\phi(10)} = 
+\onslide<3->  \textcolor{purple}{10(-1)^0} 
+\onslide<4-> + \textcolor{orange}{5(-1)^1}
+\onslide<5-> + \textcolor{brown}{2(-1)^1}
+\onslide<6-> + \textcolor{blue}{1(-1)^2}
+\]
+\onslide<6->
+\[\textcolor{green}{1}\ 2\ \textcolor{green}{3}\ 4\ 5\ 6\ \textcolor{green}{7}\ 8\ \textcolor{green}{9}\ 10
+\]
+}
+
+
+
 \section{Clustering}
 \frame{\frametitle{Other Applications}
 \begin{itemize}
-\item M\"obius inversion has many applications involving counting. Some I have been looking at:
+\item Counting:
 \begin{itemize}
 \item Inclusion-Exclusion principle
 \item Counting orbits of groups
 \end{itemize}
-\item The reason I first started looking at M\"obius inversion is because of its somewhat surprising (to me) application in data clustering.
+\item Data clustering
 \end{itemize}
 }
 \frame{\frametitle{Hierarchical Clustering}
@@ -517,76 +514,98 @@ Hierarchical clustering is a general approach to data analysis
 \]
 }
 \frame{\frametitle{A Strange Approach to Clustering}
-\begin{itemize}
-\item We want to count the number of clusters in a space. We'll do it in a weird way:
-\item[] \begin{itemize}
-\item Assign a metric to our space, i.e. a distance function $d$
-\item Assign a \textbf{weighting} to the points, i.e. assign each point a real-valued "weight"
-\item We want each cluster's weight to sum to close to 1
-\item Points near many other points will have smaller values
-\item Points which are separated will have larger values
-\end{itemize}
-\item Then, we'll sum the weights to get the \textbf{magnitude}, i.e. number of clusters, in the data set.
-\item Note: There is no "correct" or "actual" number of clusters in a space. This will be scale-dependent.
-\end{itemize}
+\only<1>{
+\[
+\includegraphics[width=.7\textwidth]{../Figures/no_weights.pdf}
+\]
+}
+\only<2>{
+\[
+\includegraphics[width=.7\textwidth]{../Figures/initial_weights.pdf}
+\]
+}
+\only<3>{
+\[
+\includegraphics[width=.7\textwidth]{../Figures/total_weights.pdf}
+\]
+}\only<4>{
+\[
+\includegraphics[width=.7\textwidth]{../Figures/unbalanced_weights.pdf}
+\]
+}
 }
 \frame{\frametitle{Weighting and Magnitude}
 \begin{itemize}
 \item
 A \textit{metric space} is a set of points $X$ together with a function $d:X \times X \rightarrow \Rr^{\geq 0}$ capturing a notion of distance.
-\item A \textbf{weighting} on a finite metric space $X$ is a set of weights $\omega(x)$ in $\Rr$ such that, for all $x \in X$:
+\item For each $x \in X$, we want:
 \[
-\sum_{y \in X}\omega(y)e^{-d(x,y)} = 1
+\sum_{y \in X}\omega(y)\textcolor{green}{e^{-d(x,y)}} = 1
 \]
-\item Then the \textbf{magnitude} of $X$, denoted $|X|$, is defined by:
-\[
-|X| = \sum_{x \in X}\omega(x).
-\]
-\item This looks kind of like a setup for M\"obius inversion. But we will need $\zeta$ which is not upper triangular and just ones and zeros.
+Then we add up the weights to get the \emph{magnitude} of $X$.
+
 \end{itemize}
 }
 \frame{\frametitle{Writing Down Weightings}
-We had
+We have:
 \[
-\text{For all } x \in X, \sum_{y \in X}\omega(y)e^{-d(x,y)} = 1
+\textcolor{purple}{1=\sum_{y \in X}\omega(y)e^{-d(x,y)} }
 \]
-We write $X = \{x_1,...,x_n\}$. Then we 
-\begin{itemize}
-\item let $\zeta$ be the $n\times n$ matrix where $\zeta_{i,j} = e^{-d(x_i, x_j)}$, 
-\item let $\boldsymbol{\omega} = [\omega(x_1), \dots, \omega(x_n)]$, and
-\item let $\bf{e}$ be the $1 \times n$ vector of ones.
-\end{itemize}
- So the above becomes the familiar
+\onslide<2->
+Remember:
+\begin{empheq}[box=\fbox]{align*}
+\textcolor{purple}{g(x) = \sum_{y \leq x}f(y)} \iff \textcolor{blue}{f(x) = \sum_{y \leq x}g(y)\mu(y,x)}
+\end{empheq}
+\onslide<3->
+We end up with a $\mu$, such that
 \[
-\mathbf{e} = \boldsymbol{\omega} \zeta
+\textcolor{blue}{\omega(x) = \sum_{y \in X}\mu(x,y)}
 \]
+\onslide<4->
+So $|X|$ is simply the sum of the entries of $\mu$.
 }
-\frame{\frametitle{Writing Down Weightings}
-\begin{itemize}
-\item We want to let $\mu = \zeta^{-1}$. Now $\zeta$ may not be invertible. But if it is, let $\mu = \zeta^{-1}$, so that
-\[
-\mathbf{e} = \boldsymbol{\omega} \zeta \Rightarrow \boldsymbol{\omega} = \mathbf{e}\mu
-\]
-\item Since $\mathbf{e}$ is the all-ones vector, this means that the weights are sums of rows of $\mu$:
-\[
-\text{For all } x \in X,\omega(x) = \sum_{y \in X}\mu(x,y)
-\]
-Recall that the magnitude of $X$, or $|X|$, which was the quantity we wanted, was the sum of the weights. So $|X|$ is simply the sum of the entries of $\mu$:
-\[
-|X| = \sum_{x,y \in X}\mu(x,y)
-\]
-\end{itemize}
+\frame{\frametitle{Magnitude Example}
+Consider the space below, with $d$ a variable:\\
+
+                        \[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (5,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (0,-.5) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](4) at (5,-.5) {};
+\draw[decoration={brace,raise=7pt},decorate] (1) -- (2) node[midway, above = 10pt] {\textit{d}};
+\draw[decoration={brace, mirror, raise = 7pt},decorate] (1) -- (3) node[midway, left = 10pt] {\textit{$\frac{d}{1,000}$}};
+% \draw (2) -- (4);
+% \draw (3) -- (4);
+\end{tikzpicture}\]\\
+\vspace{.5cm}
+As we increase $d$, we would expect this to have 1 cluster, then 2, then 4.
+}
+\frame{\frametitle{Magnitude Example}
+Plot of magnitude as we ``zoom in" on the space:
+\centerline{
+\includegraphics[width = 1.2\textwidth]{../Figures/4_point.png}
+}
 }
 \section{}
+
+\frame{
+\huge
+\begin{center}Thank you! \end{center}
+\vspace{1cm}
+\[
+\includegraphics[width=.5\textwidth]{../Figures/mobius_strip.png}
+\]
+}
 \frame{\frametitle{Sources}
 \tiny
 \nocite{*}
 \bibliographystyle{abbrv}
 \bibliography{../Drafts/bibliography.bib}
-}
-\frame{
-\huge
-\begin{center}Thank you! \end{center}
 }
 
 \end{document}
