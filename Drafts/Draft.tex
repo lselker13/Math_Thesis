@@ -1,6 +1,8 @@
 \documentclass[12pt]{pom_thesis}
 \input{commands_packages}
 \usetikzlibrary{decorations.pathreplacing,angles,quotes}
+\usepackage{mathrsfs}
+% \usepackage[euler-digits]{eulervm} %TODO: Maybe change this
 \author{Leo Selker}
 \advisor{Vin de Silva}
 \title{The Magnitude of a Metric Space: An Approach to Clustering}
@@ -8,6 +10,7 @@
 \newcommand{\fix}{\text{fix }}
 \newcommand{\cl}{\text{cl }}
 \DeclareMathOperator{\cat}{cat}
+\DeclareMathOperator{\ps}{\mathscr{P}}
 \begin{document}
 
 \maketitle
@@ -66,7 +69,7 @@ The \emph{incidence algebra} on a locally finite poset $X$ is over the set of fu
 \[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
 \]
 Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
-\[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) = \sum_{a \leq c \leq b}f(a,c)g(c,b).\]
+\[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) \left( = \sum_{a \leq c \leq b}f(a,c)g(c,b)\right).\]
 \end{defn}
 \begin{rmk}
 The requirement that $X$ be locally finite ensures that the above sum has a finite number of terms.
@@ -74,7 +77,7 @@ The requirement that $X$ be locally finite ensures that the above sum has a fini
 \begin{rmk}
 We use $\Rr$ as the codomain of the functions in the incidence algebra. But this can be generalized to other commutative rings with identity.
 \end{rmk}
-I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without th bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
+I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
 \begin{lemma}\label{mat_eq}
 Let $X$ be a finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements of $X$ from $x_1$ to $x_n$, such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the $n\times n$ square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
 \begin{enumerate}[a)]
@@ -86,7 +89,7 @@ Let $X$ be a finite poset, with $|X|=n$. Choose a total ordering on $X$ such tha
 \begin{enumerate}[a)]
 \item If $i>j$, by how we defined $F$, $x_i \nleq x_j$. So $F_{ij} = f(x_i, x_j) = 0$. 
 \item
-The result follows directly from the definition of matrix multiplication. Let $i,j\leq n$ be given. Remember that we can omit the bounds from the sum in the definition of incidence algebra multiplication. Then:
+The result follows directly from the definition of matrix multiplication. Let $i,j\leq n$ be given. Then:
 \begin{align*}
 (f * g)(x_i, x_j) &= \sum_{y \in X} f(x_i,y)g(y,x_j)\\
 &=FG_{ij}
@@ -108,16 +111,18 @@ We also define another special function, $\zeta$ (the ``indicator function''):
 
 At this point, \ref{mat_eq} tells us several things about inverses. Since $\delta$ is equivalent to the identity matrix, inverses will coincide with the corresponding matrix inverses. This leads us to the following:
 \begin{cor}\label{cor_inv}
-Let $f,g$ be elements of the incidence algebra on $X$. Then:
+Let $f,g, h$ be elements of the incidence algebra on $X$. Then:
 \begin{enumerate}[a)]
+\item $(f*g)*h = f*(g*h)$, i.e. multiplication is associative
 \item $f*g = \delta \Rightarrow g*f = \delta$
 \item If $\forall x \in X, f(x,x) \neq 0$, then $f$ is uniquely invertible - in other words, $\exists! f^{-1}$ such that $f*f^{-1} = \delta = f^{-1} * f$.
 \end{enumerate}
 \end{cor}
 \begin{proof}
-Part a) is true of all square matrices. Part b) is true of all upper triangular matrices, since the determinant of such matrices is the product of the main diagonal elements. We use \ref{mat_eq} to transfer the results to $f$ and $g$.
+Part a) is true of matrix multiplication in general. Part b) is true of all square matrices. Part c) is true of all upper triangular matrices, since the determinant of such matrices is the product of the main diagonal elements. We use \ref{mat_eq} to transfer all three results to $f$ and $g$.
 \end{proof}
 We will refer to this unique inverse, if it exists, as $f^{-1}$. 
+
 
 \section{Definition of M\"obius Inversion}
 We are now ready to define the M\"obius function on partially ordered sets.
@@ -128,25 +133,52 @@ Let $X$ be a finite poset. Let $\zeta$ be the indicator function defined above. 
 This inverse exists by \ref{cor_inv} part b. 
 \end{rmk}
 \begin{rmk}
-Another statement of the definition is that $\mu$ is the unique function such that, for all $x,y \in X$,
+Definition \ref{def_mob_pos} is a statement about incidence algebra multiplication, so is really about matrix multiplication. Another statement of the definition is that $\mu$ is the unique function such that, for all $x,y \in X$,
 \[
 \sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y)
 \]
 \end{rmk}
+
+This is the M\"obius function. To complete the definition of M\"obius inversion, we turn to the standard use of this function. 
+\begin{thm}[M\"obius Inversion]\label{mob_inv}
+Let $X$ be a finite poset. Let $f, g: X \times X \rightarrow \Rr$ be elements of the incidence algebra on $X$. Let $\zeta, \mu$ be defined as usual. Then:
+\begin{align*}
+g = f \zeta &\iff f = g \mu;\\
+g = \zeta f &\iff f = \mu g.
+\end{align*}
+Equivalently,
+\begin{align*}
+\forall x,y \in X, g(x,y) = \sum_{z \in X}f(x,z)\zeta(z,y) &\iff \forall x,y \in X, f(x,y) = \sum_{z \in X}g(x,z)\mu(z,y);\\
+\forall x,y \in X, g(x,y) = \sum_{z \in X}\zeta(x,z)f(z,y) &\iff \forall x,y \in X, f(x,y) = \sum_{z \in X}\mu(x,z)g(z,y).
+\end{align*}
+\begin{proof}
+All these results follow from the definition of $\mu$ and from facts about matrix/incidence algebra multiplication.
+\end{proof}
+\end{thm}
+This result seems quite straightforward based on how we defined $\zeta$ and $\mu$. However, it turns out to be extremely powerful. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
+
+With that in mind, we can also consider M\"obius inversion on functions in one variable (instead of two) on a poset.
+\begin{thm}
+Let $f,g:X \rightarrow \Rr$ be given. Let $\zeta, \mu$ be defined as usual. Then:
+\begin{align*}
+f = g \zeta & \iff g = f \mu;\\
+f = \zeta g & \iff g = \mu f.
+\end{align*}
+Equivalently,
+\begin{align*}
+\forall x \in X, f(x) = \sum_{y \in X} g(y)\zeta(y,x) &\iff \forall x \in X, g(x) = \sum_{y \in X} f(y)\mu(y,x);\\
+\forall x \in X, f(x) = \sum_{y \in X} \zeta(x,y)g(y) &\iff \forall x \in X, g(x) = \sum_{y \in X} \mu(x,y)g(y).
+\end{align*}
+\end{thm}
+We now have two equivalent definitions of the M\"obius function, one using matrices (or linear operators) and vectors, and one directly considering elements and sums. We will continue to move back and forth between these two approaches throughout this investigation. This is because although the two definitions are completely equivalent, they each have advantages. Working with sums and elements helps us see the details of what is going on, and reminds us of the structure of our poset. It is also often the perspective from which motivating problems arise. On the other hand, using matrices and vectors greatly simplifies the equations we have to deal with, makes the manipulations themselves easier, and allows us to keep the bigger picture - the idea of inversion - in mind more easily. 
+
 \section{Integers with Divisibility Ordering}
 We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}. It is, of course, a type of M\"obius function. But the form in equation \ref{init_mob} uses functions of a single variable, while our construction uses functions of two variables. We must do some simple conversions to make the definitions line up.
 
 Let $X$ be the poset consisting of the positive integers, using $|$, or divisibility, as the ordering relation. Let $\zeta$, and therefore $\mu = \zeta^{-1}$, be defined as usual in the associated incidence algebra.
 %TODO: Finish this section (include intuition/direct proof)
 \end{chapter}
-% % %
-\begin{defn}
-A category $\Aa$ has \emph{Mobius Inversion} $\mu$ if $\mu$ satisfies
-\[
-\sum_b \mu(a,b)\zeta(b,c) = \delta(a,c) = \sum_b \zeta(a,b)\mu(b,c),
-\]
-with each equality implying the other by finite dimensionality (this is the same argument as showing that one-sided square matrix inverses are two-sided).
-\end{defn}
+
 \begin{chapter}{Groups and Orbits} 
 We want to apply M\"obius inversion to groups. So far, the most general construct to which we have applied M\"obius inversion is the partially ordered set (poset). Given a group $G$, 
 Suppose that a group $G$ acts on a set $\Omega$. 
@@ -236,7 +268,7 @@ Let $C$ be a category. Let $\zeta$ be as defined above. Then the \emph{M\"obius 
 \[
 \sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
 \]
-If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion}.
+If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion}. %TODO: Connect back, use matrix version
 \end{defn}
 \section{Euler Characteristic of a Category}
 \subsection{Definition}
@@ -324,8 +356,34 @@ Let $\sigma$ be a simplicial complex. Then
 \end{align*}
 \end{proof}
 \section{Metric Space Magnitude}
-
 \end{chapter}
+\begin{chapter}{Inclusion-Exclusion}
+We start by introducing the desired end result, the \emph{inclusion-exclusion principle}:
+\begin{thm}[Inclusion-Exclusion]\label{iep}
+Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
+\[
+\bigcup_{i \in K}A_i = \sum_{J \subseteq K}(-1)^{|J|}\bigcap_{i \in J}A_j
+.\]
+\end{thm}
+There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset.
+
+
+
+
+% % % OLD VERSION
+\iffalse
+\begin{definition}
+Let $S$ be a set. Then the \emph{power set} of $S$, denoted $\ps(S)$, is the set of subsets of $S$, $\{A \subseteq S\}$.
+\end{definition}
+We will be using the poset whose elements are from $\ps(S)$, where $A \leq B$ if $A \supseteq B$. However, for clarity, we won't use the $\leq$ notation for this poset - we will use inclusion notation directly, and define $\zeta$ and $\mu$ in terms of it. 
+
+Recall that $\zeta$ is the indicator function on a poset. So we define $\zeta: \ps(S) \times \ps(S) \rightarrow \{0,1\}$:
+\[
+\zeta(A,B) = 
+\]
+\fi
+\end{chapter}
+
 \bibliographystyle{abbrv}
 \bibliography{bibliography.bib}
 
