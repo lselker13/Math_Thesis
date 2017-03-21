@@ -17,4 +17,8 @@ Presentation/slides.pdf
 *.toc
 *.bbl
 *.blg
+*#
+*~
+Thesis_Comp/.#metric.py
+Thesis_Comp/.#rooks.py
 

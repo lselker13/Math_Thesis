@@ -41,6 +41,7 @@
 \newtheorem{defn}[thm]{Definition}
 \newtheorem{examp}[thm]{Example}
 \newtheorem{rmk}[thm]{Remark}
+\newtheorem{fact}[thm]{Fact}
 }
 
 

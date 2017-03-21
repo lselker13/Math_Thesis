@@ -2,20 +2,25 @@
 \input{commands_packages}
 \usetikzlibrary{decorations.pathreplacing,angles,quotes}
 \usepackage{mathrsfs}
-% \usepackage[euler-digits]{eulervm} %TODO: Maybe change this
+\usepackage[euler-digits]{eulervm} %TODO: Maybe change this
 \author{Leo Selker}
 \advisor{Vin de Silva}
-\title{The Magnitude of a Metric Space: An Approach to Clustering}
+\title{M\"obius Inversion: Construction and Applications}
 
 \newcommand{\fix}{\text{fix }}
 \newcommand{\cl}{\text{cl }}
 \DeclareMathOperator{\cat}{cat}
 \DeclareMathOperator{\ps}{\mathscr{P}}
+\DeclareMathOperator{\sub}{Sub}
+\DeclareMathOperator{\stab}{Stab}
+\DeclareMathOperator{\orb}{Orb}
+\DeclareMathOperator{\fixx}{fix}
+\DeclareMathOperator{\obj}{ob}
 \begin{document}
 
 \maketitle
 
-\begin{abstract}Clustering is an important application of topology. Here we explore a method of counting clusters at various scales. We build the necessary framework using the idea of a M\"obius inversion, and then we define the magnitude of a metric space\cite{Lein2}. We investigate behaviors of positive definite metric spaces, as well as how the magnitude acts under the product of spaces.
+\begin{abstract}M\"obius inversion is a general approach to reversing certain kinds of sums. In many situations, we know that a value we have access to is equal to the sum over a poset interval of values we want. M\"obius inversion is a tool which allows us to access those summed values. Here, we first develop the theory of M\"obius inversion on arbitrary posets. Then, we investigate its application in various counting examples, including the inclusion-exclusion principle and counting orbits of group actions. Finally, we explore an application of M\"obius inversion to data clustering.
 \end{abstract}
 
 \pagenumbering{roman}
@@ -23,35 +28,15 @@
 
 \newpage
 \pagenumbering{arabic}
-\begin{chapter}{Outline}
-\section{Introduction}
-We will be investigating the magnitude of metric spaces along with related/foundational ideas. We investigate M\"obius inversion, a way of calculating the magnitude of a metric space. We motivate and define magnitude of a metric space using the Euler characteristic of a category. We investigate positive definite metric spaces and tensor products. It's still slightly early to say what our "goal" is.
-\section{M\"obius Inversion}
-We will start with Mobius inversion on the positive integers, generalize to posets, and again generalize to categories\cite{Lein1}. At each step we will justify the way we choose to generalize.
-
-Here we may also investigate the P\'olya Counting Formula/Burnside's Lemma. We're just starting on that, so we'll see where it goes.
-\section{Euler Characteristic of a Category}
-We define the Euler characteristic of a finite category as the sum of all values of its Mobius inversion\cite{Lein1}. We will justify this by showing that simplicial complexes behave well under this definition, and it coincides with the usual one in that case. We'll also investigate working the other way: Taking a poset and turning it into a simplicial complex of chains. Hopefully this will lead somewhere too.
-\section{Magnitude, Properties, and Examples}
-We will define the "induced category" of a metric space, and use it as a motivation for the definition of the \textbf{magnitude} of a finite metric space\cite{Lein2} (the magnitude is the Euler characteristic of the induces category). This definition captures the "effective number of points" in the space in some sense. As we scale the space smaller, the magnitude approaches 1, and as we scale it larger it approaches the number of points in the space. In this sense, we have a "backwards" scale factor, where to zoom in we increase the factor. 
-In some ways magnitudes over scales approximate hierarchical clustering results. In fact, the magnitude of the tensor product of two finite spaces is the product of the spaces' magnitudes (we proved this, but it is likely known). We can also say more in the case of positive definite metric spaces\cite{Meck1}. We will investigate approximation theorems for "almost-product" spaces, and other situations which are well behaved.
-
-Here we will also probably discuss results from code I am writing.
-\section{Magnitude and Persistence}
-Hierarchical clustering is a way of expressing structure at a variety of levels within data. We can keep track of that structure using a \textit{persistent set}\cite{Carl1}. We can define clusters however we want using some scale factor. Generally we use single linkage, i.e. we partition under the equivalence relation define by whether there's a path between points involving no jumps of too long a distance. 
-
-We will attempt to connect the magnitude of a space with its persistent set. Both offer scaled counts of the number of clusters in some sense - we have some basic connections but hope to find more.
-\end{chapter}
-\begin{chapter}{Introduction to M\"obius Inversion}
+\begin{chapter}{Introduction to M\"obius Inversion}\label{chap_intro}
 \section{Initial Example}
 M\"obius inversion is a general construct. The most basic definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
 
 \begin{equation}\label{init_mob} %TODO: Unify numbering
-g(n) = \sum_{d | n} f(d) \iff f(n) = \sum_{d | n} \mu\left(\frac dn\right) g(n)
+f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(n)\mu\left(\frac dn\right)
 \end{equation}
 
-
-We will formally develop this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions.
+Our first goal is to prove the existence of - and find - this function $\mu$. We will do this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions.
 \section{Posets and Incidence Algebras}
 \begin{defn}
 A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a binary relation $\leq$, such that, for all $a,b,c \in X$:
@@ -62,24 +47,28 @@ A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ togeth
 \end{itemize}
 \end{defn}
 \begin{defn}
-A poset $X$ is \emph{locally finite} if, for any $a,b \in X$, the set $\{c \in X : a \leq c \leq b\}$ is finite.
+A poset $X$ is \emph{lower finite} if, for any $a \in x$, the set $\{ c \in X: c \leq a\}$ is finite.
 \end{defn}
+\begin{rmk}
+A poset which is lower finite is also \emph{locally finite}: For any $a,b \in X$, the set $\{c \in X : a \leq c \leq b\}$ is finite.  
+\end{rmk}
+For many of the following definitions and theorems, it is enough for the poset to be locally finite. But we will assume our posets are lower finite, a stronger condition, to make certain steps easier.
 \begin{defn}
-The \emph{incidence algebra} on a locally finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
+The \emph{incidence algebra} on a lower finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
 \[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
 \]
 Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
 \[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) \left( = \sum_{a \leq c \leq b}f(a,c)g(c,b)\right).\]
 \end{defn}
 \begin{rmk}
-The requirement that $X$ be locally finite ensures that the above sum has a finite number of terms.
+The requirement that $X$ be lower finite ensures that the above sum has a finite number of nonzero terms, so is finite-valued.
 \end{rmk}
 \begin{rmk}
 We use $\Rr$ as the codomain of the functions in the incidence algebra. But this can be generalized to other commutative rings with identity.
 \end{rmk}
 I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
 \begin{lemma}\label{mat_eq}
-Let $X$ be a finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements of $X$ from $x_1$ to $x_n$, such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the $n\times n$ square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
+Let $X$ be a lower finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements with integers such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the (possibly infinite) square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
 \begin{enumerate}[a)]
 \item $F$ and $G$ are upper triangular; and
 \item For any $i,j, (f * g)(x_i, x_j)=FG_{ij}$.
@@ -111,7 +100,7 @@ We also define another special function, $\zeta$ (the ``indicator function''):
 
 At this point, \ref{mat_eq} tells us several things about inverses. Since $\delta$ is equivalent to the identity matrix, inverses will coincide with the corresponding matrix inverses. This leads us to the following:
 \begin{cor}\label{cor_inv}
-Let $f,g, h$ be elements of the incidence algebra on $X$. Then:
+Let $X$ be a lower finite poset, and let $f,g, h$ be elements of the incidence algebra on $X$. Then:
 \begin{enumerate}[a)]
 \item $(f*g)*h = f*(g*h)$, i.e. multiplication is associative
 \item $f*g = \delta \Rightarrow g*f = \delta$
@@ -127,12 +116,12 @@ We will refer to this unique inverse, if it exists, as $f^{-1}$.
 \section{Definition of M\"obius Inversion}
 We are now ready to define the M\"obius function on partially ordered sets.
 \begin{defn}\label{def_mob_pos}
-Let $X$ be a finite poset. Let $\zeta$ be the indicator function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
+Let $X$ be a lower finite poset. Let $\zeta$ be the indicator function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
 \end{defn}
 \begin{rmk}
 This inverse exists by \ref{cor_inv} part b. 
 \end{rmk}
-\begin{rmk}
+\begin{rmk}\label{sum_form}
 Definition \ref{def_mob_pos} is a statement about incidence algebra multiplication, so is really about matrix multiplication. Another statement of the definition is that $\mu$ is the unique function such that, for all $x,y \in X$,
 \[
 \sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y)
@@ -141,15 +130,15 @@ Definition \ref{def_mob_pos} is a statement about incidence algebra multiplicati
 
 This is the M\"obius function. To complete the definition of M\"obius inversion, we turn to the standard use of this function. 
 \begin{thm}[M\"obius Inversion]\label{mob_inv}
-Let $X$ be a finite poset. Let $f, g: X \times X \rightarrow \Rr$ be elements of the incidence algebra on $X$. Let $\zeta, \mu$ be defined as usual. Then:
+Let $X$ be a lower finite poset. Let $f, g: X \times X \rightarrow \Rr$ be elements of the incidence algebra on $X$. Let $\zeta, \mu$ be defined as usual. Then:
 \begin{align*}
-g = f \zeta &\iff f = g \mu;\\
-g = \zeta f &\iff f = \mu g.
+f = g * \zeta &\iff g = f *\mu;\\
+f = \zeta * g &\iff g = \mu * f.
 \end{align*}
 Equivalently,
 \begin{align*}
-\forall x,y \in X, g(x,y) = \sum_{z \in X}f(x,z)\zeta(z,y) &\iff \forall x,y \in X, f(x,y) = \sum_{z \in X}g(x,z)\mu(z,y);\\
-\forall x,y \in X, g(x,y) = \sum_{z \in X}\zeta(x,z)f(z,y) &\iff \forall x,y \in X, f(x,y) = \sum_{z \in X}\mu(x,z)g(z,y).
+\forall x,y \in X, f(x,y) = \sum_{z \in X}g(x,z)\zeta(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}f(x,z)\mu(z,y);\\
+\forall x,y \in X, f(x,y) = \sum_{z \in X}\zeta(x,z)g(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}\mu(x,z)f(z,y).
 \end{align*}
 \begin{proof}
 All these results follow from the definition of $\mu$ and from facts about matrix/incidence algebra multiplication.
@@ -158,11 +147,11 @@ All these results follow from the definition of $\mu$ and from facts about matri
 This result seems quite straightforward based on how we defined $\zeta$ and $\mu$. However, it turns out to be extremely powerful. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
 
 With that in mind, we can also consider M\"obius inversion on functions in one variable (instead of two) on a poset.
-\begin{thm}
-Let $f,g:X \rightarrow \Rr$ be given. Let $\zeta, \mu$ be defined as usual. Then:
+\begin{thm}\label{1var_mob_inv}
+Let $X$ be a lower finite poset. Let $f,g:X \rightarrow \Rr$ be given. Let $\zeta, \mu$ be defined as usual. Then:
 \begin{align*}
-f = g \zeta & \iff g = f \mu;\\
-f = \zeta g & \iff g = \mu f.
+f = g *\zeta & \iff g = f *\mu;\\
+f = \zeta *g & \iff g = \mu *f.
 \end{align*}
 Equivalently,
 \begin{align*}
@@ -170,20 +159,186 @@ Equivalently,
 \forall x \in X, f(x) = \sum_{y \in X} \zeta(x,y)g(y) &\iff \forall x \in X, g(x) = \sum_{y \in X} \mu(x,y)g(y).
 \end{align*}
 \end{thm}
+\begin{proof}
+If we fix one argument of functions on two variables, this follows from \ref{mob_inv}.
+\end{proof}
 We now have two equivalent definitions of the M\"obius function, one using matrices (or linear operators) and vectors, and one directly considering elements and sums. We will continue to move back and forth between these two approaches throughout this investigation. This is because although the two definitions are completely equivalent, they each have advantages. Working with sums and elements helps us see the details of what is going on, and reminds us of the structure of our poset. It is also often the perspective from which motivating problems arise. On the other hand, using matrices and vectors greatly simplifies the equations we have to deal with, makes the manipulations themselves easier, and allows us to keep the bigger picture - the idea of inversion - in mind more easily. 
 
 \section{Integers with Divisibility Ordering}
-We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}. It is, of course, a type of M\"obius function. But the form in equation \ref{init_mob} uses functions of a single variable, while our construction uses functions of two variables. We must do some simple conversions to make the definitions line up.
+We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}, with very little work.
 
-Let $X$ be the poset consisting of the positive integers, using $|$, or divisibility, as the ordering relation. Let $\zeta$, and therefore $\mu = \zeta^{-1}$, be defined as usual in the associated incidence algebra.
-%TODO: Finish this section (include intuition/direct proof)
+We will consider the set $\Nn$ as a poset ordered by divisibility. For our purposes, $0 \notin \Nn$. Note that this poset is lower finite: For any number $n$, the set $\{q \in \Nn: q|n\} \subseteq \{q \in \Nn: q \leq n\}$, and the latter set contains $n$ elements, which is finite. This means we are able to use M\"obius inversion.
+
+We go through the usual steps of M\"obius inversion and apply \ref{mob_inv}. We will use functions and sums rather than matrices and vectors to make it easier to see what is going on.
+\begin{itemize}
+\item Let $\zeta: \Nn \times \Nn \rightarrow \Nn$ be defined as follows. Note that $m|n$ means that $m$ divides $n$ without remainder.
+\[
+\zeta(m,n) = \begin{cases}1 & m|n \\ 0 & else \end{cases}
+\]
+\item Let $\mu = \zeta^{-1}$ (inverse in the incidence algebra)
+\end{itemize}
+Then \ref{1var_mob_inv} gives us:
+\[
+g(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu(d,n)
+\]
+This is almost what we want, but not quite. Here $\mu$ is a function in two variables, while in \ref{init_mob} it is a function in a single variable. It turns out that values of $\mu(d,n)$ will only depend on $\frac nd$, which will gives us the desired form. To see that, we start by writing down a recursive form which works for any M\"obius function.
+
+\begin{lemma}\label{recurse}
+Let $X$ be a lower finite partially ordered set, and let $\zeta, \mu$ be defined as usual. Then for all $a, b \in X$,
+\[
+\mu(a,b) = 
+\begin{cases}
+0 & a \nleq b\\
+\delta(a,b)-\sum_{a \leq c < b}\mu(a,c) & else.
+\end{cases}
+\]
+\end{lemma}
+\begin{rmk}
+Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is correct - albeit less clear- to just write
+\[
+\mu(a,b) = \delta(a,b)-\sum_{a \leq c < b}\mu(a,c).
+\]
+\end{rmk}
+\begin{proof}
+We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
+\begin{align*}
+\sum_{c \in X}\mu(a,c) \zeta(c,b) &= \delta(a,b)\\
+\sum_{a \leq c < b} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
+\mu(a,b) &= \delta(a,b) - \sum_{a \leq c < b} \mu(a,c) 
+\end{align*}
+\end{proof}
+We are now ready to write down $\mu$ in the context of the divisibility lattice poset. 
+
+\begin{lemma}\label{nfact}
+Let $\zeta, \mu$ be defined as usual on $\Nn$ ordered by divisibility. Let $m,n \in \Nn$ be given.  Then:
+\[
+\mu(m,n) =
+\begin{cases}
+0 & m\nmid n\\
+0 & \exists p \in \Nn: p^2|(\frac nm )\\
+(-1)^{\#\{p \text{ prime}: p|\frac nm\}} & else
+\end{cases}
+\]
+\end{lemma}
+This lemma gives us what we need - a way of writing values of $\mu$ in terms of a single variable. We will prove it by induction on the number of prime factors of $\frac nm$.
+\begin{proof}
+If $n \nmid m$, then by \ref{recurse}, $\mu(m,n) = 0$. This is the first case.
+
+If $n = m$, then $\frac nm=1$ has zero prime factors. In that case, again by \ref{recurse}, $\mu(n,m) = 1$. This will be our base case for the second and third branches.
+
+Suppose that if $m|n$, and $\frac nm$ has $k$ prime factors (with multiplicity), then \ref{nfact} holds for $m$ and $n$. Suppose that $m_0|n_0$ and $\frac nm$ has $k+1$ prime factors. We now consider three cases.
+\begin{description}
+\item[Case 1:] Suppose that $\frac nm$ has no squared prime factors. 
+\end{description}
+\end{proof}
+
 \end{chapter}
 
 \begin{chapter}{Groups and Orbits} 
-We want to apply M\"obius inversion to groups. So far, the most general construct to which we have applied M\"obius inversion is the partially ordered set (poset). Given a group $G$, 
-Suppose that a group $G$ acts on a set $\Omega$. 
+\section{Background}
+NOTE: Define groups, actions, orbits, subgroups, etc. (do I need to?)
+
+I will use $G(x)$ to denote $x$'s orbit under $G$, and $\orb(\Omega, G)$ to denote the set of orbits in $\Omega$ under $G$'s action on it. 
+\section{M\"obius Inversion on Poset of Subgroups}
+We want to apply M\"obius inversion to finite groups. This means we will need a poset. We will use the \emph{poset of subgroups} (or \emph{lattice of subgroups}):
+\begin{defn}
+Let $G$ be a finite group. Then let the \textit{poset of subgroups} of $G$, or $\sub(G)$, be the poset consisting of subgroups of $G$ \emph{reverse} ordered by inclusion. In other words, we say that $A \leq B$ if $A \supseteq B$.
+\end{defn}
+\begin{rmk}
+Because $G$ is finite, $\sub(G)$ is finite (so lower finite).
+\end{rmk}
+\begin{rmk}
+We are ordering the poset this way for reasons that will soon become clear. But to reduce confusion, we will continue to use inclusion notation to define $\zeta$, and so $\mu$, rather than using $\leq$. Also note that I will be using $\subseteq$ rather than $\leq$ to denote subgroups, also to reduce confusion with the poset relation.
+\end{rmk}
+This puts us in the position to apply M\"obius inversion. We will use the form of M\"obius inversion with matrices and vectors. So throughout this chapter:
+\begin{itemize}
+\item Given a group $G$, assume a total ordering of $\sub(G)$ which respects the partial ordering. Let $\zeta$ also denote the square matrix of size $|\sub(G)|$, with rows and columns labeled with elements of $\sub(G)$, such that 
+\[
+\zeta_{A,B} = \begin{cases}
+1 & A \supseteq B\\
+0 & else
+\end{cases}
+\]
+\item Let $\mu = \zeta^{-1}$, which exists by \ref{cor_inv}.
+\end{itemize}
+Now, \ref{1var_mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
+\[
+f = g\zeta \iff g = f\mu.
+\]
+\section{Counting Orbits}
+Throughout this section, let $G$ be a finite group acting on a set $\Omega$.
+
+We start by defining some vectors, each with entries corresponding with subgroups of $G$, which we will be using. Let:
+\begin{align*}
+f_A &= \#\{x \in \Sigma: \stab(x) \supseteq A\} = |\fix(A)|\\
+g_A &= \#\{x \in \Sigma: \stab(x) = A\}
+\sigma_A &= |A|
+\end{align*}
+
+What now? The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\orb(\Omega, G)|$. We will start with the assumption that we are able to find $f$ and $\sigma$, which is true if we know the structure of $\sub(G)$ and know the group action. Then there are two steps we will follow:
+\begin{description}
+\item[Step 1:] Determine how to use $g$ and $\sigma$ to find $|\orb(\Omega, G)|$; and
+\item[Step 2:] Find $g$ from $g$.
+\end{description}
+
+Suppose we are handed $g$. In order to see how to find $|\orb(\Omega, G)|$, we recall a basic fact from group theory, which holds for any $x \in \Omega$:
+\begin{fact}
+\[|G| = |G(x)||\stab(x, G)|\]
+\end{fact}
+Because $G$ is finite, this implies that \[|G(x)| = \frac{|G|}{|\stab(x, G)|}.\]
+
+Starting from a trivial fact, we have:
+\begin{align*}
+|\orb(\Omega, G)| &= \sum_{O \in \orb(\Omega, G)}1\\
+&= \sum_{O \in \orb(\Omega, G)}\left(\sum_{x \in O}\frac{1}{|O|}\right)\\
+&= \sum_{x \in \Omega}\frac{1}{|G(x)|}
+\end{align*}
+
+Substituting, we now have the relationship:
+\[
+|\orb(\Omega, G)| = \frac{1}{|G|}\sum_{x \in \Omega}|\stab(x, G)|
+\]
+Each element of $\Omega$ has exactly one stabilizer in $G$. This means that we can partition the above sum as follows:
+\[
+|\orb(\Omega, G)| = \frac{1}{|G|}\sum_{A \in \sub(G)}\left(\sum_{x \in \Omega: \stab(x) = A}|A|\right)
+\]
+Using the definitions of $g$ and $\sigma$, we can rewrite to get the relationship we need:
+\begin{align*}
+|\orb(\Omega, G)| &= \frac{1}{|G|}\sum_{A \in \sub(G)}g_A|A|\\
+&= g \cdot \sigma
+\end{align*}
+
+On to Step 2. It is clear that $f_A = \sum_{B \supseteq A} g_A$. Another way of putting that is that $f = g\zeta$. As usual, this implies that $g = f\mu$. So M\"obius inversion makes this step trivial. Putting it all together:
+
+\[
+|\orb(\Omega, G)| = f\mu \cdot \sigma
+\]
+\section{Burnside's Lemma}
+A more familiar way of counting the orbits of a group is the following:
+\begin{thm}[Burnside's Lemma]\label{burnside}
+Let $G$ be a finite group acting on a finite set $\Omega$. Then:
+\[
+|\orb(\Omega, G) = \frac{1}{G}\sum_{g \in G}\fixx(g)
+\]
+\end{thm}
+
 \end{chapter}
 
+\begin{chapter}{Inclusion-Exclusion}
+\section{Introduction}
+We start by introducing the desired end result, the \emph{inclusion-exclusion principle}:
+\begin{thm}[Inclusion-Exclusion]\label{iep}
+Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
+\[
+\bigcup_{i \in K}A_i = \sum_{J \subseteq K}(-1)^{|J|}\bigcap_{i \in J}A_j
+.\]
+\end{thm}
+\section{Proof using Mobius Inversion}
+There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset.
+\section{Generalizations}
+%TODO: Connect with integer divisibility
+
+\end{chapter}
 \begin{chapter}{Metric Space Magnitude}
 \section{Motivation: Clustering}
 The \emph{magnitude} of a metric space is a notion introduced in \cite{Lein2}. %TODO: Finish introduction
@@ -213,7 +368,7 @@ such that the following axioms are satisfied:
 \item Composition respects identities: If $a,b \in C_0, f \in C(a,b)$, then $1_b \circ f = f = f \circ 1_a$.
 \end{itemize}
 \end{defn}
-This is a definition of what is usually called a category, but here we will refer to it as an \emph{ordinary} category. This is because it will also be useful to mention a generalization of categories, called \emph{enriched categories}. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
+This is a definition of what is usually called a category, but here we will refer to it as an \emph{ordinary} category. This is because it will also be useful to mention a generalization of categories, called \emph{enriched categories}. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. We will be using a particular kind of enriched category, called a \textit{generalized metric space}.
 
 It's not necessary to fully understand how generalized metric spaces are categories - every space we consider here will be a bona fide metric space. Furthermore, the definitions and constructions we explore will be easy to apply directly to metric spaces. I point out that this construction is a type of category to justify dealing with them together with other categories in the next section. We will define the Euler characteristic of a category, and we will need to apply the definition to metric spaces by way of generalized metric spaces. This will make much more sense if we keep in mind that generalized metric spaces are categories.
 
@@ -258,7 +413,7 @@ C(a,c) \leq C(a,b) + C(b,c).
 \]
 The inverse exponential function is monotonically decreasing. So we simply apply it to both sides and flip the inequality to get the same result, that $\zeta(a,c) \geq \zeta(a,b) \zeta(b,c)$.
 
-There is another way of looking at essentially the same property, which might make it slightly more clear why this works out. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. So it makes sense that we exponentiate in the generalized metric space case. Adding exponents becomes multiplication.
+There is another way of looking at essentially the same property. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. We want a fact about addition to give us a fact about multiplication. Exponentiating is the most natural way to translate multiplication into addition, so we can apply the axiom.
 \section{M\"obius Inversion on a Category}
 To define M\"obius inversion on a partially ordered set, we used an "indicator function" which was - not coincidentally - notated as $\zeta$. We will henceforth refer to this function as $\zeta'$, reserving $\zeta$ for the function we just defined on categories. Recall that for $a,b$ in a poset $X$, $\zeta'(a,b)$ was defined to be 1 if $a \leq b$, and 0 otherwise. We would like to generalize the construction of M\"obius inversion. The first step is to observe the following: Given a poset $X$, we can construct an "equivalent" category by letting $C_0=X$, and adding a single morphism from elements $a,b \in C_0$ if and only if $a \leq b \in X$. It is easily checked that this is in fact a category, and that for each triplet in $C_0$ there is only one possible composition operator (this is why we don't bother to explicitly define them). 
 
@@ -272,16 +427,17 @@ If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion}. %TODO: Co
 \end{defn}
 \section{Euler Characteristic of a Category}
 \subsection{Definition}
-We are now ready to construct central definition of this section: the Euler characteristic of a category. The entire construction can be found in \cite{Lein1}, \cite{Lein2}, \cite{Lein4}. We will immediately connect this to M\"obius inversion. This will lead to the initial definition of the Euler characteristic of a category, which in turn will directly lead to the definition of the magnitude of a metric space.
+We are now ready to construct central definition of this section: the Euler characteristic of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}. 
 
 Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. The definition of $\zeta$ from section \ref{mag_defs} will be assumed.
 
 \begin{defn}
-A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\ob(\Aa)$ such that for all $a \in \Aa$,
+A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
 \[
 \sum_b \zeta(a,b)\omega_b = 1.
 \]
 \end{defn}
+
 \begin{lemma}
 \label{mobius_is_weighting}
 If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
@@ -296,9 +452,11 @@ If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weightin
 \end{align*}
 \end{proof}
 
+This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
+
 The following definition is due to \cite{Lein1}.
 \begin{defn}
-Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler characteristic} of $A$, denoted (as usual) as $\chi(A)$, is defined by
+Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler characteristic} of $A$, denoted by $\chi(A)$, is defined by
 \[
 \chi(A) = \sum_{a \in A} \omega_a
 \]
@@ -309,9 +467,11 @@ If a finite category $A$ has a M\"obius inversion $\mu$, then
 \[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
 \]
 \end{cor}
-This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
+
 \subsection{Simplicial Complexes}
-This definition needs some intuitive justification. We will use a new construction, the simplicial complex, to show that calling this value an Euler characteristic is reasonable. 
+Calling a new construction an Euler characteristic needs some intuitive justification. We will a structure called a \textit{simplicial complex} to show that calling this value an Euler characteristic is reasonable. 
+
+%TODO: Define simplicial complex
 
 \begin{defn}
 Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
@@ -355,34 +515,14 @@ Let $\sigma$ be a simplicial complex. Then
 &= \chi(\sigma)
 \end{align*}
 \end{proof}
+This implies the comforting fact that $\chi(\cat(\sigma)) = \chi(\sigma)$.
 \section{Metric Space Magnitude}
+\subsection{Motivation: Hierarchical Clustering}
+\subsection{Idea and Definition}
+\subsection{Product Spaces}
+\subsection{Examples}
 \end{chapter}
-\begin{chapter}{Inclusion-Exclusion}
-We start by introducing the desired end result, the \emph{inclusion-exclusion principle}:
-\begin{thm}[Inclusion-Exclusion]\label{iep}
-Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
-\[
-\bigcup_{i \in K}A_i = \sum_{J \subseteq K}(-1)^{|J|}\bigcap_{i \in J}A_j
-.\]
-\end{thm}
-There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset.
 
-
-
-
-% % % OLD VERSION
-\iffalse
-\begin{definition}
-Let $S$ be a set. Then the \emph{power set} of $S$, denoted $\ps(S)$, is the set of subsets of $S$, $\{A \subseteq S\}$.
-\end{definition}
-We will be using the poset whose elements are from $\ps(S)$, where $A \leq B$ if $A \supseteq B$. However, for clarity, we won't use the $\leq$ notation for this poset - we will use inclusion notation directly, and define $\zeta$ and $\mu$ in terms of it. 
-
-Recall that $\zeta$ is the indicator function on a poset. So we define $\zeta: \ps(S) \times \ps(S) \rightarrow \{0,1\}$:
-\[
-\zeta(A,B) = 
-\]
-\fi
-\end{chapter}
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography.bib}
