@@ -6,7 +6,7 @@
 \author{Leo Selker}
 \advisor{Vin de Silva}
 \title{M\"obius Inversion: Construction and Applications}
-
+\renewcommand{\theequation}{\addtocounter{thm}{0}\thethm}
 \newcommand{\fix}{\text{fix }}
 \newcommand{\cl}{\text{cl }}
 \DeclareMathOperator{\cat}{cat}
@@ -20,7 +20,7 @@
 
 \maketitle
 
-\begin{abstract}M\"obius inversion is a general approach to reversing certain kinds of sums. In many situations, we know that a value we have access to is equal to the sum over a poset interval of values we want. M\"obius inversion is a tool which allows us to access those summed values. Here, we first develop the theory of M\"obius inversion on arbitrary posets. Then, we investigate its application in various counting examples, including the inclusion-exclusion principle and counting orbits of group actions. Finally, we explore an application of M\"obius inversion to data clustering.
+\begin{abstract} %TODO: Write a better abstract.  M\"obius inversion is a general approach to reversing certain kinds of sums. In many situations, we know that a value we have access to is equal to the sum over a poset interval of values we want. M\"obius inversion is a tool which allows us to access those summed values. Here, we first develop the theory of M\"obius inversion on arbitrary posets. Then, we investigate its application in various counting examples, including the inclusion-exclusion principle and counting orbits of group actions. Finally, we explore an application of M\"obius inversion to data clustering.\
 \end{abstract}
 
 \pagenumbering{roman}
@@ -29,15 +29,42 @@
 \newpage
 \pagenumbering{arabic}
 \begin{chapter}{Introduction to M\"obius Inversion}\label{chap_intro}
-\section{Initial Example}
-M\"obius inversion is a general construct. The most basic definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
+\section{Introduction and Motivation}
+%TODO: Expand introduction with more explicit examples
+Suppose that we have the integer sequence $g$ of ones:
+\[
+g : 1, 1, 1, \cdots
+\]
+We can let $f$ be the sequence of cumulative sums of $g$. So $f_k = g_1 + \cdots + g_k$. We can write down the values:
+\[
+f: 1,2,3,\cdots
+\]
+In general, summing up values is easy. Finding values of $f$ from $g$ was not difficult. 
 
-\begin{equation}\label{init_mob} %TODO: Unify numbering
-f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(n)\mu\left(\frac dn\right)
+If we knew $f$ and wanted to find values of $g$, we would subtract adjacent values of $f$. So we would use the fact that $g_k = f_k - f_{k-1}$. It seems clear that, when we are talking about integer sequences, if for all integers $k$,
+\[
+\forall k f_k = \sum_{i = 1}^k g_i,
+\]
+then it is also true that
+\[\\
+g_k = f_k = f_{k-1}.
+\]
+This relationship is a result of the simple structure of the positive integers. However, it is possible to sum up values over more subsets of more complicated structures, such that this relationship isn't so obvious. For example, we could add up values of $g$ over a number's divisors, instead of over all numbers less than or equal to it:
+\[
+h_k = \sum_{l|k}g_l.
+\] 
+It is now much less clear how to obtain $g$ from $h$. In fact, we will see how to reverse this kind of sum soon.
+
+The goal of M\"obius inversion is to generalize the process of reversing sums over discrete, ordered structures called \emph{posets}. If sums like the above are a discrete analogue of integration (cumulatively summing over a region), then M\"obius inversion is discrete differentiation. In the same way that developing the theory of the derivative is useful for solving differential equations where functions are defined in terms of their integral, M\"obius inversion helps us extract values which are defined in terms of their cumulative sums. In addition to building the necessary machinery for M\"obius inversion, we will consider several applications of it, including a somewhat surprising one in data clustering.
+\section{Initial Example and Posets}
+M\"obius inversion is a general construct. The classical definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
+
+\begin{equation}\label{init_mob} 
+f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(m)\mu\left(\frac dn\right)
 \end{equation}
 
-Our first goal is to prove the existence of - and find - this function $\mu$. We will do this using a more general construction, and then generalize to more even more abstract structures. We start with several definitions.
-\section{Posets and Incidence Algebras}
+Our first goal is to prove the existence of, and find, this function $\mu$. We will do this using by developing M\"obius inversion in general and then applying it. We start with several definitions.
+
 \begin{defn}
 A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a binary relation $\leq$, such that, for all $a,b,c \in X$:
 \begin{itemize}
@@ -46,72 +73,61 @@ A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ togeth
 \item If $a \leq b$ and $b \leq c$ then $a \leq c$ (transitive).
 \end{itemize}
 \end{defn}
+Note that, for completeness, a poset should be labeled with both its elements and its relations - e.g. $(X, \leq)$. But often we just write $X$ when the relation is implied.
 \begin{defn}
 A poset $X$ is \emph{lower finite} if, for any $a \in x$, the set $\{ c \in X: c \leq a\}$ is finite.
 \end{defn}
-\begin{rmk}
-A poset which is lower finite is also \emph{locally finite}: For any $a,b \in X$, the set $\{c \in X : a \leq c \leq b\}$ is finite.  
-\end{rmk}
-For many of the following definitions and theorems, it is enough for the poset to be locally finite. But we will assume our posets are lower finite, a stronger condition, to make certain steps easier.
-\begin{defn}
-The \emph{incidence algebra} on a lower finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
-\[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
-\]
-Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
-\[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) \left( = \sum_{a \leq c \leq b}f(a,c)g(c,b)\right).\]
-\end{defn}
-\begin{rmk}
-The requirement that $X$ be lower finite ensures that the above sum has a finite number of nonzero terms, so is finite-valued.
-\end{rmk}
-\begin{rmk}
-We use $\Rr$ as the codomain of the functions in the incidence algebra. But this can be generalized to other commutative rings with identity.
-\end{rmk}
-I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
-\begin{lemma}\label{mat_eq}
-Let $X$ be a lower finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements with integers such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the (possibly infinite) square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
-\begin{enumerate}[a)]
-\item $F$ and $G$ are upper triangular; and
-\item For any $i,j, (f * g)(x_i, x_j)=FG_{ij}$.
-\end{enumerate}
-\end{lemma}
-\begin{proof}
-\begin{enumerate}[a)]
-\item If $i>j$, by how we defined $F$, $x_i \nleq x_j$. So $F_{ij} = f(x_i, x_j) = 0$. 
-\item
-The result follows directly from the definition of matrix multiplication. Let $i,j\leq n$ be given. Then:
-\begin{align*}
-(f * g)(x_i, x_j) &= \sum_{y \in X} f(x_i,y)g(y,x_j)\\
-&=FG_{ij}
-\end{align*}
-\end{enumerate}
-\end{proof}
+This condition will be necessary for many of the following facts and theorems, to ensure that certain sums have a finite number of nonzero terms.
 
-
-There are several important functions, present in any incidence algebra, which we will need. 
-The \textbf{identity function} $\delta$ is defined by 
-\[\delta(a,b) = \begin{cases} 1 & a = b \\ 0 & else. \end{cases}
-\]
-This is equivalent to the identity matrix, with 1's along the main diagonal.
-
-We also define another special function, $\zeta$ (the ``indicator function''):
+Next, we define an important function on lower finite posets: $\zeta$ (the ``indicator function''), from $X \times X$ to $\Rr$:
 \[
 \zeta(a,b) = \begin{cases} 1 & a \leq b \\ 0 & else. \end{cases}
 \]
 
-At this point, \ref{mat_eq} tells us several things about inverses. Since $\delta$ is equivalent to the identity matrix, inverses will coincide with the corresponding matrix inverses. This leads us to the following:
-\begin{cor}\label{cor_inv}
-Let $X$ be a lower finite poset, and let $f,g, h$ be elements of the incidence algebra on $X$. Then:
-\begin{enumerate}[a)]
-\item $(f*g)*h = f*(g*h)$, i.e. multiplication is associative
-\item $f*g = \delta \Rightarrow g*f = \delta$
-\item If $\forall x \in X, f(x,x) \neq 0$, then $f$ is uniquely invertible - in other words, $\exists! f^{-1}$ such that $f*f^{-1} = \delta = f^{-1} * f$.
-\end{enumerate}
-\end{cor}
-\begin{proof}
-Part a) is true of matrix multiplication in general. Part b) is true of all square matrices. Part c) is true of all upper triangular matrices, since the determinant of such matrices is the product of the main diagonal elements. We use \ref{mat_eq} to transfer all three results to $f$ and $g$.
-\end{proof}
-We will refer to this unique inverse, if it exists, as $f^{-1}$. 
+M\"obius inversion is concerned with adding up values of functions. In particular, given a lower finite poset $X$ and a function $g:X \rightarrow \Rr$, we want to consider a function $f:X \rightarrow \Rr$ defined by
 
+\[
+f(a) = \sum_{b \leq a}g(b)
+\]
+
+Note that, because $X$ is lower finite, this sum has a finite number of terms, so is always finite-valued. Using the ``indicator" function $\zeta$ from above, we can rewrite the definition of $f$ to remove the need for the bound on the sum:
+\begin{equation}\label{sum_form_intro}
+f(a) = \sum_{b \in X}g(b)\zeta(b,a)
+\end{equation}
+Each value of $f$, therefore, takes on precisely the structure of a dot product. We will use this structure to leverage linear algebra: 
+\begin{itemize}
+\item Totally order $X$ such that the partial order is respected;
+\item Write $g$ as a row vector which contains the values $g$ takes on elements of $X$, with respect to the total ordering;
+\item Write $\zeta$ as a matrix whose $i,j$ entry is equal to $\zeta(a_i, a_j)$, where $a_i, a_j$ are the $i$'th and $j$'th elements of $X$ under the total ordering.
+\end{itemize}
+
+Going forward, we will not explicitly define the vector/matrix forms of functions in this way. Instead, when we refer to functions on one or two elements of a partially ordered set, we will implicitly think of them as (row) vectors and as matrices. We will also implicitly assume a total ordering, and identify an element $a$ of $X$ with its index in the total ordering. So if we write $g(a)$, we are referring to the function $g$ applied to $a$ and also to the element of the corresponding vector containing that value - they are equivalent. We will also use this perspective for function multiplication and inversion. Going forward, $g\zeta$ will refer to the vector/matrix product of $g$ and $\zeta$ rather than function composition, and $\zeta^{-1}$ will refer to the matrix inverse of $\zeta$ rather than the inverse function under composition.
+
+We now are able to define our desired function (or vector) $f$ more succinctly:
+\[
+f = g \zeta
+\]
+
+If the matrix multiplication is explicitly written out, what we get is identical to \ref{sum_form_intro}. %TODO: Fix this numbering
+
+The goal of M\"obius inversion is to obtain $g$ given $f$. If $\zeta$ were invertible, we would be able to do that. It turns out that $\zeta$ always is invertible. Because the total ordering respects the partial ordering, the matrix $\zeta$ is upper triangular and has ones on the diagonal. This implies the following straightforward but crucial fact:
+\begin{lemma}\label{inv_ex}
+Let $X$ be a lower finite poset. Fix a total order on $X$ which respects the partial order, and let $\zeta$ be the matrix where 
+\[
+\zeta(a,b) = \begin{cases}1 & a \leq b \\ 0 & else. \end{cases}
+\]
+Then $\zeta$ is invertible, and elements of $\zeta^{-1}$ are integers.
+\end{lemma}
+\begin{proof}
+We have already observed that $\zeta$ is upper triangular and has ones on the main diagonal. This means that $\det(\zeta) = 1$, meaning that $\zeta$ is invertible. Together with the fact that elements of $\zeta$ are integers, this also implies that elements of $\zeta^{-1}$ are integers.
+\end{proof}
+
+This means that we can let $\mu=\zeta^{-1}$, which we now know exists, and write down the central relationship of M\"obius inversion, which holds for any lower finite poset $X$ and pair of functions $f,g$ on it:
+\[
+g = g \zeta \iff g = f \mu.
+\]
+
+We will develop this further in the next section.
 
 \section{Definition of M\"obius Inversion}
 We are now ready to define the M\"obius function on partially ordered sets.
@@ -119,65 +135,152 @@ We are now ready to define the M\"obius function on partially ordered sets.
 Let $X$ be a lower finite poset. Let $\zeta$ be the indicator function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
 \end{defn}
 \begin{rmk}
-This inverse exists by \ref{cor_inv} part b. 
+Recall that $\zeta^{-1}$ is the matrix inverse rather than the functional inverse, and that it exists by \ref{inv_ex}.
 \end{rmk}
 \begin{rmk}\label{sum_form}
-Definition \ref{def_mob_pos} is a statement about incidence algebra multiplication, so is really about matrix multiplication. Another statement of the definition is that $\mu$ is the unique function such that, for all $x,y \in X$,
+We can unpack the linear algebra to get a definition analagous to \ref{sum_form_intro}: We can say that $\mu$ is the unique function from $X\times X$ to $\Rr$ such that, for all $x,y \in X$,
 \[
-\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y)
+\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
 \]
 \end{rmk}
 
-This is the M\"obius function. To complete the definition of M\"obius inversion, we turn to the standard use of this function. 
-\begin{thm}[M\"obius Inversion]\label{mob_inv}
-Let $X$ be a lower finite poset. Let $f, g: X \times X \rightarrow \Rr$ be elements of the incidence algebra on $X$. Let $\zeta, \mu$ be defined as usual. Then:
+To complete the definition of M\"obius inversion, we turn to the standard use of this function. 
+\begin{thm}[Single Variable M\"obius Inversion]\label{mob_inv}
+Let $X$ be a lower finite poset. Let $f,g:X \rightarrow \Rr$ be given. Let $\zeta:X \times X \rightarrow \Rr$ be defined as usual, and let $\mu = \zeta^{-1}$. Then:
 \begin{align*}
-f = g * \zeta &\iff g = f *\mu;\\
-f = \zeta * g &\iff g = \mu * f.
+f = g \zeta & \iff g = f \mu.
 \end{align*}
 Equivalently,
 \begin{align*}
-\forall x,y \in X, f(x,y) = \sum_{z \in X}g(x,z)\zeta(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}f(x,z)\mu(z,y);\\
-\forall x,y \in X, f(x,y) = \sum_{z \in X}\zeta(x,z)g(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}\mu(x,z)f(z,y).
+\forall x \in X, f(x) = \sum_{y \in X} g(y)\zeta(y,x) &\iff \forall x \in X, g(x) = \sum_{y \in X} f(y)\mu(y,x).
 \end{align*}
-\begin{proof}
-All these results follow from the definition of $\mu$ and from facts about matrix/incidence algebra multiplication.
-\end{proof}
 \end{thm}
-This result seems quite straightforward based on how we defined $\zeta$ and $\mu$. However, it turns out to be extremely powerful. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
+\begin{proof}
+Recall that by \ref{inv_ex}, $\mu = \zeta^{-1}$ exists. Given that, the result follows if we right-multiply both sides by $\mu$. The first statement becomes the second when the sums are made explicit.
+\end{proof}
 
-With that in mind, we can also consider M\"obius inversion on functions in one variable (instead of two) on a poset.
-\begin{thm}\label{1var_mob_inv}
-Let $X$ be a lower finite poset. Let $f,g:X \rightarrow \Rr$ be given. Let $\zeta, \mu$ be defined as usual. Then:
-\begin{align*}
-f = g *\zeta & \iff g = f *\mu;\\
-f = \zeta *g & \iff g = \mu *f.
-\end{align*}
-Equivalently,
-\begin{align*}
-\forall x \in X, f(x) = \sum_{y \in X} g(y)\zeta(y,x) &\iff \forall x \in X, g(x) = \sum_{y \in X} f(y)\mu(y,x);\\
-\forall x \in X, f(x) = \sum_{y \in X} \zeta(x,y)g(y) &\iff \forall x \in X, g(x) = \sum_{y \in X} \mu(x,y)g(y).
-\end{align*}
-\end{thm}
-\begin{proof}
-If we fix one argument of functions on two variables, this follows from \ref{mob_inv}.
-\end{proof}
+This result is quite straightforward based on how we defined $\zeta$ and $\mu$. In fact, it feels strange that a supposedly central fact is just the inversion of a single matrix operation. In fact, the simplicity of the inversion step is the whole point of M\"obius inversion. The tricky part is formulating a given problem such that \ref{mob_inv} can be applied to it. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
+
 We now have two equivalent definitions of the M\"obius function, one using matrices (or linear operators) and vectors, and one directly considering elements and sums. We will continue to move back and forth between these two approaches throughout this investigation. This is because although the two definitions are completely equivalent, they each have advantages. Working with sums and elements helps us see the details of what is going on, and reminds us of the structure of our poset. It is also often the perspective from which motivating problems arise. On the other hand, using matrices and vectors greatly simplifies the equations we have to deal with, makes the manipulations themselves easier, and allows us to keep the bigger picture - the idea of inversion - in mind more easily. 
+\section{Integer Lattices}
+We now turn to a specific class of partially ordered sets, which will come up several times going forward.
+\begin{defn}\label{lattice}
+For any positive integer $n$, the \emph{integer lattice of dimension $n$}, which we denote $\Nn^n$, is the set of ordered $n$-tuples of non-negative integers. For any two elements $(a_1,...,a_n), (b_1,...,b_n) \in \Nn^n$, we say that $(a_1,...,a_n)\leq (b_1,...,b_n)$ if $a_i \leq b_i$ for each $i = 1,\cdots,n$.
+\end{defn}
+\begin{rmk}
+$(\Nn^n, \leq)$ is a poset for any positive integer $n$. The axioms are easily checked.
+\end{rmk}
+We turn to several examples.
+\begin{examp}
+Consider the $n$-dimensional unit cube in $\Rr^n$, placed such that one corner is at the origin and all vertices have non-negative coordinates. Let $S$ denote the set of vertices of the cube. Then we can think of the vertices of the cube as ordered $n$-tuples of zeros and ones. So $S \subseteq \Nn^{n}$. 
 
-\section{Integers with Divisibility Ordering}
-We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}, with very little work.
+In this example, what is the interpretation of the poset relation? If $v_1, v_2 \subseteq S$, then $v_1 \leq v_2$ if $v_1$ has zeros in all of the coordinates where $v_2$ has zeros. So $v_1 \leq v_2$ if $v_1$ is part of a shortest path from $v_2$ to the origin along the edges of the cube. Equivalently, $v_1 \leq v_2$ if $v_1$ is the projection of $v_2$ onto some subset of the axes. %TODO: Make sure this is true
+\end{examp}
+\begin{examp}
+Each integer can be uniquely represented by its prime factorization. In particular, if we consider the set of integers whose factorizations only include the first $n$ primes, we can write those factorizations as ordered $n$-tuples, capturing each prime's multiplicity in the factorization. As a result, the integers whose factorizations only include the first $n$ primes form a copy of the $n$-dimensional integer lattice. 
 
-We will consider the set $\Nn$ as a poset ordered by divisibility. For our purposes, $0 \notin \Nn$. Note that this poset is lower finite: For any number $n$, the set $\{q \in \Nn: q|n\} \subseteq \{q \in \Nn: q \leq n\}$, and the latter set contains $n$ elements, which is finite. This means we are able to use M\"obius inversion.
-
-We go through the usual steps of M\"obius inversion and apply \ref{mob_inv}. We will use functions and sums rather than matrices and vectors to make it easier to see what is going on.
-\begin{itemize}
-\item Let $\zeta: \Nn \times \Nn \rightarrow \Nn$ be defined as follows. Note that $m|n$ means that $m$ divides $n$ without remainder.
+In this case, if $\leq$ represents the poset relation from \ref{lattice}, then $m \leq n$ if, for each prime $p$, $m$'s factorization contains no more copies of $p$ than $n$'s factorization. This is the same as saying that $m|n$. So the poset relation becomes divisibility. We will explore this example more in the next sections.
+\end{examp}
+It turns out that several important posets have this lattice structure. So the goal is to determine the M\"obius function on certain subsets of the integer lattice, and then transfer those results to other partially ordered sets. To do so, we first need a lemma which applies to the M\"obius function on any poset.
+\begin{lemma}\label{recurse}
+Let $X$ be a lower finite partially ordered set, and let $\zeta, \mu$ be defined as usual. Then for all $a, b \in X$,
 \[
-\zeta(m,n) = \begin{cases}1 & m|n \\ 0 & else \end{cases}
+\mu(a,b) = 
+\begin{cases}
+0 & a \nleq b\\
+\delta(a,b)-\sum_{a \leq c < b}\mu(a,c) & else.
+\end{cases}
 \]
-\item Let $\mu = \zeta^{-1}$ (inverse in the incidence algebra)
+\end{lemma}
+\begin{rmk}
+Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is correct - albeit less clear- to just write
+\[
+\mu(a,b) = \delta(a,b)-\sum_{a \leq c < b}\mu(a,c).
+\]
+\end{rmk}
+\begin{proof}
+We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
+\begin{align*}
+\sum_{c \in X}\mu(a,c) \zeta(c,b) &= \delta(a,b)\\
+\sum_{a \leq c < b} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
+\mu(a,b) &= \delta(a,b) - \sum_{a \leq c < b} \mu(a,c) 
+\end{align*}
+\end{proof}
+We are now ready to write down $\mu$ on certain subsets of the integer lattice. In order to ensure that the sums involved are predictable, we need an additional condition on the subsets we consider:
+
+\begin{lemma}\label{mu_lattice}
+Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. Let $X$ be a subset of $L$ such that if $x \in X, y \in L$, and $y \leq x$, then $y \in X$. Let $\zeta, \mu$ be defined as usual on $X$. Let $x=(x_1,...,x_n),y = (y_1,...,y_n)$ be elements of the lattice. Then:
+\[
+\mu(x,y) =
+\begin{cases}
+0 & x\nleq y\\
+0 & \exists i \in \Nn: y_i-x_i \geq 2\\
+(-1)^{\sum_{i=1}^ny_i-x_i} & \text{otherwise}
+\end{cases}
+\]
+\end{lemma}
+
+\begin{proof} %TODO: Prove for general integer lattice
+If $x \nleq y$, then by \ref{recurse}, $\mu(x,y) = 0$. This is the first case.
+
+We now proceed by induction on $\sum_{i=1}^ny_i-x_i$. If $x \leq y$ and $\sum_{i=1}^ny_i-x_i = 0$, then $x = y$. So by \ref{recurse}, $\mu(x,y) = 1$. This is the base case.
+
+Suppose that we have \ref{mu_lattice} for any $x \leq y$ where $\sum_{i=1}^ny_i-x_i \leq k-1$. Let $x \leq y$ be fixed such that $\sum_{i=1}^ny_i-x_i =k$. If $\exists i \in \Nn: y_i-x_i \geq 2$
+
+
+
+If $\frac{n_0}{d_0}$ is not divisible by a square, then $\frac{n_0}{d_0} = p_1p_2\cdots p_{k+1}$, where the $p_i$ are distinct primes. Then there is a direct correspondence:
+\begin{center}$\{k : d_0|k, k|n_0, k\neq n_0\} \leftrightarrow$ \{Nonempty subsets of $\{p_1,\cdots,p_{k+1}\}$\},\end{center}
+where $k$ is obtained by multiplying the remaining prime factors by $m_0$, and the omitted prime factors can be determined by factoring $k$.
+
+This means that we can index the sum from \ref{recurse} using those subsets:
+\[
+\mu(m_0, n_0) = -\sum_{P \subsetneq \{1,\cdots,k+1\}} \mu(d_0, m_0\cdot \prod_{i \in P}p_i )
+\]
+Because $\frac{d_0\cdot \prod_{i \in P}p_i}{d_0} = \prod_{i \in P}p_i$ has $|P| < k + 1$ prime factors, we can apply the inductive hypothesis, which tells us that 
+\[
+\mu(d_0, md_0\cdot \prod_{i \in P}p_i = (-1)^{|P|}.
+\]
+So we can write
+\begin{align*}
+\mu(d_0, n_0) &= -\sum_{P \subsetneq \{1,\cdots,k+1\}} (-1)^{|P|}\\
+&= -\sum_{i = 1}^{k}(-1)^i{k+1 \choose i}\\
+&= (-1)^{k+1}
+\end{align*}
+with the final equality following from the alternating-sum binomial identity
+\[
+\sum_{1=1}^{k+1}(-1)^i{k+1 \choose i} = 0.
+\]
+Finally, we consider the case where $\frac {d_0}{n_0}$ has a squared factor. So we can write 
+\[
+\frac {d_0}{n_0} = p^2q
+\]
+where $p$ is prime, and $q$ is some other integer. Note that we can no longer use the previous argument, because the factors of $\frac {d_0}{n_0} = p^2q$ form a set with multiplicity rather than a simple set, so the sum will no longer have standard binomial coefficients.
+
+Let $r$ divide $d_0q$ and be divisible by $d_0$. So $\mu(d_0, r)$ is a term in the sum from \ref{recurse}. Note also that $rp$ divides $d_0qp$, so $\mu(d_0, rp)$ is also a term in the sum. By the inductive hypothesis, $\mu(d_0, rp) = -\mu(d_0, r)$, so the terms cancel. We can pair terms in this way to eliminate all divisors of $d_0pq$. The only remaining terms are of the form $\mu(d_0, d_0p^2k)$. But because $\frac{d_0p^2k}{d_0}$ is divisible by $p^2$, by the inductive hypothesis, these terms are all zero. So all terms in \ref{recurse} cancel, meaning that $\mu(d_0, n_0) = 0$.
+\end{proof}
+
+
+
+
+
+
+
+
+\section{Integers with Divisibility Ordering} %TODO: Change \Nn to \Nn^+
+We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}, with little work.
+
+We will consider the set $\Nn$ as a poset ordered by divisibility. For our purposes, $0 \notin \Nn$. Note that this poset is lower finite: For any number $n$, the set $\{q \in \Nn: q|n\} \subseteq \{q \in \Nn: q \leq n\}$, and the latter set contains $n$ elements, which is finite (note that $d|n$ means that $d$ divides $n$ without remainder). This means we are able to use M\"obius inversion.
+
+We go through the usual steps of M\"obius inversion and apply \ref{mob_inv}:
+\begin{itemize}
+\item Let $\zeta: \Nn \times \Nn \rightarrow \Nn$ be defined as follows.
+\[
+\zeta(d,n) = \begin{cases}1 & d|n \\ 0 & else \end{cases}
+\]
+\item Let $\mu = \zeta^{-1}$ 
 \end{itemize}
-Then \ref{1var_mob_inv} gives us:
+Then \ref{mob_inv} gives us:
 \[
 g(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu(d,n)
 \]
@@ -210,33 +313,86 @@ We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
 We are now ready to write down $\mu$ in the context of the divisibility lattice poset. 
 
 \begin{lemma}\label{nfact}
-Let $\zeta, \mu$ be defined as usual on $\Nn$ ordered by divisibility. Let $m,n \in \Nn$ be given.  Then:
+Let $\zeta, \mu$ be defined as usual on $\Nn$ ordered by divisibility. Let $d,n \in \Nn$ be given.  Then:
 \[
-\mu(m,n) =
+\mu(d,n) =
 \begin{cases}
-0 & m\nmid n\\
-0 & \exists p \in \Nn: p^2|(\frac nm )\\
-(-1)^{\#\{p \text{ prime}: p|\frac nm\}} & else
+0 & d\nmid n\\
+0 & \exists p \in \Nn: p^2|(\frac nd )\\
+(-1)^{\#\{p \text{ prime}: p|\frac nd\}} & else
 \end{cases}
 \]
 \end{lemma}
-This lemma gives us what we need - a way of writing values of $\mu$ in terms of a single variable. We will prove it by induction on the number of prime factors of $\frac nm$.
-\begin{proof}
-If $n \nmid m$, then by \ref{recurse}, $\mu(m,n) = 0$. This is the first case.
+This lemma gives us what we need - a way of writing values of $\mu$ in terms of a single variable. We will prove it by induction on the number of prime factors of $\frac nd$.
+\begin{proof} %TODO: Prove for general integer lattice
+If $d \nmid n$, then by \ref{recurse}, $\mu(d,n) = 0$. This is the first case.
 
-If $n = m$, then $\frac nm=1$ has zero prime factors. In that case, again by \ref{recurse}, $\mu(n,m) = 1$. This will be our base case for the second and third branches.
+If $n = d$, then $\frac nd=1$ has zero prime factors. In that case, again by \ref{recurse}, $\mu(n,d) = 1$. This will be our base case for the second and third branches.
 
-Suppose that if $m|n$, and $\frac nm$ has $k$ prime factors (with multiplicity), then \ref{nfact} holds for $m$ and $n$. Suppose that $m_0|n_0$ and $\frac nm$ has $k+1$ prime factors. We now consider three cases.
-\begin{description}
-\item[Case 1:] Suppose that $\frac nm$ has no squared prime factors. 
-\end{description}
+Suppose that if $d|n$, and $\frac nd$ has $k$ prime factors (with multiplicity), then \ref{nfact} holds for $d$ and $n$. Suppose that $d_0|n_0$ and $\frac {n_0}{d_0}$ has $k+1$ prime factors. If $\frac{n_0}{d_0}$ is not divisible by a square, then $\frac{n_0}{d_0} = p_1p_2\cdots p_{k+1}$, where the $p_i$ are distinct primes. Then there is a direct correspondence:
+\begin{center}$\{k : d_0|k, k|n_0, k\neq n_0\} \leftrightarrow$ \{Nonempty subsets of $\{p_1,\cdots,p_{k+1}\}$\},\end{center}
+where $k$ is obtained by multiplying the remaining prime factors by $m_0$, and the omitted prime factors can be determined by factoring $k$.
+
+This means that we can index the sum from \ref{recurse} using those subsets:
+\[
+\mu(m_0, n_0) = -\sum_{P \subsetneq \{1,\cdots,k+1\}} \mu(d_0, m_0\cdot \prod_{i \in P}p_i )
+\]
+Because $\frac{d_0\cdot \prod_{i \in P}p_i}{d_0} = \prod_{i \in P}p_i$ has $|P| < k + 1$ prime factors, we can apply the inductive hypothesis, which tells us that 
+\[
+\mu(d_0, md_0\cdot \prod_{i \in P}p_i = (-1)^{|P|}.
+\]
+So we can write
+\begin{align*}
+\mu(d_0, n_0) &= -\sum_{P \subsetneq \{1,\cdots,k+1\}} (-1)^{|P|}\\
+&= -\sum_{i = 1}^{k}(-1)^i{k+1 \choose i}\\
+&= (-1)^{k+1}
+\end{align*}
+with the final equality following from the alternating-sum binomial identity
+\[
+\sum_{1=1}^{k+1}(-1)^i{k+1 \choose i} = 0.
+\]
+Finally, we consider the case where $\frac {d_0}{n_0}$ has a squared factor. So we can write 
+\[
+\frac {d_0}{n_0} = p^2q
+\]
+where $p$ is prime, and $q$ is some other integer. Note that we can no longer use the previous argument, because the factors of $\frac {d_0}{n_0} = p^2q$ form a set with multiplicity rather than a simple set, so the sum will no longer have standard binomial coefficients.
+
+Let $r$ divide $d_0q$ and be divisible by $d_0$. So $\mu(d_0, r)$ is a term in the sum from \ref{recurse}. Note also that $rp$ divides $d_0qp$, so $\mu(d_0, rp)$ is also a term in the sum. By the inductive hypothesis, $\mu(d_0, rp) = -\mu(d_0, r)$, so the terms cancel. We can pair terms in this way to eliminate all divisors of $d_0pq$. The only remaining terms are of the form $\mu(d_0, d_0p^2k)$. But because $\frac{d_0p^2k}{d_0}$ is divisible by $p^2$, by the inductive hypothesis, these terms are all zero. So all terms in \ref{recurse} cancel, meaning that $\mu(d_0, n_0) = 0$.
 \end{proof}
+Given \ref{nfact}, we can write $\mu(\frac nm)$ instead of $\mu(m,n)$. This allows us to use \ref{mob_inv} to arrive at \ref{init_mob}:
+\[
+f(n) = \sum_{m | n} g(m) \iff g(n) = \sum_{m | n}  f(m)\mu\left(\frac mn\right).
+\]
+\section{Euler's Totient}
+Euler's Totient is a famous function in number theory, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Nn \rightarrow \Nn$, and its definition is:
+\[
+\varphi(n) = \#\{1 \leq m \leq n : (m,n) = 1\},
+\]
+where $(m,n)$ denotes the greatest common divisor of $m,n$.
 
+We wonder how we can write down the value of $\varphi(n)$ given a particular integer $n$. One approach would be to go through all the values from 1 to $n$, find each one's greatest common divisor with $n$, and then count how many are equal to 1. However, for large values of $n$, this could be computationally expensive. We will use the function $\mu$ from the previous part to arrive at a different, likely more efficient, approach.
+
+We start with an important fact:
+\begin{thm}[Gauss]\label{gauss}
+Let $n \in \Nn$ be given. Then 
+\[
+n = \sum_{d|n}\varphi(d).
+\]
+\end{thm}
+There are a variety of ways of proving this fact. Here we include a concise proof using group theory.
+\begin{proof}
+For any integer $d$, $\varphi(d)$ counts the generators of $C_d$. Each element of $C_n$ generates exactly one cyclic subgroup, so counting the total number of generators of cyclic subgroups of $C_n$ is equivalent to counting the elements of $C_n$. Also, $C_n$ has exactly one cyclic subgroup for each divisor of $n$ (and no others). So the sum indeed counts the number of elements of $C_n$, of which there are $n$.
+\end{proof}
+This sum gives us a value we have access to ($n$) in terms of a sum of values we want. This is a perfect situation to apply M\"obius inversion, and undo that sum. We apply \ref{init_mob}, which tells us
+\[
+\varphi(n) = \sum_{d|n} d\mu\left(\frac nd\right).
+\]
+Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
 \end{chapter}
 
 \begin{chapter}{Groups and Orbits} 
 \section{Background}
-NOTE: Define groups, actions, orbits, subgroups, etc. (do I need to?)
+Suppose that a group $G$ acts on a set $\Omega$. 
 
 I will use $G(x)$ to denote $x$'s orbit under $G$, and $\orb(\Omega, G)$ to denote the set of orbits in $\Omega$ under $G$'s action on it. 
 \section{M\"obius Inversion on Poset of Subgroups}
@@ -250,35 +406,38 @@ Because $G$ is finite, $\sub(G)$ is finite (so lower finite).
 \begin{rmk}
 We are ordering the poset this way for reasons that will soon become clear. But to reduce confusion, we will continue to use inclusion notation to define $\zeta$, and so $\mu$, rather than using $\leq$. Also note that I will be using $\subseteq$ rather than $\leq$ to denote subgroups, also to reduce confusion with the poset relation.
 \end{rmk}
-This puts us in the position to apply M\"obius inversion. We will use the form of M\"obius inversion with matrices and vectors. So throughout this chapter:
+This puts us in the position to apply M\"obius inversion. We first define the usual functions on $\sub(G) \times \sub(G)$:
 \begin{itemize}
-\item Given a group $G$, assume a total ordering of $\sub(G)$ which respects the partial ordering. Let $\zeta$ also denote the square matrix of size $|\sub(G)|$, with rows and columns labeled with elements of $\sub(G)$, such that 
+\item Given a group $G$, let $\zeta:\sub(G) \times \sub(G) \rightarrow \Rr$ be defined by
 \[
-\zeta_{A,B} = \begin{cases}
+\zeta(a,b) = \begin{cases}
 1 & A \supseteq B\\
 0 & else
 \end{cases}
 \]
-\item Let $\mu = \zeta^{-1}$, which exists by \ref{cor_inv}.
+\item Let $\mu = \zeta^{-1}$, which exists by \ref{inv_ex}.
 \end{itemize}
-Now, \ref{1var_mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
+Recall that we manipulate $\zeta, \mu$ as if they were matrices.
+
+Now, \ref{mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
 \[
 f = g\zeta \iff g = f\mu.
 \]
+Now, of course, the challenge is to determine how to formulate the problem such that inverting $\zeta$ will be useful.
 \section{Counting Orbits}
 Throughout this section, let $G$ be a finite group acting on a set $\Omega$.
 
-We start by defining some vectors, each with entries corresponding with subgroups of $G$, which we will be using. Let:
+We start by defining some functions/vectors, each with entries corresponding with subgroups of $G$, which we will be using. Let:
 \begin{align*}
-f_A &= \#\{x \in \Sigma: \stab(x) \supseteq A\} = |\fix(A)|\\
-g_A &= \#\{x \in \Sigma: \stab(x) = A\}
-\sigma_A &= |A|
+f(A) &= \#\{x \in \Sigma: \stab(x) \supseteq A\} = |\fix(A)|\\
+g(A) &= \#\{x \in \Sigma: \stab(x) = A\}
+\sigma(A) &= |A|
 \end{align*}
 
-What now? The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\orb(\Omega, G)|$. We will start with the assumption that we are able to find $f$ and $\sigma$, which is true if we know the structure of $\sub(G)$ and know the group action. Then there are two steps we will follow:
+What now? The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\orb(\Omega, G)|$. We will start with the assumption that we are able to find $\sigma$, which is true if we know the structure of $\sub(G)$. We will also assume that we are able to carry out the group action, thereby determining which elements of $\Omega$ are fixed by given subgroups of $G$. This gives us access to $f$. Then there are two steps we will follow:
 \begin{description}
 \item[Step 1:] Determine how to use $g$ and $\sigma$ to find $|\orb(\Omega, G)|$; and
-\item[Step 2:] Find $g$ from $g$.
+\item[Step 2:] Find $g$ from $f$ using M\"obius inversion.
 \end{description}
 
 Suppose we are handed $g$. In order to see how to find $|\orb(\Omega, G)|$, we recall a basic fact from group theory, which holds for any $x \in \Omega$:
@@ -304,24 +463,31 @@ Each element of $\Omega$ has exactly one stabilizer in $G$. This means that we c
 \]
 Using the definitions of $g$ and $\sigma$, we can rewrite to get the relationship we need:
 \begin{align*}
-|\orb(\Omega, G)| &= \frac{1}{|G|}\sum_{A \in \sub(G)}g_A|A|\\
-&= g \cdot \sigma
+|\orb(\Omega, G)| &= \frac{1}{|G|}\sum_{A \in \sub(G)}g(A)|A|\\
+&= \frac {1}{|G|}g \cdot \sigma
 \end{align*}
 
 On to Step 2. It is clear that $f_A = \sum_{B \supseteq A} g_A$. Another way of putting that is that $f = g\zeta$. As usual, this implies that $g = f\mu$. So M\"obius inversion makes this step trivial. Putting it all together:
 
 \[
-|\orb(\Omega, G)| = f\mu \cdot \sigma
+|\orb(\Omega, G)| = \frac {1}{|G|}f\mu \cdot \sigma
 \]
+Recall that $\sigma$ and $\mu$ do not depend on the details of the group action, or on $\Omega$ at all. They only depend on $G$. So it is useful to rearrange this expression to isolate $f$, the only part which does depend on the action:
+\[
+|\orb(\Omega, G)| = \frac {1}{|G|}(\mu \cdot \sigma)^Tf^T
+\]
+
+By combining M\"obius inversion with basic group theory, we have a recipe for turning something readily obtainable (the function $f$) into something less obvious (the number of orbits of an action).
+\iffalse
 \section{Burnside's Lemma}
 A more familiar way of counting the orbits of a group is the following:
-\begin{thm}[Burnside's Lemma]\label{burnside}
+\begin{thm}[Burnside's Lemma]\label{burnside} %TODO: omit?
 Let $G$ be a finite group acting on a finite set $\Omega$. Then:
 \[
 |\orb(\Omega, G) = \frac{1}{G}\sum_{g \in G}\fixx(g)
 \]
 \end{thm}
-
+\fi
 \end{chapter}
 
 \begin{chapter}{Inclusion-Exclusion}
@@ -330,11 +496,58 @@ We start by introducing the desired end result, the \emph{inclusion-exclusion pr
 \begin{thm}[Inclusion-Exclusion]\label{iep}
 Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
 \[
-\bigcup_{i \in K}A_i = \sum_{J \subseteq K}(-1)^{|J|}\bigcap_{i \in J}A_j
+\left|\bigcup_{i \in K}A_i\right| = \sum_{J \subseteq K}(-1)^{|J|}\left|\bigcap_{i \in J}A_j\right|
 .\]
 \end{thm}
 \section{Proof using Mobius Inversion}
-There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset.
+There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset. We start by formalizing that:
+
+\begin{defn}
+For any set $I$, the \emph{power set} of $I$, denoted by $\ps(I)$, is the set of subsets of $I$. 
+\end{defn}
+\begin{rmk}\label{power_poset}
+Let $I$ be a finite set. Then $(\ps(I), \supseteq)$ is a partially ordered set.
+\end{rmk}
+Note that the poset from \ref{power_poset} is ordered by reverse inclusion rather than simple inclusion. The poset axioms are easily checked.
+
+The goal of the inclusion-exclusion principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could say
+\[
+\left|\bigcup_{i \in K}A_i\right| = \sum_{i \in K}\left|A_i\right|.
+\]
+But, because intersections of the $A_i$ might be nonempty, this sum might count some elements multiple times. In order to solve this problem, we suppose that we have access to \emph{intersections} (but not unions) of the $A_i$ (it is apparent that this is required to use \ref{iep}). First, we define the following indicator function $\chi: s \rightarrow \ps(I)$ by:
+\[
+\chi(x) = \{i \in I : x \in A_i\}.
+\]
+So $\chi$ gives us the indices of the subsets of $S$ which contain $x$.  
+Next, we define some functions defined on our poset, $\ps(I)$.
+Let $J \subseteq I$ be given. Define $f,g,\hat{f}, \hat{g}:\ps(I) \rightarrow \Nn$ by
+
+\begin{align*}
+f(J) &= \left| \bigcap_{i \in J} A_i\right| &= |\{x \in S: \chi(x) \supseteq J\}|\\
+g(J) &= \left| \bigcap_{i \in J} A_i \cap \bigcap_{i \notin J} A_i^c\right| &= |\{x \in S: \chi(x) = J\}|\\
+\hat{f}(J) &= \left| \bigcap_{i \in J} A_i^c\right| &= |\{x \in S: \chi(x)^c \supseteq J\}|\\
+\hat{g}(J) &= \left|\bigcap_{i \in J} A_i^c \cap \bigcap_{i \notin J} A_i \right| &= |\{x \in S: \chi(x)^c = J\}|
+\end{align*}
+
+We can go through these functions to get a better handle on what they mean:
+\begin{itemize}
+\item The function $f$ counts the elements contained in $A_i$ for $i \in J$;
+\item The function $g$ counts the elements contained \emph{only} in the $A_i$ for $i \in J$;
+\item The function $\hat{f}$ counts the elements contained in none of the $A_i$ for $i \in J$; and
+\item The function $\hat{g}$ counts the elements contained in none of the $A_i$ for $i \in J$, but contained in all the other $A_i$.
+\end{itemize}
+Based on these definitions, we can observe certain relationships, which will start to point the way for using M\"obius inversion:
+\begin{align*}
+f(J) &= \sum_{K \supseteq J} g(K)\\
+\hat{f}(J) &= \sum_{K \supseteq J} \hat{g}(K)\\
+g(J) &= \hat{g}(J^c)
+\end{align*}
+
+Finally, we recall that our goal is to find the union of the $A_i$ for $i$ in some given $J$. To that end, we observe that
+\[
+\left| \bigcup_{i \in J} A_i \right| = |S| - \hat{f}(J).
+\]
+So if we are able to write down values of $\hat{f}$, we're done.
 \section{Generalizations}
 %TODO: Connect with integer divisibility
 
@@ -368,6 +581,7 @@ such that the following axioms are satisfied:
 \item Composition respects identities: If $a,b \in C_0, f \in C(a,b)$, then $1_b \circ f = f = f \circ 1_a$.
 \end{itemize}
 \end{defn}
+%TODO: Add examples
 This is a definition of what is usually called a category, but here we will refer to it as an \emph{ordinary} category. This is because it will also be useful to mention a generalization of categories, called \emph{enriched categories}. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. We will be using a particular kind of enriched category, called a \textit{generalized metric space}.
 
 It's not necessary to fully understand how generalized metric spaces are categories - every space we consider here will be a bona fide metric space. Furthermore, the definitions and constructions we explore will be easy to apply directly to metric spaces. I point out that this construction is a type of category to justify dealing with them together with other categories in the next section. We will define the Euler characteristic of a category, and we will need to apply the definition to metric spaces by way of generalized metric spaces. This will make much more sense if we keep in mind that generalized metric spaces are categories.
@@ -528,5 +742,66 @@ This implies the comforting fact that $\chi(\cat(\sigma)) = \chi(\sigma)$.
 \bibliography{bibliography.bib}
 
 
+
+% % % Extra stuff/deleted portions
+\iffalse
+\iffalse
+We can replace the vectors $f,g$ with matrices to get the following generalization, which :
+\begin{thm}[Two Variable M\"obius Inversion]\label{mob_inv_old}
+Let $X$ be a lower finite poset.  Let $f,g:X \times X \rightarrow \Rr$ be given. Let $\zeta:X \times X \rightarrow \Rr$ be defined as usual, and let $\mu = \zeta^{-1}$. Then:
+\begin{align*}
+f = g \zeta &\iff g = f \mu;\\
+f = \zeta g &\iff g = \mu f.
+\end{align*}
+Equivalently,
+\begin{align*}
+\forall x,y \in X, f(x,y) = \sum_{z \in X}g(x,z)\zeta(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}f(x,z)\mu(z,y);\\
+\forall x,y \in X, f(x,y) = \sum_{z \in X}\zeta(x,z)g(z,y) &\iff \forall x,y \in X, g(x,y) = \sum_{z \in X}\mu(x,z)f(z,y).
+\end{align*}
+\begin{proof}
+Again, the result is trivial when we treat $f,g,\zeta,\mu$ as matrices.
+\end{proof}
+\end{thm}
+\fi
+
+\begin{defn}
+The \emph{incidence algebra} on a lower finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
+\[\{f:X \times X \rightarrow \Rr:a \nleq b \Rightarrow f(a,b) = 0\}
+\]
+Scalar multiplication and addition are defined pointwise.  Multiplication is denoted by ``*'', and is defined:
+\[(f* g)(a,b) = \sum_{a \in X}f(a,c)g(c,b) \left( = \sum_{a \leq c \leq b}f(a,c)g(c,b)\right).\]
+\end{defn}
+\begin{rmk}
+The requirement that $X$ be lower finite ensures that the above sum has a finite number of nonzero terms, so is finite-valued.
+\end{rmk}
+\begin{rmk}
+We use $\Rr$ as the codomain of the functions in the incidence algebra. But this can be generalized to other commutative rings with identity.
+\end{rmk}
+I include the version with bounds for clarity, but they make no difference, because all other terms will go to zero anyway by the condition on elements. Considering the sum without the bounds, we see that this is identical to matrix multiplication. It will be useful to formalize this:
+\begin{lemma}\label{mat_eq}
+Let $X$ be a lower finite poset, with $|X|=n$. Choose a total ordering on $X$ such that the partial order is respected - in other words, label the elements with integers such that if $x_i \leq x_j, i \leq j$. Let $f,g$ be elements of the incidence algebra on $X$. Let $F$ be the (possibly infinite) square matrix where $F_{ij}=f(x_i, x_j)$. Define $G$ likewise. Then:
+\begin{enumerate}[a)]
+\item $F$ and $G$ are upper triangular; and
+\item For any $i,j, (f * g)(x_i, x_j)=FG_{ij}$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+\begin{enumerate}[a)]
+\item If $i>j$, by how we defined $F$, $x_i \nleq x_j$. So $F_{ij} = f(x_i, x_j) = 0$. 
+\item
+The result follows directly from the definition of matrix multiplication. Let $i,j\leq n$ be given. Then:
+\begin{align*}
+(f * g)(x_i, x_j) &= \sum_{y \in X} f(x_i,y)g(y,x_j)\\
+&=FG_{ij}
+\end{align*}
+\end{enumerate}
+\end{proof}
+
+
+
+The \textbf{identity function} $\delta$ is defined by 
+\[\delta(a,b) = \begin{cases} 1 & a = b \\ 0 & else. \end{cases}
+\]
+\fi
 \end{document}
 
