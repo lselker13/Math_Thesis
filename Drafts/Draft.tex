@@ -1,4 +1,5 @@
 \documentclass[12pt]{pom_thesis}
+\usepackage[T1]{fontenc}
 \input{commands_packages}
 \usetikzlibrary{decorations.pathreplacing,angles,quotes}
 \usepackage{mathrsfs}
@@ -6,7 +7,6 @@
 \author{Leo Selker}
 \advisor{Vin de Silva}
 \title{M\"obius Inversion: Construction and Applications}
-\renewcommand{\theequation}{\addtocounter{thm}{0}\thethm}
 \newcommand{\fix}{\text{fix }}
 \newcommand{\cl}{\text{cl }}
 \DeclareMathOperator{\cat}{cat}
@@ -16,6 +16,23 @@
 \DeclareMathOperator{\orb}{Orb}
 \DeclareMathOperator{\fixx}{fix}
 \DeclareMathOperator{\obj}{ob}
+\DeclareMathOperator{\im}{Im}
+\newcommand{\catname}[1]{\textbf{\textsc{#1}}}
+
+%\theoremstyle{plain}{
+%\newtheorem{thm}{Theorem}[chapter]
+%\newtheorem{lemma}[thm]{Lemma}
+%\newtheorem{prop}[thm]{Proposition}
+%\newtheorem{cor}[thm]{Corollary}
+%\newtheorem{conj}[thm]{Conjecture}
+%}
+
+%\theoremstyle{definition}{
+%\newtheorem{defn}[thm]{Definition}
+%\newtheorem{examp}[thm]{Example}
+%\newtheorem{rmk}[thm]{Remark}
+%\newtheorem{fact}[thm]{Fact}
+%}
 \begin{document}
 
 \maketitle
@@ -58,9 +75,8 @@ It is now much less clear how to obtain $g$ from $h$. In fact, we will see how t
 The goal of M\"obius inversion is to generalize the process of reversing sums over discrete, ordered structures called \emph{posets}. If sums like the above are a discrete analogue of integration (cumulatively summing over a region), then M\"obius inversion is discrete differentiation. In the same way that developing the theory of the derivative is useful for solving differential equations where functions are defined in terms of their integral, M\"obius inversion helps us extract values which are defined in terms of their cumulative sums. In addition to building the necessary machinery for M\"obius inversion, we will consider several applications of it, including a somewhat surprising one in data clustering.
 \section{Initial Example and Posets}
 M\"obius inversion is a general construct. The classical definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
-
 \begin{equation}\label{init_mob} 
-f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(m)\mu\left(\frac dn\right)
+f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac dn\right)
 \end{equation}
 
 Our first goal is to prove the existence of, and find, this function $\mu$. We will do this using by developing M\"obius inversion in general and then applying it. We start with several definitions.
@@ -74,10 +90,22 @@ A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ togeth
 \end{itemize}
 \end{defn}
 Note that, for completeness, a poset should be labeled with both its elements and its relations - e.g. $(X, \leq)$. But often we just write $X$ when the relation is implied.
+\begin{rmk}
+Given $x_1, x_2$ in a poset $X$, we write $[x_1, x_2]$ to denote the set 
+\[
+\{y \in X: x_1 \leq y \leq x_2\}
+\]
+Replacing one of the square brackets with a parenthesis means we are omitting that element. So
+\begin{align*}
+[x_1, x_2) &= \{y \in X: x_1 \leq y < x_2\},\\
+(x_1, x_2] &= \{y \in X: x_1 < y \leq x_2\}.
+\end{align*}
+Note that if $x_1 \nleq x_2, [x_1, x_2] = [x_1, x_2) = (x_1, x_2]= \emptyset.$
+\end{rmk}
 \begin{defn}
 A poset $X$ is \emph{lower finite} if, for any $a \in x$, the set $\{ c \in X: c \leq a\}$ is finite.
 \end{defn}
-This condition will be necessary for many of the following facts and theorems, to ensure that certain sums have a finite number of nonzero terms.
+This condition will be necessary for many of the following facts and theorems, to ensure that certain sums have a finite number of nonzero terms. Note that in a lower finite poset, $[x_1, x_2]$ is finite for any $x_1, x_2$.
 
 Next, we define an important function on lower finite posets: $\zeta$ (the ``indicator function''), from $X \times X$ to $\Rr$:
 \[
@@ -90,7 +118,7 @@ M\"obius inversion is concerned with adding up values of functions. In particula
 f(a) = \sum_{b \leq a}g(b)
 \]
 
-Note that, because $X$ is lower finite, this sum has a finite number of terms, so is always finite-valued. Using the ``indicator" function $\zeta$ from above, we can rewrite the definition of $f$ to remove the need for the bound on the sum:
+Note that, because $X$ is lower finite, this sum has a finite number of terms, so is always finite-valued. Using the ``indicator'' function $\zeta$ from above, we can rewrite the definition of $f$ to remove the need for the bound on the sum:
 \begin{equation}\label{sum_form_intro}
 f(a) = \sum_{b \in X}g(b)\zeta(b,a)
 \end{equation}
@@ -108,7 +136,7 @@ We now are able to define our desired function (or vector) $f$ more succinctly:
 f = g \zeta
 \]
 
-If the matrix multiplication is explicitly written out, what we get is identical to \ref{sum_form_intro}. %TODO: Fix this numbering
+If the matrix multiplication is explicitly written out, what we get is identical to \eqref{sum_form_intro}.
 
 The goal of M\"obius inversion is to obtain $g$ given $f$. If $\zeta$ were invertible, we would be able to do that. It turns out that $\zeta$ always is invertible. Because the total ordering respects the partial ordering, the matrix $\zeta$ is upper triangular and has ones on the diagonal. This implies the following straightforward but crucial fact:
 \begin{lemma}\label{inv_ex}
@@ -124,7 +152,7 @@ We have already observed that $\zeta$ is upper triangular and has ones on the ma
 
 This means that we can let $\mu=\zeta^{-1}$, which we now know exists, and write down the central relationship of M\"obius inversion, which holds for any lower finite poset $X$ and pair of functions $f,g$ on it:
 \[
-g = g \zeta \iff g = f \mu.
+f = g \zeta \iff g = f \mu.
 \]
 
 We will develop this further in the next section.
@@ -138,9 +166,13 @@ Let $X$ be a lower finite poset. Let $\zeta$ be the indicator function defined a
 Recall that $\zeta^{-1}$ is the matrix inverse rather than the functional inverse, and that it exists by \ref{inv_ex}.
 \end{rmk}
 \begin{rmk}\label{sum_form}
-We can unpack the linear algebra to get a definition analagous to \ref{sum_form_intro}: We can say that $\mu$ is the unique function from $X\times X$ to $\Rr$ such that, for all $x,y \in X$,
+We can unpack the linear algebra to get a definition analagous to \eqref{sum_form_intro}: We can say that $\mu$ is the unique function from $X\times X$ to $\Rr$ such that, for all $x,y \in X$,
 \[
-\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
+\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,y) = \sum_{z \in X} \zeta(x,z)\mu(z,y),
+\]
+or
+\[
+\sum_{z \leq y} \mu(x,z) = \delta(x,y) = \sum_{z \geq x} \mu(z,y).
 \]
 \end{rmk}
 
@@ -165,11 +197,20 @@ We now have two equivalent definitions of the M\"obius function, one using matri
 \section{Integer Lattices}
 We now turn to a specific class of partially ordered sets, which will come up several times going forward.
 \begin{defn}\label{lattice}
-For any positive integer $n$, the \emph{integer lattice of dimension $n$}, which we denote $\Nn^n$, is the set of ordered $n$-tuples of non-negative integers. For any two elements $(a_1,...,a_n), (b_1,...,b_n) \in \Nn^n$, we say that $(a_1,...,a_n)\leq (b_1,...,b_n)$ if $a_i \leq b_i$ for each $i = 1,\cdots,n$.
+For any positive integer $n$, the \emph{integer lattice of dimension $n$}, which we denote $\Nn^n$, is the set of ordered $n$-tuples of non-negative integers. For any two elements $(a_1,\dots,a_n), (b_1,\dots,b_n) \in \Nn^n$, we say that $(a_1,\dots,a_n)\leq (b_1,\dots,b_n)$ if $a_i \leq b_i$ for each $i = 1,\cdots,n$.
 \end{defn}
-\begin{rmk}
-$(\Nn^n, \leq)$ is a poset for any positive integer $n$. The axioms are easily checked.
-\end{rmk}
+\begin{lemma}
+$(\Nn^n, \leq)$ is a lower finite poset for any positive integer $n$. 
+\end{lemma}
+\begin{proof}
+The poset axioms are easily checked. We also observe that for any $x \in (\Nn^n, \leq)$,
+\[
+\#\{y \in (\Nn^n, \leq):y \leq x\} = \prod_{i =1}^n x_i.
+\]
+
+This is a finite product of integers, so is finite.
+\end{proof}
+
 We turn to several examples.
 \begin{examp}
 Consider the $n$-dimensional unit cube in $\Rr^n$, placed such that one corner is at the origin and all vertices have non-negative coordinates. Let $S$ denote the set of vertices of the cube. Then we can think of the vertices of the cube as ordered $n$-tuples of zeros and ones. So $S \subseteq \Nn^{n}$. 
@@ -188,28 +229,28 @@ Let $X$ be a lower finite partially ordered set, and let $\zeta, \mu$ be defined
 \mu(a,b) = 
 \begin{cases}
 0 & a \nleq b\\
-\delta(a,b)-\sum_{a \leq c < b}\mu(a,c) & else.
+\delta(a,b)-\sum_{c \in [a,b)}\mu(a,c) & else.
 \end{cases}
 \]
 \end{lemma}
 \begin{rmk}
 Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is correct - albeit less clear- to just write
 \[
-\mu(a,b) = \delta(a,b)-\sum_{a \leq c < b}\mu(a,c).
+\mu(a,b) = \delta(a,b)-\sum_{c \in [a,b)}\mu(a,c).
 \]
 \end{rmk}
 \begin{proof}
 We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
 \begin{align*}
 \sum_{c \in X}\mu(a,c) \zeta(c,b) &= \delta(a,b)\\
-\sum_{a \leq c < b} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
-\mu(a,b) &= \delta(a,b) - \sum_{a \leq c < b} \mu(a,c) 
+\sum_{c \in [a,b)} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
+\mu(a,b) &= \delta(a,b) - \sum_{c \in [a,b)} \mu(a,c) 
 \end{align*}
 \end{proof}
 We are now ready to write down $\mu$ on certain subsets of the integer lattice. In order to ensure that the sums involved are predictable, we need an additional condition on the subsets we consider:
 
-\begin{lemma}\label{mu_lattice}
-Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. Let $X$ be a subset of $L$ such that if $x \in X, y \in L$, and $y \leq x$, then $y \in X$. Let $\zeta, \mu$ be defined as usual on $X$. Let $x=(x_1,...,x_n),y = (y_1,...,y_n)$ be elements of the lattice. Then:
+\begin{lemma}\label{int_lattice}
+Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. Let $\zeta, \mu$ be defined as usual on $L$. Let $x=(x_1,\dots,x_n),y = (y_1,\dots,y_n)$ be elements of $L$. Then:
 \[
 \mu(x,y) =
 \begin{cases}
@@ -220,150 +261,115 @@ Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. L
 \]
 \end{lemma}
 
-\begin{proof} %TODO: Prove for general integer lattice
+\begin{proof}
 If $x \nleq y$, then by \ref{recurse}, $\mu(x,y) = 0$. This is the first case.
 
 We now proceed by induction on $\sum_{i=1}^ny_i-x_i$. If $x \leq y$ and $\sum_{i=1}^ny_i-x_i = 0$, then $x = y$. So by \ref{recurse}, $\mu(x,y) = 1$. This is the base case.
 
-Suppose that we have \ref{mu_lattice} for any $x \leq y$ where $\sum_{i=1}^ny_i-x_i \leq k-1$. Let $x \leq y$ be fixed such that $\sum_{i=1}^ny_i-x_i =k$. If $\exists i \in \Nn: y_i-x_i \geq 2$
-
-
-
-If $\frac{n_0}{d_0}$ is not divisible by a square, then $\frac{n_0}{d_0} = p_1p_2\cdots p_{k+1}$, where the $p_i$ are distinct primes. Then there is a direct correspondence:
-\begin{center}$\{k : d_0|k, k|n_0, k\neq n_0\} \leftrightarrow$ \{Nonempty subsets of $\{p_1,\cdots,p_{k+1}\}$\},\end{center}
-where $k$ is obtained by multiplying the remaining prime factors by $m_0$, and the omitted prime factors can be determined by factoring $k$.
-
-This means that we can index the sum from \ref{recurse} using those subsets:
-\[
-\mu(m_0, n_0) = -\sum_{P \subsetneq \{1,\cdots,k+1\}} \mu(d_0, m_0\cdot \prod_{i \in P}p_i )
-\]
-Because $\frac{d_0\cdot \prod_{i \in P}p_i}{d_0} = \prod_{i \in P}p_i$ has $|P| < k + 1$ prime factors, we can apply the inductive hypothesis, which tells us that 
-\[
-\mu(d_0, md_0\cdot \prod_{i \in P}p_i = (-1)^{|P|}.
-\]
-So we can write
+Suppose that we have \ref{int_lattice} for any $x \leq y$ where $\sum_{i=1}^ny_i-x_i \leq k-1$. Let $x \leq y$ be fixed such that $\sum_{i=1}^ny_i-x_i =k$. Suppose that for some $j \in \Nn, y_j-x_j \geq 2$. Let $y' = (y_1,\dots,y_j-1,\dots,y_n)$. Note that $x \leq y' < y$. So we can decompose the sum from $\ref{int_lattice}$. Let
 \begin{align*}
-\mu(d_0, n_0) &= -\sum_{P \subsetneq \{1,\cdots,k+1\}} (-1)^{|P|}\\
-&= -\sum_{i = 1}^{k}(-1)^i{k+1 \choose i}\\
-&= (-1)^{k+1}
+\alpha &= \sum_{x \leq z \leq y'} \mu(x,z)\\
+\beta &= \sum_{y' < z < y}\mu(x,z).\\
 \end{align*}
-with the final equality following from the alternating-sum binomial identity
-\[
-\sum_{1=1}^{k+1}(-1)^i{k+1 \choose i} = 0.
+Then
+\begin{align*}
+\mu(x,y) &= -\sum_{x \leq z \leq y}\mu(x,z)\\
+&= -\sum_{x \leq z \leq y'} \mu(x,z) - \sum_{y' < z < y}\mu(x,z)\\
+&= -(\alpha + \beta).
+\end{align*}
+We note that
+\[\alpha = \sum_{z \in L} \mu(x,z)\zeta(z,y').
 \]
-Finally, we consider the case where $\frac {d_0}{n_0}$ has a squared factor. So we can write 
-\[
-\frac {d_0}{n_0} = p^2q
-\]
-where $p$ is prime, and $q$ is some other integer. Note that we can no longer use the previous argument, because the factors of $\frac {d_0}{n_0} = p^2q$ form a set with multiplicity rather than a simple set, so the sum will no longer have standard binomial coefficients.
+So by \ref{sum_form}, $\alpha=0$. 
 
-Let $r$ divide $d_0q$ and be divisible by $d_0$. So $\mu(d_0, r)$ is a term in the sum from \ref{recurse}. Note also that $rp$ divides $d_0qp$, so $\mu(d_0, rp)$ is also a term in the sum. By the inductive hypothesis, $\mu(d_0, rp) = -\mu(d_0, r)$, so the terms cancel. We can pair terms in this way to eliminate all divisors of $d_0pq$. The only remaining terms are of the form $\mu(d_0, d_0p^2k)$. But because $\frac{d_0p^2k}{d_0}$ is divisible by $p^2$, by the inductive hypothesis, these terms are all zero. So all terms in \ref{recurse} cancel, meaning that $\mu(d_0, n_0) = 0$.
+Recall that for all $i \neq j, y'_i = y_i$. This means that for any $z \in L$ where $z>y'$ and $y > z, z_j = y_j$. So $z_j-x_j \geq 2$. By the inductive hypothesis, this implies that $\mu(z,x)=0$. So all the terms of $\beta$ are zero, so $\beta=0$. This implies that \[\mu(z,y)=-(\alpha+\beta)=0.\]
+
+Finally, suppose that for all $i = 1,\dots,n, y_i-x_i \leq 1$. Because $\sum_{i=1}^ny_i-x_i =k$, there must be $k$ indices where $x$ and $y$ differ by one, while at the other $n-k$ indices they are equal. So for each $j = 0,\dots,k-1$, there are $k \choose j$ elements $z$ of $X$ where $x \leq z < y$ and $\sum_{i = 1}^n y_i-z_i = j$. For each of these, by the inductive hypothesis, $\mu(x,z) = (-1)^j$. So, using \ref{sum_form}, we can write
+\begin{align*}
+\mu(x,y)& = -\sum_{j = 1}^k {k \choose j} (-1)^j\\
+&= (-1)^k.
+\end{align*}
 \end{proof}
-
-
-
-
-
-
-
-
-\section{Integers with Divisibility Ordering} %TODO: Change \Nn to \Nn^+
-We are now able to justify the existence of, and find, the function $\mu$ from equation \ref{init_mob}, with little work.
-
-We will consider the set $\Nn$ as a poset ordered by divisibility. For our purposes, $0 \notin \Nn$. Note that this poset is lower finite: For any number $n$, the set $\{q \in \Nn: q|n\} \subseteq \{q \in \Nn: q \leq n\}$, and the latter set contains $n$ elements, which is finite (note that $d|n$ means that $d$ divides $n$ without remainder). This means we are able to use M\"obius inversion.
-
-We go through the usual steps of M\"obius inversion and apply \ref{mob_inv}:
-\begin{itemize}
-\item Let $\zeta: \Nn \times \Nn \rightarrow \Nn$ be defined as follows.
+This result will be powerful for determining values of $\mu$ on various posets whose structure is similar to an integer lattice. 
+\begin{thm}\label{mapping}
+Let $(X, \leq_X),(Y, \leq_Y)$ be lower finite posets. Let $x_1 \leq x_2 \in S$ be given. Suppose that there exists a bijective map
 \[
-\zeta(d,n) = \begin{cases}1 & d|n \\ 0 & else \end{cases}
+\phi: [x_1, x_2] \leftrightarrow [\phi(x_1), \phi(x_2)]
 \]
-\item Let $\mu = \zeta^{-1}$ 
-\end{itemize}
-Then \ref{mob_inv} gives us:
+such that for all $z_1, z_2 \in [x_1, x_2]$,
+\[ 
+z_1 \leq_X z_2 \iff \phi(z_1) \leq_Y \phi(z_2).
+\] 
+Let $\mu_X, \mu_Y$ denote the M\"obius functions on $X$ and $Y$ respectively. Then:
 \[
-g(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu(d,n)
+\mu_X(x_1, x_2) = \mu_Y(\phi(x_1), \phi(x_2)).
 \]
-This is almost what we want, but not quite. Here $\mu$ is a function in two variables, while in \ref{init_mob} it is a function in a single variable. It turns out that values of $\mu(d,n)$ will only depend on $\frac nd$, which will gives us the desired form. To see that, we start by writing down a recursive form which works for any M\"obius function.
-
-\begin{lemma}\label{recurse}
-Let $X$ be a lower finite partially ordered set, and let $\zeta, \mu$ be defined as usual. Then for all $a, b \in X$,
-\[
-\mu(a,b) = 
-\begin{cases}
-0 & a \nleq b\\
-\delta(a,b)-\sum_{a \leq c < b}\mu(a,c) & else.
-\end{cases}
-\]
-\end{lemma}
-\begin{rmk}
-Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is correct - albeit less clear- to just write
-\[
-\mu(a,b) = \delta(a,b)-\sum_{a \leq c < b}\mu(a,c).
-\]
-\end{rmk}
+\end{thm}
+This theorem tells us that if we can find a portion of a familiar poset which has identical structure to a portion of an unknown poset, we can transfer what we know about values of $\mu$ on that portion from one to the other.
 \begin{proof}
-We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
+We induct on $\#[x_1, x_2]$. Because $x_1 \leq x_2$, if $[x_1, x_2] = 1$, then $x_1 = x_2$. So by \ref{recurse}, $\mu_X(x_1, x_2) = 1$. Because $\phi(x_1) = \phi(x_2), \mu_Y(\phi(x_1), \phi(x)2) = 1$ also.
+
+Suppose the theorem is true if $\#[x_1, x_2] \leq k-1$ for some integer $k$. Fix $x_1, x_2$ such that $\#[x_1, x_2] = k$. Then by \ref{recurse},
+\[
+\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{y \in [\phi(x_1), \phi(x_2)]}\mu_Y(\phi(x_1), y)
+\]
+Because $\phi$ is an isomorphism which preserves $\leq$, we can rewrite this sum:
+\[
+\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{x \in [x_1, x_2]}\mu_Y(\phi(x_1), \phi(x))
+\]
+We can restrict $\phi$ to $[\phi(x_1), \phi(x)]$ to satisfy the hypotheses for all intermediate elements $x$. So we can apply the inductive hypothesis to all the terms of this sum:
 \begin{align*}
-\sum_{c \in X}\mu(a,c) \zeta(c,b) &= \delta(a,b)\\
-\sum_{a \leq c < b} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
-\mu(a,b) &= \delta(a,b) - \sum_{a \leq c < b} \mu(a,c) 
+\mu_Y(\phi(x_1), \phi(x_2)) &= -\sum_{x \in [x_1, x_2]}\mu_X(x_1, x)\\
+&= \mu_X(x_1, x_2)
 \end{align*}
 \end{proof}
-We are now ready to write down $\mu$ in the context of the divisibility lattice poset. 
+The following corollary follows immediately if we let $\phi$ be the inclusion map:
+\begin{cor}\label{subset}
+Let $X$ be a poset. Let $I$ be an interval in $X$. In other words, let $I = [z_1, z_2]$ for some $z_1, z_2 \in X$. Then
+\[
+\mu_I = \mu_X|_I.
+\]
+\end{cor}
+In the next section, we explore a poset where this fact will be extremely useful. 
 
-\begin{lemma}\label{nfact}
-Let $\zeta, \mu$ be defined as usual on $\Nn$ ordered by divisibility. Let $d,n \in \Nn$ be given.  Then:
+\section{Integers with Divisibility Ordering}
+We are now able to justify the existence of, and find, the function $\mu$ from \eqref{init_mob}, with little work.
+
+We will consider the poset $(\Zz^{+}, |)$. This is the set of positive integers ordered by divisibility (recall that $d|n$ if $d$ divides $n$ without remainder). Note that this poset is lower finite: For any number $n$, the set $\{q \in \Zz^{+}: q|n\} \subseteq \{q \in \Zz^{+}: q \leq n\}$, and the latter set contains $n$ elements, which is finite (note that $d|n$ means that $d$ divides $n$ without remainder). This means we are able to use M\"obius inversion. Rather than compute the M\"obius function directly, we can use \ref{int_lattice} and \ref{mapping} to reuse what we already know.
+
+\begin{thm}\label{mu_div}
+Let $\zeta, \mu$ be defined as usual on the poset $(\Zz^+, |)$. Then for all $d,n \in \Zz^+$,
 \[
 \mu(d,n) =
 \begin{cases}
-0 & d\nmid n\\
-0 & \exists p \in \Nn: p^2|(\frac nd )\\
-(-1)^{\#\{p \text{ prime}: p|\frac nd\}} & else
+0 & \nmid n \\
+0 & \exists p: p^2|\frac nd\\
+(-1)^{\#\{p|\frac nd : p \text{ prime}\}} & otherwise
 \end{cases}
 \]
-\end{lemma}
-This lemma gives us what we need - a way of writing values of $\mu$ in terms of a single variable. We will prove it by induction on the number of prime factors of $\frac nd$.
-\begin{proof} %TODO: Prove for general integer lattice
-If $d \nmid n$, then by \ref{recurse}, $\mu(d,n) = 0$. This is the first case.
+\end{thm}
 
-If $n = d$, then $\frac nd=1$ has zero prime factors. In that case, again by \ref{recurse}, $\mu(n,d) = 1$. This will be our base case for the second and third branches.
+\begin{proof}
+Let $d,n \in \Zz^+$ be given. We set up the isomorphism required for \ref{mapping}: Index the primes $p_1, p_2, \dots$. So $p_1=2, p_2=3$, and so on. Let $k$ be the index of the largest prime which divides either $d$ or $n$. Then let $\phi : [d,n] \rightarrow \Nn^k$ be defined by
+\[
+ p_1^{x_1}p_2^{x_2}\cdots p_k^{x_k} \mapsto (x_1, \cdots, x_k).
+\]
+We claim that $\phi$ is a bijection from $[d,n]$ to $\im(\phi)$.
 
-Suppose that if $d|n$, and $\frac nd$ has $k$ prime factors (with multiplicity), then \ref{nfact} holds for $d$ and $n$. Suppose that $d_0|n_0$ and $\frac {n_0}{d_0}$ has $k+1$ prime factors. If $\frac{n_0}{d_0}$ is not divisible by a square, then $\frac{n_0}{d_0} = p_1p_2\cdots p_{k+1}$, where the $p_i$ are distinct primes. Then there is a direct correspondence:
-\begin{center}$\{k : d_0|k, k|n_0, k\neq n_0\} \leftrightarrow$ \{Nonempty subsets of $\{p_1,\cdots,p_{k+1}\}$\},\end{center}
-where $k$ is obtained by multiplying the remaining prime factors by $m_0$, and the omitted prime factors can be determined by factoring $k$.
+Because prime factorizations are unique, this map is well-defined and injective. Let $m_1, m_2 \in [d,n]$ be given. Then $m_1|m_2$ if and only if the multiplicity of each prime $p_i$ in the factorization of $m_1$ is equal to or smaller than $p_i$'s multiplicity in the factorization of $m_2$. This is equivalent to checking whether or not $\phi(m_1)_i \leq \phi(m_2)_i$, which is the definition of $\leq$ on $\Nn^k$. So this map preserves $\leq$. This implies that $\im(\phi) \subseteq [\phi(d), \phi(n)]$, which allows us to check the final condition, surjectivity. 
 
-This means that we can index the sum from \ref{recurse} using those subsets:
-\[
-\mu(m_0, n_0) = -\sum_{P \subsetneq \{1,\cdots,k+1\}} \mu(d_0, m_0\cdot \prod_{i \in P}p_i )
-\]
-Because $\frac{d_0\cdot \prod_{i \in P}p_i}{d_0} = \prod_{i \in P}p_i$ has $|P| < k + 1$ prime factors, we can apply the inductive hypothesis, which tells us that 
-\[
-\mu(d_0, md_0\cdot \prod_{i \in P}p_i = (-1)^{|P|}.
-\]
-So we can write
-\begin{align*}
-\mu(d_0, n_0) &= -\sum_{P \subsetneq \{1,\cdots,k+1\}} (-1)^{|P|}\\
-&= -\sum_{i = 1}^{k}(-1)^i{k+1 \choose i}\\
-&= (-1)^{k+1}
-\end{align*}
-with the final equality following from the alternating-sum binomial identity
-\[
-\sum_{1=1}^{k+1}(-1)^i{k+1 \choose i} = 0.
-\]
-Finally, we consider the case where $\frac {d_0}{n_0}$ has a squared factor. So we can write 
-\[
-\frac {d_0}{n_0} = p^2q
-\]
-where $p$ is prime, and $q$ is some other integer. Note that we can no longer use the previous argument, because the factors of $\frac {d_0}{n_0} = p^2q$ form a set with multiplicity rather than a simple set, so the sum will no longer have standard binomial coefficients.
+Let $x = (x_1,...,x_k) \in [\phi(d), \phi(n)]$ be given. Then $\phi(p_1^{x_1}\cdots p_k^{x_k}) = x$. By above, because $\phi$ preserves $\leq$, $p_1^{x_1}\cdots p_k^{x_k} \in [d,n]$. So $x \in \im(\phi)$. 
 
-Let $r$ divide $d_0q$ and be divisible by $d_0$. So $\mu(d_0, r)$ is a term in the sum from \ref{recurse}. Note also that $rp$ divides $d_0qp$, so $\mu(d_0, rp)$ is also a term in the sum. By the inductive hypothesis, $\mu(d_0, rp) = -\mu(d_0, r)$, so the terms cancel. We can pair terms in this way to eliminate all divisors of $d_0pq$. The only remaining terms are of the form $\mu(d_0, d_0p^2k)$. But because $\frac{d_0p^2k}{d_0}$ is divisible by $p^2$, by the inductive hypothesis, these terms are all zero. So all terms in \ref{recurse} cancel, meaning that $\mu(d_0, n_0) = 0$.
+So $\phi:[d,n] \leftrightarrow [\phi(d), \phi(n)]$ is a bijection.
+
+This allows us to use \ref{mapping}, and the result immediately follows.
 \end{proof}
-Given \ref{nfact}, we can write $\mu(\frac nm)$ instead of $\mu(m,n)$. This allows us to use \ref{mob_inv} to arrive at \ref{init_mob}:
+
+This definition of $\mu$ depends only on $\frac nd$, which means that we can abuse notation to write $\mu(\frac nd)$ instead of $\mu(d,n)$. This allows us to use \ref{mob_inv} to arrive at \eqref{init_mob}:
 \[
-f(n) = \sum_{m | n} g(m) \iff g(n) = \sum_{m | n}  f(m)\mu\left(\frac mn\right).
+f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac nd\right).
 \]
-\section{Euler's Totient}
+\section{Euler's Totient} %TODO: Fix \Zz^+
 Euler's Totient is a famous function in number theory, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Nn \rightarrow \Nn$, and its definition is:
 \[
 \varphi(n) = \#\{1 \leq m \leq n : (m,n) = 1\},
@@ -383,11 +389,11 @@ There are a variety of ways of proving this fact. Here we include a concise proo
 \begin{proof}
 For any integer $d$, $\varphi(d)$ counts the generators of $C_d$. Each element of $C_n$ generates exactly one cyclic subgroup, so counting the total number of generators of cyclic subgroups of $C_n$ is equivalent to counting the elements of $C_n$. Also, $C_n$ has exactly one cyclic subgroup for each divisor of $n$ (and no others). So the sum indeed counts the number of elements of $C_n$, of which there are $n$.
 \end{proof}
-This sum gives us a value we have access to ($n$) in terms of a sum of values we want. This is a perfect situation to apply M\"obius inversion, and undo that sum. We apply \ref{init_mob}, which tells us
+This sum gives us a value we have access to ($n$) in terms of a sum of values we want (values of $\varphi$). This is a perfect situation to apply M\"obius inversion, and undo that sum. We apply \eqref{init_mob}, which tells us
 \[
 \varphi(n) = \sum_{d|n} d\mu\left(\frac nd\right).
 \]
-Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
+Recall that \ref{mu_div} tells us how to write down values of $\mu$. Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
 \end{chapter}
 
 \begin{chapter}{Groups and Orbits} 
@@ -496,25 +502,27 @@ We start by introducing the desired end result, the \emph{inclusion-exclusion pr
 \begin{thm}[Inclusion-Exclusion]\label{iep}
 Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
 \[
-\left|\bigcup_{i \in K}A_i\right| = \sum_{J \subseteq K}(-1)^{|J|}\left|\bigcap_{i \in J}A_j\right|
+\left|\bigcup_{i \in K}A_i\right| = \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|
 .\]
 \end{thm}
-\section{Proof using Mobius Inversion}
-There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset. Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on subsets of $I$, so this will be our poset. We start by formalizing that:
+\section{Proof using M\"obius Inversion} %TODO: Motivate
+There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset.
 
 \begin{defn}
-For any set $I$, the \emph{power set} of $I$, denoted by $\ps(I)$, is the set of subsets of $I$. 
+For any set $X$, the \emph{power set} of $X$, denoted by $\ps(X)$, is the set of subsets of $X$. 
 \end{defn}
 \begin{rmk}\label{power_poset}
-Let $I$ be a finite set. Then $(\ps(I), \supseteq)$ is a partially ordered set.
+Let $I$ be a finite set. Then $(\ps(X), \supseteq)$ is a lower finite partially ordered set.
 \end{rmk}
 Note that the poset from \ref{power_poset} is ordered by reverse inclusion rather than simple inclusion. The poset axioms are easily checked.
 
-The goal of the inclusion-exclusion principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could say
+Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on $(\ps(I), \supseteq)$, so this will be our poset. 
+
+The goal of the inclusion-exclusion principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could just consider
 \[
-\left|\bigcup_{i \in K}A_i\right| = \sum_{i \in K}\left|A_i\right|.
+\sum_{i \in K}\left|A_i\right|.
 \]
-But, because intersections of the $A_i$ might be nonempty, this sum might count some elements multiple times. In order to solve this problem, we suppose that we have access to \emph{intersections} (but not unions) of the $A_i$ (it is apparent that this is required to use \ref{iep}). First, we define the following indicator function $\chi: s \rightarrow \ps(I)$ by:
+But, because intersections of the $A_i$ might be nonempty, this sum might count some elements multiple times. We must approach the problem more carefully. First, we define the following indicator function $\chi: s \rightarrow \ps(I)$ by:
 \[
 \chi(x) = \{i \in I : x \in A_i\}.
 \]
@@ -536,26 +544,411 @@ We can go through these functions to get a better handle on what they mean:
 \item The function $\hat{f}$ counts the elements contained in none of the $A_i$ for $i \in J$; and
 \item The function $\hat{g}$ counts the elements contained in none of the $A_i$ for $i \in J$, but contained in all the other $A_i$.
 \end{itemize}
-Based on these definitions, we can observe certain relationships, which will start to point the way for using M\"obius inversion:
+Finally, we recall that our goal is to find the union of the $A_i$ for $i$ in some given $K$. To that end, we observe that
+\[
+\left| \bigcup_{i \in J=K} A_i \right| = |S| - \hat{f}(K).
+\]
+
+In order to find $\hat{f}$, we suppose that we have access to \emph{intersections} (but not unions) of the $A_i$ (it is apparent that this is required to use \ref{iep}). This means that we have access to $f$. 
+
+We can observe certain relationships, which will start to point the way for using M\"obius inversion:
 \begin{align*}
 f(J) &= \sum_{K \supseteq J} g(K)\\
 \hat{f}(J) &= \sum_{K \supseteq J} \hat{g}(K)\\
 g(J) &= \hat{g}(J^c)
 \end{align*}
+Using these relationships, we can:
+\begin{enumerate}
+\item Use $f$ to find $g$ by using M\"obius inversion to invert the sum;
+\item Translate from $g$ to $\hat{g}$; and
+\item Use $\hat{g}$ to determine $\hat{f}$.
+\end{enumerate}
 
-Finally, we recall that our goal is to find the union of the $A_i$ for $i$ in some given $J$. To that end, we observe that
+Let $\zeta$ be defined as usual on $(\ps(I), \supseteq)$. So let $\zeta:\ps(I) \times \ps(I) \rightarrow \Rr$ be defined by
 \[
-\left| \bigcup_{i \in J} A_i \right| = |S| - \hat{f}(J).
+\zeta(J,K) = \begin{cases} 1 & J \supseteq K \\ 0 & \text{otherwise}. \end{cases}
 \]
-So if we are able to write down values of $\hat{f}$, we're done.
+
+Also, we define the \emph{complement} function/matrix $c$ as follows:
+\[
+c(J,K) = \begin{cases} 1 & J = K^c \\ 0 & \text{otherwise}. \end{cases}
+\]
+Note that by definition, $c(J,K) = c(K,J)$. So $c$ is symmetric. We also observe that $c^2 = I$, so $c$ is self-inverse. 
+
+Using $\zeta$ and $c$, we can rewrite the relationships between the functions:
+\begin{align*}
+f &= g\zeta\\
+\hat{f} &= \hat{g}\zeta\\
+g &= \hat{g}c\\
+\hat{g} &= gc
+\end{align*}
+The complement matrix is readily accessible and self-inverse, so we are able to move easily between $g$ and $\hat{g}$. It is also straightforward to determine $\hat{f}$ from $\hat{g}$ using $\zeta$. The only remaining step is to determine $g$ using $f$. As usual, we use M\"obius inversion to reverse multiplication by $\zeta$.
+
+Let $\mu = \zeta^{-1}$ (as usual, we mean the matrix inverse). Then we can add the following important fact, using \ref{mob_inv}:
+\[
+g = f\mu.
+\]
+Putting it all together, we can write $\hat{f}$ in terms of $f$ step-by-step:
+\begin{align*}
+\hat{f} &= \hat{g}\zeta\\
+&= gc\zeta\\
+&= f\mu c\zeta.
+\end{align*}
+In a sense, we are done. We have determined how to find unions of sets of $A_i$ using $\hat{f}$, and we have written $\hat{f}$ in terms of values we have access to. But with a bit more work, we can show that what we have derived is really the inclusion-exclusion principle. The first step is to interpret values of $\mu$. We will again use \ref{int_lattice} and \ref{mapping}. 
+
+\begin{thm}
+Let $\mu$ be defined as above. Then for all $J, K \in \ps(I)$,
+\[
+\mu(J,K) = 
+\begin{cases}
+0 & J \not\supseteq K\\
+(-1)^{|K|-|J|} & \text{otherwise}.
+\end{cases}
+\]
+\end{thm}
+The idea is that $\ps(I)$ can be viewed as a subset of the $|I|$-dimensional integer lattice, where all the coordinates are either ones or zeros, with a one corresponding to an element being present in a subset and a zero corresponding with that element being absent. This is the idea behind the bijection we will set up.
+\begin{proof}
+Label the elements of $I$, so that $I = \{\iota_1, \dots, \iota_{|I|}\}$. Let $\Nn^{|I|}$ be the integer lattice of dimension $|I|$. Let $X$ be the subset of $\Nn^{|I|}$ consisting of the points with all coordinates either zero or one. Let $\phi:X \rightarrow \ps(I)$ be defined as follows:
+\[
+\phi(x_1, \dots, x_{|I|}) = \{\iota_w : x_w = 0\}
+\]
+There are a variety of things we must check to use \ref{mapping}.
+\begin{itemize}
+\item $X = [(0,\dots,0), (1,\dots,1)] \subset \Nn^{|I|}$, so $X$ is an interval, as required.
+\item Let $J \subseteq I$ be given. Then we can construct an element of $X$ which maps to $J$ by setting the appropriate elements to zeros and ones. So $\phi$ is surjective on $\ps(I)$. 
+\item Distinct elements of $X$ map to distinct subsets of $I$. So $\phi$ is injective. 
+\item It is straightforward to check that $\phi(x) \leq_{\ps(I)} \phi(y) \iff x \leq_{\Nn^{|I|}} y$.
+\end{itemize}
+This means that \begin{align*}
+\mu_{\ps(I)}(J,K) &= \mu_{\Nn^{|I|}}(\phi(J), \phi(K)) \\
+&= \begin{cases}
+0 & J \not\supseteq K\\
+(-1)^{|K|-|J|} & \text{otherwise}
+\end{cases}
+\end{align*}
+\end{proof}
+This allows us to determine values of $\mu$. Given that we know $f, c$, and $\zeta$, we are now ready to determine $\hat{f}$.
+
+Recall that our goal is to determine 
+\[
+\left| \bigcup_{i \in J} A_i \right|,
+\]
+and that earlier we observed that
+\begin{align*}
+\left| \bigcup_{i \in J} A_i \right| &= |S| - \hat{f}(J)\\
+&= |S| - (f\mu c\zeta)(J).
+\end{align*}
+We consider the $J,K$ entry of $\mu c \zeta$. First we take the dot product of row $J$ of $\mu$ with column $K$ of $c$. Recall that column $K$ of $c$ is zero everywhere except in the row corresponding to $K^c$. So $(\mu c)(J,K) = \mu(J, K^c)$. 
+
+Now we must consider the dot product of row $J$ of $(\mu c)$ and column $K$ of $\zeta$. Recall that $\zeta(L,K)$ is equal to one if and only if $L \supseteq K$, and zero otherwise. So, putting it all together:
+\begin{align*}
+(\mu c \zeta)(J,K) &= \sum_{L \supseteq K} \mu(J, L^c)\\
+&= \sum_{L \subseteq K^c} \mu(J, L) &\text{re-indexing the sum}\\
+\end{align*}
+Finally, we would like to multiply this on the left by $f$ to obtain $\hat{f} = f\mu c\zeta$. Expanding the dot product and rearranging, we have
+\begin{align*}
+f\mu c\zeta(K) &= \sum_{J \in \ps(I)} f(J) \sum_{L \subseteq K^c} \mu(J,L)\\
+&= \sum_{J \supseteq L} \sum_{L \subseteq K^c} (-1)^{|J|-|L|} f(J)\\
+&= \sum_{J \in \ps(I)}\left( \sum_{L \subseteq K^c \cap J}(-1)^{|J| - |L|} \right) f(J)\\
+&= \sum_{J \in \ps(I)}\left( \sum_{L \subseteq K^c \cap J}\mu(\emptyset, L)\right) (-1)^{|J|}f(J)
+\end{align*}
+We now apply \ref{sum_form} to simplify the inner sum and insert the definition of $f$:
+\begin{align*}
+\hat{f}(K) &= f\mu c\zeta(K) \\
+&=  \sum_{J \in \ps(I)}(\delta(\emptyset, K^c \cap J)(-1)^{|J|} )f(J)\\
+&= \sum_{J \subseteq K}(-1)^{|J|}f(J)\\
+&= \sum_{J \subseteq K}(-1)^{|J|}\left| \bigcap_{i \in J} A_i\right|\\
+\end{align*}
+Recall that 
+\[
+\left| \bigcup_{i \in K} A_i \right| = |S| - \hat{f}(K).
+\]
+So we can arrive at \ref{iep}:
+\begin{align*}
+\left| \bigcup_{i \in K} A_i \right| &= |S| - \sum_{J \subseteq K}(-1)^{|J|}\left| \bigcap_{i \in J} A_i\right|\\
+&= \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|.
+\end{align*}
 \section{Generalizations}
-%TODO: Connect with integer divisibility
+
 
 \end{chapter}
-\begin{chapter}{Metric Space Magnitude}
-\section{Motivation: Clustering}
-The \emph{magnitude} of a metric space is a notion introduced in \cite{Lein2}. %TODO: Finish introduction
-\section{Important Definitions} \label{mag_defs}
+\begin{chapter}{Euler Characteristic of a Category}\label{chap_euler}
+\section{Introduction to Categories} \label{cat_defs}
+
+A category is an algebraic structure which generalizes ``objects'' and ``maps'' (or ``morphisms''), with composition. There are several equivalent definitions, all somewhat technical, but the construct itself is quite intuitive once you get used to it.  
+\begin{defn}
+A \textit{category} $C$ consists of:
+\begin{itemize}
+\item A collection $C_0$ of \emph{objects};
+\item For each $a,b \in C_0$, a collection $C(a,b)$ of \emph{morphisms from $x$ to $y$};
+\item For each $a,b,c \in C_0$, a \emph{composition operator}: A function $\circ_{abc} :C(a,b) \times C(b,c) \rightarrow C(a,c)$ (note that we usually omit the subscript, because they can be inferred); and
+\item For each $a \in C_0$, an \emph{identity morphism} $1_a \in C(a,a)$,
+\end{itemize}
+such that the following axioms are satisfied:
+\begin{itemize}
+\item Composition is associative: If $a,b,c,d \in C_0$ and $f\in C(a,b), g \in C(b,c), h \in C(c,d)$, then $f \circ (g \circ h) = (f \circ g) \circ h$, and
+\item Composition respects identities: If $a,b \in C_0, f \in C(a,b)$, then $1_b \circ f = f = f \circ 1_a$.
+\end{itemize}
+\end{defn}
+Note that we sometimes use function notation to write morphisms. So if $f \in C(a,b)$, we might right $f:a \rightarrow b$. We also often write $x \in C$ rather than $x \in C_0$ for an object $x$ of $C$, although technically $C$ is the entire category while $C_0$ is the set of objects.
+
+Categories are extremely general constructions. Note that we did not even insist that the collection of objects in a category is a set, which allows us consider ``larger'' categories such as the category of sets. We consider that example here:
+\begin{examp}
+If $f:X \rightarrow Y, g:Y\rightarrow Z$ are functions, then $g \circ f$ exists, and function composition is associative. So we can let \catname{set} be the category of all sets, with a morphism between sets $X,Y$ for each map $X \rightarrow Y$. 
+\end{examp}
+A \emph{small} category is a category whose collection of objects is a set.
+
+We present several examples.
+\begin{examp}
+Let $G$ be a group. Then we can represent $G$ as a category $C$ as follows: 
+\begin{itemize}
+\item Let $C_0 = \{*\}$, a single object
+\item Let $C(*, *) = G$. In other words, let the set of morphisms from $*$ to $*$ be equal to the set of group elements. 
+\item Use the group operation for multiplication. In other words, if $g,h \in C(*,*)$, then, because $g,h \in G$, we can write $gh$. So let $g \circ h = gh$. 
+\end{itemize}
+It is straightforward to check that $C$ is indeed a category. 
+\end{examp}
+
+
+
+\section{M\"obius Inversion on a Category}
+
+To define M\"obius inversion on a partially ordered set, we used an ``indicator function'' which was notated as $\zeta$. We will henceforth refer to this function as $\zeta'$, reserving $\zeta$ for a function we are about to define on categories. Recall that for $a,b$ in a poset $X$, $\zeta'(a,b)$ was defined to be 1 if $a \leq b$, and 0 otherwise. We would like to define something similar on categories. It turns out that categories are generalizations of partially ordered sets - any poset can be represented using a category.
+
+Given a poset $X$, we can construct a category by letting $C_0=X$, and adding a single morphism from elements $a,b \in C_0$ if and only if $a \leq b \in X$. We formalize this:
+
+\begin{defn}\label{cat_poset}
+Let $(X, \leq)$ be a poset. Let $C$ be the category whose objects are elements of $X$, and where for any pair of elements $a,b \in X$, the set $C(a,b)$ contains one morphism if $a \leq b$, and zero otherwise. Then $C$ is the \emph{poset category of $X$}, which we will refer to as $\cat(X)$.
+\end{defn}
+Then $\cat(X)$ is a category for any poset $X$. The identity requirement follows from reflexivity of posets, and because pairs of elements have at most one morphism between them, we do not need to specify the composition operators.
+
+To do M\"obius inversion, we need a function/matrix $\zeta$. We would like the $\zeta$ arising from $\cat(X)$ to be the same as the one arising from $X$. Motivated by that intuition, we define $\zeta$ as follows. Note that it is not clear what a ``lower finite'' category would look like, so we restrict ourselves to finite categories.
+
+\begin{defn}
+Let $C$ be a finite category. Then define $\zeta : C \times C \rightarrow \Rr$ by 
+\[
+\zeta(a,b) = |C(a,b)|.
+\]
+\end{defn}
+So $\zeta$ simply counts the number of morphism from $a$ to $b$. In $\cat(X)$, there is one morphism if $a \leq b \in X$ and zero otherwise. So $\zeta(a,b) = \zeta'(a,b)$ (note that here $a,b \in C$ and also $a,b \in X$).
+
+What is unclear at this point is what the purpose is of doing M\"obius inversion on a category. It is not clear what kind of sum we are attempting to reverse - unlike the poset case, we don't know why we would want to reverse the operation of multiplying by $\zeta$. It turns out that inverting $\zeta$ (if we are able to) will allow us to calculate what is called the \emph{Euler-Leinster characteristic} of a category, which is the analog of an Euler characteristic on other structures. We will explore this over the next few sections. First, we finish the definition of the M\"obius function on categories.
+
+\begin{defn}\label{cat_mob} 
+Let $C$ be a finite category. Let $\zeta$ be as defined above. Then the \emph{M\"obius function} $\mu$ on $C$, if it exists, is defined by 
+\[
+\mu = \zeta^{-1}.
+\]
+Equivalently, $\mu$ is the function which, for all $x,y \in C$, satisfies
+\[
+\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
+\]
+If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion} or to \emph{admit M\"obius inversion}.
+\end{defn}
+Note that $\mu$ may not exist. Unlike in the poset case, we have no way of ensuring that $\zeta$ is upper triangular or invertible. For example:
+\begin{examp}
+Let $C$ be the category with two objects $a$ and $b$, with exactly one morphism going each direction between $a$ and $b$, and with no other morphisms except the required identity morphisms. We can draw this category:
+\[
+\includegraphics{../Figures/cat_2.pdf}
+\]
+Note that whenever we draw a category, we omit the identity morphisms. They are implied, and serve only to clutter the diagram. We also omit implied compositions of morphisms. In this case, because the identity morphisms are the only elements of $C(a,a)$ and $C(b,b)$, it must be that the two drawn morphisms compose to the identity morphisms.
+
+
+We observe $\zeta$ defined on $C$ is
+\[\begin{bmatrix}1 & 1 \\ 1 & 1 \end{bmatrix}.\]
+This is not an invertible matrix. So this simple category does not admit M\"obius inversion.
+\end{examp} 
+
+\section{Euler-Leinster Characteristic of a Category}
+We are now ready to construct central definition of this section: the Euler-Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}. 
+
+Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. The definition of $\zeta$ from section \ref{cat_defs} will be assumed.
+
+\begin{defn}
+A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
+\[
+\sum_b \zeta(a,b)\omega_b = 1.
+\]
+\end{defn}
+
+\begin{lemma}
+\label{mobius_is_weighting}
+If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
+\end{lemma}
+\begin{proof} For all $a \in \Aa$,
+\begin{align*}
+\sum_b \zeta(a,b)\omega_b &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
+&=\sum_b\sum_c\zeta(a,b)\mu(b,c)\\
+&=\sum_c\left(\sum_b\zeta(a,b)\mu(b,c)\right)\\
+&=\sum_c \delta(a,c)\\
+&=1.
+\end{align*}
+\end{proof}
+
+This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
+
+The following definition is due to \cite{Lein1}.
+\begin{defn}\label{cat_euler}
+Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler-Leinster characteristic}, or just the \emph{Euler characteristic}, of $A$, denoted by $\chi(A)$, is defined by
+\[
+\chi(A) = \sum_{a \in A} \omega_a
+\]
+\end{defn}
+Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with \ref{mobius_is_weighting}, this implies the following:
+\begin{cor}\label{euler_mu}
+If a finite category $A$ has a M\"obius inversion $\mu$, then
+\[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
+\]
+\end{cor}
+
+\section{Simplicial Complexes}
+Calling a new construction an Euler characteristic needs some intuitive justification. We will introduce a structure called a \textit{simplicial complex} to show that calling this value an Euler characteristic is reasonable. 
+
+The most elementary form of an Euler characteristic is the version defined on polyhedrons: Vertices minus edges plus faces. As a result, it is common to think of the Euler characteristic as a value defined on geometric objects. A simplicial complex is a generalization of a polyhedron into higher dimensions. We use this construction because it has a natural notion of an Euler characteristic, which is consistent with the common one, and yet also is easily connected with categories. We start with the definition:
+
+\begin{defn}
+Let $V$ be a set. A \emph{simplicial complex} $\sigma$ over $V$ is a set of finite, non-empty subsets of $V$, called \emph{simplices} or \emph{cells}, such that, if $\alpha \in \sigma$ and $\emptyset \neq \beta \subset \alpha$, then $\beta \in \sigma$.
+\end{defn}
+
+Put another way, a simplicial complex over $V$  is a set of subsets of $V$ which is closed under taking subsets, with the exception of the empty subset. 
+
+If a set in a simplicial complex $\sigma$ has $k$ elements, we call it a \emph{$k-1$-simplex} or a \emph{$k-1$-cell}. We think of 0-cells as vertices, 1-cells as edges, 2-cells as faces, etc. This will become much clearer with some examples.
+\begin{examp}
+Let $V=\{a,b\}, \sigma_2 = \{\{a\},\{b\}, \{a,b\}\}$. Then $\sigma_2$ is a simplicial complex over $V$. We visualize $\sigma_2$ as follows:
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+
+\node[label = above:{$\{a\}$}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[label = above:{$\{b\}$}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (3,0) {};
+
+\draw[-latex] (1) -- (2) node[midway, above = 3pt] {$\{a,b\}$};
+
+\end{tikzpicture}\]
+Because $\{a\} \subseteq \{a,b\}$, the vertex $\{a\}$ is an endpoint of the line $\{a,b\}$. Because $\sigma_2$ is closed under taking subsets, as all simplicial complexes must be, the line has both its endpoints.
+\end{examp}
+Going forward, when writing down simplicial complexes, we will not explicitly write down the set $V$ - it will implicitly be the set of all elements used in the simplicies. We will also omit the braces around the subsets to reduce clutter. So we would write $\sigma_2 = \{a,b,ab\}$.
+
+We saw in the previous example why it is that lines always have both their endpoints in the geometric representation of a simplicial complex. For the same reason, faces have all three edges. But the converse is not necessarily true - the outline of a triangle, for example, might exists without the triangle being filled.
+\begin{examp}
+Let $\sigma = \{a, b, c, d, ab, ac, bc, bd, cd, abc\}$. Then we draw $\sigma$ as follows:
+\[
+\includegraphics[scale = 1.3]{../Figures/simp_1.pdf}
+\]
+\end{examp}
+As these examples illustrate, a $k$-simplex, or a simplex with $k+1$ elements, is considered to be a $k$-dimensional feature.
+
+The goal of this construction was to justify our definition of the Euler characteristic of a category. To do that, we need to define the Euler characteristic of a simplicial complex.
+\begin{defn}
+Let $\sigma$ be a simplicial complex. Then the \emph{Euler characteristic} of $\sigma$, denoted by $\chi(\sigma)$, is equal to
+\[
+\sum_{\tau \in \sigma}(-1)^{|\tau|}.
+\]
+\end{defn}
+Note that this is a distinct (although related) definition to \ref{cat_euler}, yet we use $\chi$ for both. Which we mean will be determined by what kind of object we are applying $\chi$ to. 
+
+This definition is consistent with the definition of the Euler characteristic of a polyhedron: If the largest cells of a simplicial complex are 2-cells, or two-dimensional faces, then the definitions are identical. 
+
+It turns out that there is a straightforward way of converting a simplicial complex into a category. We will find that the Euler-Leinster characteristic of the resulting category will be the same as the Euler characteristic of the simplicial complex. 
+\begin{defn}
+Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
+\end{defn}
+Note that a simplicial complex can be converted into a poset, where the cells are ordered by inclusion. Recall that we also defined $\cat(X)$ for a poset $X$ in \ref{cat_poset}. If $\sigma$ is a simplicial complex, and $X$ is the corresponding poset, then $\cat(\sigma) = \cat(X)$.
+
+The notation for $\cat(\sigma)$ is a little tricky. If $\sigma$ is a simplicial complex, and $\alpha \in \sigma$ is a simplex, then we write $\cat(\alpha)$ to denote the object in $\cat(\sigma)$ corresponding with the simplex $\alpha \in \sigma$. We consider an example.
+\begin{examp}
+Let $\sigma = \{a, b, ab\}$. Then we can draw $\sigma, \cat(\sigma)$:
+\[
+\includegraphics{../Figures/simp_cat.pdf}
+\]
+\end{examp}
+Recall that we omit identity morphisms when drawing a category.
+
+To prove that this operation preserves the Euler characteristic, we start with two lemmas about $\mu$, the M\"obius function on a category. First, recall that categories do not necessarily admit M\"obius inversion. So $\mu$, a priori, might not exist on a given category. However, the following lemma will rule this possibility out in the case of the category generated by a simplicial complex.
+\begin{lemma}\label{mu_exists}
+Let $\sigma$ be a simplicial complex. Then $\cat(\sigma)$ admits M\"obius inversion.
+\end{lemma}
+\begin{proof}
+Totally order the simplices of $\sigma$ respecting the partial order of number of elements (so if $\alpha, \beta \in \sigma$ and $|\alpha| < |\beta|$, then $\alpha < \beta$ in the total order). Write down the matrix $\zeta$ with the rows and columns in that order. Then $\zeta$ will be upper triangular, so it will be invertible. So $\mu = \zeta^{-1}$ exists.
+\end{proof}
+Now that we know $\mu$ exists, we can inductively determine its value, similarly to how we have done so in previous sections with M\"obius functions on partially ordered sets.
+\begin{lemma}
+\label{mu_lemma}
+Suppose $\sigma$ is a simplicial complex, and $\alpha \subseteq \beta$ are simplices in $\sigma$. Let $\mu$ denote the M\"obius function on $\cat(\sigma)$. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$ (note that $|\alpha|$ simply denotes the size of $\alpha$ as a set).
+\end{lemma}
+\begin{proof}
+We use induction. Base case: $\alpha = \beta$, and $\mu(\alpha, \beta)=1$.
+
+For the inductive step, suppose that if $|\beta-\alpha| \leq k$, the result is true.
+
+Suppose that $|\beta - \alpha| = k+1$. We know by \ref{cat_mob} that, because $\alpha \neq \beta$,
+ \begin{align*}
+\sum_{\alpha \subseteq \sigma \subseteq \beta} \mu(\alpha, \sigma)&= 0\\
+\mu(\alpha, \beta) &=  - \sum_{\alpha \subseteq \sigma \subset \beta} \mu(\alpha, \sigma)\\
+&= - \sum_{\gamma \subset (\beta - \alpha)} \mu(\alpha, \gamma \cup \alpha) 
+\end{align*}
+Note that the above unions are always disjoint. So, by the inductive hypothesis, we can rewrite it:
+\begin{align*}
+\mu(\alpha, \beta) &= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma \cup \alpha - \alpha|} \\ %& \text{inductive hypothesis}\\
+&= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma|}\\ % &\text{by disjointness}\\
+\end{align*}
+We can add and subtract $(-1)^{|\beta - \alpha|}$ and apply a binomial identity to finish the proof:
+\begin{align*}
+\mu(\alpha, \beta) &= - \sum_{\gamma \subseteq (\beta - \alpha)} (-1)^{|\gamma|} + (-1)^{|\beta - \alpha|} \\ 
+&= (-1)^{|\beta - \alpha|} -  \sum_{i = 0}^{|\beta - \alpha|}(-1)^i{|\beta- \alpha| \choose i}\\ 
+&= (-1)^{|\beta - \alpha|} \\ 
+\end{align*}
+\end{proof}
+We are now ready to prove that the two definitions of the Euler characteristic coincide.
+\begin{thm}
+\label{consistentEuler}
+Let $\sigma$ be a simplicial complex. Then 
+\[
+\chi(\cat(\sigma)) = \chi(\sigma).
+\]
+
+\end{thm}
+\begin{proof}
+Recall that by \ref{cat_euler}, 
+\[
+\chi(\cat(\sigma)) = \sum_{\gamma \in \sigma} \sum_{\alpha \in \sigma} \mu(\cat(\alpha), \cat(\gamma)).
+\]
+We know that if $\alpha \not \subseteq \gamma, \mu(\alpha, \gamma) = 0$. So
+\[
+\chi(\cat(\sigma)) = \sum_{\gamma \in \sigma} \sum_{\emptyset \neq \alpha \subseteq \gamma}\mu(\cat(\alpha), \cat(\gamma)).
+\]
+So we have
+\begin{align*}
+\chi(\cat(\sigma)) &= \sum_{\gamma \in \sigma} \sum_{\emptyset \neq \alpha \subseteq \gamma}\mu(\cat(\alpha), \cat(\gamma))\\
+&= \sum_{\gamma \in \sigma} \sum_{\emptyset \neq \alpha \subseteq \gamma}(-1)^{|\gamma| - |\alpha|} &\text{by \ref{mu_lemma}}\\
+&= \sum_{\gamma \in \sigma}(-1)^{|\gamma|} \sum_{i = 1}^{|\gamma|} (-1)^i{|\gamma| \choose i}\\
+&= \sum_{\gamma \in \sigma} (-1)^{|\gamma|} \\
+&= \chi(\sigma)
+\end{align*}
+\end{proof}
+The fact that $\chi(\cat(\sigma)) = \chi(\sigma)$ is comforting. It justifies calling using $\chi$ in \ref{cat_euler}, and calling this construction a type of Euler characteristic.
+
+\section{Euler-Leinster Characteristic Examples}
+
+
+\end{chapter}
+\begin{chapter}{Metric Space Magnitude}\label{chap_magnitude}
+\section{Motivation: Hierarchical Clustering}
+A common task in data analysis is clustering. Given a set of data points, it is often desirable to decide how many ``groups'' those data points fall into. Of course, there is usually no clear-cut definition of which points are in groups and which are not. 
+
+The most straightforward way to cluster points is based on some notion of distance between them. If we assign a distance to each pair of points, then we can cluster points which are close together. But there is often no clear threshold for which points are and aren't close enough together to be in the same cluster. It all depends on the scale of structure we are looking for. One common technique for avoiding choosing a scale is what is called \emph{hierarchical clustering}. 
+
+The idea of hierarchical clustering is that instead of choosing a scale, we capture the data's structure at a variety of scales:
+
+\[
+\includegraphics[width = 0.5\paperwidth] {../Figures/multiscale_structure.png}
+\]
+
+We can see that here that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
+
+There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. We will explore an alternate method of clustering, which does not actually construct clusters, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler-Leinster characteristic from chapter \ref{chap_euler}. We start by building some important definitions.
+
 A metric space is a space with a notion of distance between pairs of points. 
 \begin{defn}
 A \textit{metric space} $(M,d)$ is a set $M$ together with a function  $d:M \times M \rightarrow \Rr$ (the \emph{metric}), such that the following are satisfied for all $a,b,c \in M$:
@@ -566,42 +959,104 @@ A \textit{metric space} $(M,d)$ is a set $M$ together with a function  $d:M \tim
 \end{itemize}
 We sometimes write just $M$ if the metric is unambiguous.
 \end{defn}
-A category is an algebraic structure which generalizes ``objects" and ``maps" (or ``morphisms"), with composition. There are several equivalent definitions, all somewhat technical, but the construct itself is quite intuitive once you get used to it.  
+
+In almost all forms of hierarchical clustering, we represent data as a metric space. Here, we will actually define a slightly different structure which will be quite similar to a metric space, and use that instead. However, it's useful to keep in mind this more fundamental definition of a set with distance.
+
+In the next section, we expand the Euler-Leinster characteristic to a generalization of categories called \emph{enriched categories}. We will connect this back to data and metric spaces in subsequent sections.
+\section{Enriched Categories}
+In chapter \ref{chap_euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
+
+%TODO: Fix Furthermore, the definitions and constructions we explore will be easy to apply directly to metric spaces. I point out that this construction is a type of category to justify dealing with them together with other categories in the next section. We will define the Euler characteristic of a category, and we will need to apply the definition to metric spaces by way of generalized metric spaces. This will make much more sense if we keep in mind that generalized metric spaces are categories.
+
+In order to define the next construction, we need to define a notion of isomorphism between objects in a category.
 \begin{defn}
-A \textit{category} $C$ consists of:
+Let $C$ be an ordinary category. Let $x,y \in C$ be two of $C$'s objects. Suppose that $f \in C(a,b), g \in C(b,a)$ are morphisms such that $g \circ f = 1_x, f \circ g = 1_y$. Then we say
 \begin{itemize}
-\item A collection $C_0$ of \emph{objects};
-\item For each $a,b \in C_0$, a collection $C(a,b)$ of \emph{morphisms from $x$ to $y$};
-\item For each $a,b,c \in C_0$, a \emph{composition operator}: A function $\circ:C(a,b) \times C(b,c) \rightarrow C(a,c)$; and
-\item For each $a \in C_0$, an \emph{identity morphism} $1_a \in C(a,a)$,
-\end{itemize}
-such that the following axioms are satisfied:
-\begin{itemize}
-\item Composition is associative: If $a,b,c,d \in C_0$ and $f\in C(a,b), g \in C(b,c), h \in C(c,d)$, then $f \circ (g \circ h) = (f \circ g) \circ h$, and
-\item Composition respects identities: If $a,b \in C_0, f \in C(a,b)$, then $1_b \circ f = f = f \circ 1_a$.
+\item $f = g^{-1}, g = f^{-1}$
+\item $f$ and $g$ are \emph{inverses} of each other
+\item $f$ and $g$ are both \emph{isomorphisms}
+\item $f \cong g$
+\item $a$ and $b$ are \emph{isomorphic}.
 \end{itemize}
 \end{defn}
-%TODO: Add examples
-This is a definition of what is usually called a category, but here we will refer to it as an \emph{ordinary} category. This is because it will also be useful to mention a generalization of categories, called \emph{enriched categories}. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. We will be using a particular kind of enriched category, called a \textit{generalized metric space}.
 
-It's not necessary to fully understand how generalized metric spaces are categories - every space we consider here will be a bona fide metric space. Furthermore, the definitions and constructions we explore will be easy to apply directly to metric spaces. I point out that this construction is a type of category to justify dealing with them together with other categories in the next section. We will define the Euler characteristic of a category, and we will need to apply the definition to metric spaces by way of generalized metric spaces. This will make much more sense if we keep in mind that generalized metric spaces are categories.
+If two objects $a$ and $b$ are isomorphic, then for any morphism to or from either $a$ or $b$, we can use the isomorphisms to construct an ``equivalent'' map to or from the other object. As a result, $a$ and $b$ are equivalent in nearly every way. The next several definitions will replace requirements for - for example - associativity with requiring associativity up to isomorphism. This is common in category theory, and makes definitions more versatile, although it also makes them seem much more complicated at first. 
 
-The full definition of enriched categories is complicated, technical, and not necessary here. For a full discussion of enriched categories, see \cite{Kelly1}. We will instead directly define a particular enriched category object called a \emph{generalized metric space}.
 \begin{defn}
-A \emph{generalized metric space} $C$ consists of:
+A \emph{monoidal category} is an ordinary category $A$, together with
 \begin{itemize}
-\item A collection $M$ of points (or objects); and
-\item For each $a,b \in M$, a non-negative real number $d(a,b)$, such
+\item A \emph{monoidal product} $\otimes : A \times A \rightarrow A$;
+\item A \emph{unit object} $u \in A$;
 \end{itemize}
-such that, for all $a,b \in M$,
-\[C(a,a) = 0,\hspace{1cm} C(a,b) + C(b,c) \geq C(a,c).
+such that
+\begin{itemize}
+\item For each ordered triple of objects $x,y,z \in A$, $(x \otimes y) \otimes z \cong x \otimes (y \otimes z)$
+\item For each $x \in A$, $u \otimes x \cong x \cong x \otimes u$,
+\end{itemize} 
+and all the isomorphisms commute appropriately.
+\end{defn}
+There are a variety of commutation requirements which we are not considering in detail here. For a full account, see \cite{Kelly1}.
+
+We turn to several examples of monoidal categories.
+\begin{examp}
+The category $\catname{set}$ is the prototypical example of a monoidal category. In that case, the monoidal product $\otimes$ is the tensor product on sets (hence the notation $\otimes$ for the monoidal product), and $u = \{*\}$, some set with a single element.
+
+Here, we can consider what the required isomorphisms look like. It's required that for any set $X \in \catname{set}, \{*\} \otimes X \cong X$. Elements of $\{*\} \otimes X$ are of the form $(*, x)$ for $x \in X$. Also recall that an isomorphism is an invertible morphism, and that in \catname{set}, morphisms are just maps. So, because $|X| = |\{*\} \otimes X|$, the two sets are isomorphic in \catname{set}. The associativity isomorphisms are similar.
+\end{examp}
+\begin{examp}\label{cat_real}
+A monoidal category which will be very important here is $\Rr^{\geq 0}$, where there is exactly one morphism $f \in \Rr(a,b)$ if $a \geq b$. The monoidal product is addition, and the unit object is 0. The requirements are easily checked. We will refer to this category as $D$, because soon it will be used to represent distances.
+
+In this case, there are no need for isomorphisms, because for any $a,b,c \in \Rr^{\geq 0}, (a + b) + c = a + (b + c)$, and $0 + a = a = a + 0$. A monoidal category like this, where all the associativity and identity isomorphisms are the identity, is called a \emph{strict} monoidal category. In fact, in $D$, no two distinct elements are isomorphic. 
+\end{examp}
+We are now ready to partially define an important generalization on ordinary categories. This definition is highly technical, and a full understanding of it is not necessary for this investigation. So we will not spend much time exploring examples or intuition beyond the specific applications we need.
+\begin{defn}\label{en_cat}
+Let $M$ be a monoidal category. Then a \emph{category enriched by $M$} consists of
+\begin{itemize}
+\item A set $C_0$ of objects;
+\item For each $a,b \in C_0$, an \emph{object of morphisms} $C(a,b) \in M$;
+\item For each $a,b,c \in C_0$, a \emph{composition morphism} $\circ_{abc}:  (C(b,c) \otimes  C(a,b)) \rightarrow  C(a,c)$;
+\item For each $a \in C_0$, an \emph{identity element morphism} $i_a : u \rightarrow C(a,a)$, where $u$ is the unit object in $M$,
+\end{itemize}
+such that all the $i_1, \circ_{abc}$ commute appropriately.
+\end{defn}
+As with ordinary categories, we usually will omit the subscripts on the composition morphisms. They will be implied by context.
+\begin{rmk}
+For a full discussion of enriched categories, including a complete description of the commutation requirements, see \cite{Kelly1}. 
+\end{rmk}
+
+\section{Norms and Magnitude}
+
+\begin{defn}\label{gen_met}
+Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
+\end{defn}
+It can be difficult to untangle the definitions involved in enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
+\begin{thm}\label{direct_def}
+A generalized metric space $C$ can be defined equivalently by the following:
+\begin{itemize}
+\item A collection $C_0$ of points (or objects); and
+\item For each ordered pair $a,b \in C_0$, a non-negative real number $C(a,b)$
+\end{itemize}
+such that, for all $a,b \in C_0$,
+\[C(a,a) = 0,
 \]
-\end{defn}
-Note that this is essentially the same as a metric space, but without the restriction that distinct points have nonzero distance, and without the requirement of symmetry. Relaxing these constraints allows us to cleanly express this as an enriched category. In keeping with the intuitive description of enriched categories which I gave earlier, this is a category where sets of morphisms are replaced by non-negative real numbers. The two axioms are enforced by details in the definition of an enriched category which I swept under the rug.
+\[\hspace{1cm} C(a,b) + C(b,c) \geq C(a,c).
+\]
+\end{thm}
+\begin{proof}
+We will start with the definition from \ref{gen_met}, and argue that it is equivalent to the above. As defined originally, a generalized metric space consists of a set of objects $C_0$, with a non-negative real number $C(a,b)$ between any ordered pair of elements $a,b \in C_0$. So what remains is to show that the composition requirements from \ref{en_cat} are equivalent to the conditions in \ref{direct_def}. 
 
-For those who are interested in the details, what we are doing is letting $\mathcal{V}$ be the monoidal category whose set of objects is $\Rr^{\geq 0}$, with a single morphism from $a$ to $b$ if and only if $a \leq b$, and with addition (+) as the monoid operator. Then a generalized metric space is a category enriched with $\mathcal{V}$. 
+Let $C$ be a generalized metric space as defined in \ref{gen_met}. Then \ref{en_cat} requires that there be a morphism $i_a:0 \rightarrow C(a,a)$ for any $a \in C$. This exists if and only if $C(a,a) \leq 0$, which is equivalent to saying that $C(a,a)=0$. So the existence of $i_a$ for all $a$ is equivalent to the first requirement above.
 
-We will soon be interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We will call this binary function $\zeta$, and define it on a category $C$ as follows: For $a,b \in C_0$, if $C$ is an ordinary category, then $\zeta(a,b) = |C(a,b)|$, or the size of the set of morphisms from $a$ to $b$. If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. 
+It is also required that for any $a,b,c \in C$, there is a map $\circ_{abc}: C(b,c) + C(a,b) \rightarrow C(a,c)$. This is equivalent to saying that $C(b,c) + C(a,b) \geq C(a,c)$, which is the second requirement. So the definitions are indeed identical.
+\end{proof}
+
+
+This makes it clear why we call this construction a generalized metric space. It is a metric space, but without the restriction that distinct points have nonzero distance, and without the requirement of symmetry. Relaxing these constraints allows us to cleanly express this as an enriched category. 
+
+
+
+%TODO: Probably remove
+We are interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We do this by defining $\zeta$ appropriately: If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. 
 
 The definition for ordinary categories is fairly natural. The version for generalized metric spaces is less intuitive, but the definitions are surprisingly consistent. Consider three objects $a,b,c$ in an ordinary category. The numbers above the arrows indicate the number of morphisms between adjacent objects:
 
@@ -628,113 +1083,8 @@ C(a,c) \leq C(a,b) + C(b,c).
 The inverse exponential function is monotonically decreasing. So we simply apply it to both sides and flip the inequality to get the same result, that $\zeta(a,c) \geq \zeta(a,b) \zeta(b,c)$.
 
 There is another way of looking at essentially the same property. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. We want a fact about addition to give us a fact about multiplication. Exponentiating is the most natural way to translate multiplication into addition, so we can apply the axiom.
-\section{M\"obius Inversion on a Category}
-To define M\"obius inversion on a partially ordered set, we used an "indicator function" which was - not coincidentally - notated as $\zeta$. We will henceforth refer to this function as $\zeta'$, reserving $\zeta$ for the function we just defined on categories. Recall that for $a,b$ in a poset $X$, $\zeta'(a,b)$ was defined to be 1 if $a \leq b$, and 0 otherwise. We would like to generalize the construction of M\"obius inversion. The first step is to observe the following: Given a poset $X$, we can construct an "equivalent" category by letting $C_0=X$, and adding a single morphism from elements $a,b \in C_0$ if and only if $a \leq b \in X$. It is easily checked that this is in fact a category, and that for each triplet in $C_0$ there is only one possible composition operator (this is why we don't bother to explicitly define them). 
-
-The key fact here is that for $a,b \in C_0 = X, \zeta(a,b) = \zeta'(a,b)$. This motivates the following definition:
-\begin{defn}\label{cat_mob} %TODO: Check uniqueness
-Let $C$ be a category. Let $\zeta$ be as defined above. Then the \emph{M\"obius function} on $C$, if it exists, is a function $\mu$ which, for all $x,y \in C$, satisfies
-\[
-\sum_{z \in X} \mu(x,z)\zeta(z,y) = \delta(x,z) = \sum_{z \in X} \zeta(x,z)\mu(z,y).
-\]
-If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion}. %TODO: Connect back, use matrix version
-\end{defn}
-\section{Euler Characteristic of a Category}
-\subsection{Definition}
-We are now ready to construct central definition of this section: the Euler characteristic of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}. 
-
-Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. The definition of $\zeta$ from section \ref{mag_defs} will be assumed.
-
-\begin{defn}
-A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
-\[
-\sum_b \zeta(a,b)\omega_b = 1.
-\]
-\end{defn}
-
-\begin{lemma}
-\label{mobius_is_weighting}
-If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
-\end{lemma}
-\begin{proof} For all $a \in \Aa$,
-\begin{align*}
-\sum_b \zeta(a,b)\omega_b &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
-&=\sum_b\sum_c\zeta(a,b)\mu(b,c)\\
-&=\sum_c\left(\sum_b\zeta(a,b)\mu(b,c)\right)\\
-&=\sum_c \delta(a,c)\\
-&=1.
-\end{align*}
-\end{proof}
-
-This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
-
-The following definition is due to \cite{Lein1}.
-\begin{defn}
-Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler characteristic} of $A$, denoted by $\chi(A)$, is defined by
-\[
-\chi(A) = \sum_{a \in A} \omega_a
-\]
-\end{defn}
-Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with \ref{mobius_is_weighting}, this implies the following:
-\begin{cor}
-If a finite category $A$ has a M\"obius inversion $\mu$, then
-\[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
-\]
-\end{cor}
-
-\subsection{Simplicial Complexes}
-Calling a new construction an Euler characteristic needs some intuitive justification. We will a structure called a \textit{simplicial complex} to show that calling this value an Euler characteristic is reasonable. 
-
-%TODO: Define simplicial complex
-
-\begin{defn}
-Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
-\end{defn}
-\begin{lemma}
-\label{mu_lemma}
-Suppose $\alpha \subseteq \beta$ are cells of a simplicial complex. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$.
-\end{lemma}
-\begin{proof}
-We use induction. Base case: $\sigma = \beta$, \checkmark \\
-For any simplex $\sigma$, let $\sigma'$ be $\sigma \cup \emptyset$. Suppose that $|\beta - \alpha| = k+1$. We know that \begin{align*}
-\mu(\alpha, \beta) &=  - \sum_{\alpha \subseteq \sigma \subset \beta} \mu(\alpha, \sigma)\\
-&= - \sum_{\gamma \subset (\beta - \alpha)'} \mu(\alpha, \gamma \cup \alpha) 
-\end{align*}
-Note that the above unions are always disjoint. So, by the inductive hypothesis, we can rewrite it:
-\begin{align*}
-\mu(\alpha, \beta) &= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma \cup \alpha| - |\alpha|} \\ %& \text{inductive hypothesis}\\
-&= - \sum_{\gamma \subset (\beta - \alpha)'} (-1)^{|\gamma|}\\ % &\text{by disjointness}\\
-&= - \sum_{\gamma \subseteq (\beta - \alpha)} (-1)^{|\gamma|} + (-1)^{|\beta - \alpha|} - (-1)^0 \\ %&\text{Removing the empty simplex and including $\gamma = \beta - \alpha$}\\
-&= \chi(\beta - \alpha) + (-1)^{|\beta - \alpha|} - (-1)^0\\
-&= 1-1+ (-1)^{|\beta - \alpha|}\\
-&= (-1)^{|\beta - \alpha|}
-\end{align*}
-
-
-\end{proof}
-\begin{thm}
-\label{consistentEuler}
-Let $\sigma$ be a simplicial complex. Then 
-\[
-\sum_{\gamma \subseteq \sigma} \sum_{\alpha \subseteq \gamma} \mu(\alpha, \gamma) = \chi(\sigma).
-\]
-
-\end{thm}
-\begin{proof}
-
-\begin{align*}
-\sum_{\gamma \in \sigma} \sum_{\alpha \subseteq \gamma} \mu(\alpha, \gamma) &= \sum_{\gamma \in \sigma} \sum_{\emptyset \subset \alpha \subseteq \gamma} \mu(\alpha, \gamma)\\
-&= \sum_{\gamma \in \sigma} \mu(\emptyset, \gamma)\\
-&= \sum_{\gamma \in \sigma} (-1)^{|\gamma|} &\text{by \ref{mu_lemma}}\\
-&= \chi(\sigma)
-\end{align*}
-\end{proof}
-This implies the comforting fact that $\chi(\cat(\sigma)) = \chi(\sigma)$.
-\section{Metric Space Magnitude}
-\subsection{Motivation: Hierarchical Clustering}
-\subsection{Idea and Definition}
-\subsection{Product Spaces}
-\subsection{Examples}
+\section{Product Spaces and Approximations}
+\section{Examples}
 \end{chapter}
 
 
