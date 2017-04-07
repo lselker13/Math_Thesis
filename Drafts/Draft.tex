@@ -725,7 +725,7 @@ Then $\cat(X)$ is a category for any poset $X$. The identity requirement follows
 To do M\"obius inversion, we need a function/matrix $\zeta$. We would like the $\zeta$ arising from $\cat(X)$ to be the same as the one arising from $X$. Motivated by that intuition, we define $\zeta$ as follows. Note that it is not clear what a ``lower finite'' category would look like, so we restrict ourselves to finite categories.
 
 \begin{defn}
-Let $C$ be a finite category. Then define $\zeta : C \times C \rightarrow \Rr$ by 
+Let $C$ be a finite category. Then define the \emph{similarity matrix} or \emph{similarity function} $\zeta : C \times C \rightarrow \Rr$ by 
 \[
 \zeta(a,b) = |C(a,b)|.
 \]
@@ -735,7 +735,7 @@ So $\zeta$ simply counts the number of morphism from $a$ to $b$. In $\cat(X)$, t
 What is unclear at this point is what the purpose is of doing M\"obius inversion on a category. It is not clear what kind of sum we are attempting to reverse - unlike the poset case, we don't know why we would want to reverse the operation of multiplying by $\zeta$. It turns out that inverting $\zeta$ (if we are able to) will allow us to calculate what is called the \emph{Euler-Leinster characteristic} of a category, which is the analog of an Euler characteristic on other structures. We will explore this over the next few sections. First, we finish the definition of the M\"obius function on categories.
 
 \begin{defn}\label{cat_mob} 
-Let $C$ be a finite category. Let $\zeta$ be as defined above. Then the \emph{M\"obius function} $\mu$ on $C$, if it exists, is defined by 
+Let $C$ be a finite category. Let $\zeta$ be the similarity matrix defined above. Then the \emph{M\"obius function} $\mu$ on $C$, if it exists, is defined by 
 \[
 \mu = \zeta^{-1}.
 \]
@@ -746,7 +746,7 @@ Equivalently, $\mu$ is the function which, for all $x,y \in C$, satisfies
 If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion} or to \emph{admit M\"obius inversion}.
 \end{defn}
 Note that $\mu$ may not exist. Unlike in the poset case, we have no way of ensuring that $\zeta$ is upper triangular or invertible. For example:
-\begin{examp}
+\begin{examp}\label{2_pt}
 Let $C$ be the category with two objects $a$ and $b$, with exactly one morphism going each direction between $a$ and $b$, and with no other morphisms except the required identity morphisms. We can draw this category:
 \[
 \includegraphics{../Figures/cat_2.pdf}
@@ -762,22 +762,26 @@ This is not an invertible matrix. So this simple category does not admit M\"obiu
 \section{Euler-Leinster Characteristic of a Category}
 We are now ready to construct central definition of this section: the Euler-Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}. 
 
-Throughout this section, objects declared as categories are implicitly allowed to be either ordinary categories or generalized metric spaces. The definition of $\zeta$ from section \ref{cat_defs} will be assumed.
-
-\begin{defn}
-A \emph{weighting} on a category $\Aa$ is a function $w_a$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
+\begin{defn}\label{def_weighting}
+A \emph{weighting} on a category $\Aa$ is a function $\omega$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
 \[
-\sum_b \zeta(a,b)\omega_b = 1.
+\sum_{b \in C}|C(a,b)|\omega(b) = 1,
+\]
+or, equivalently, if
+\[
+\sum_{b \in C}\zeta(a,b)\omega(b) = 1.
 \]
 \end{defn}
 
+One of the first questions we ask when we see this definition is how we can write find valid weightings. Luckily, this definition looks familiar. We have a value we know (1) expressed as the sum of function we are seeking ($\omega$). So we can use M\"obius inversion! The situation is slightly more complicated, because we don't know for sure that $\zeta$ is invertible. We formalize that:
+
 \begin{lemma}
 \label{mobius_is_weighting}
-If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weighting on $\Aa$.
+If $C$ has M\"obius inversion, then the weighting $\omega_\mu$ defined by $\omega_\mu(a) = \sum_b \mu(a,b)$ is a weighting on $C$.
 \end{lemma}
-\begin{proof} For all $a \in \Aa$,
+\begin{proof} For all $a \in C$,
 \begin{align*}
-\sum_b \zeta(a,b)\omega_b &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
+\sum_b \zeta(a,b)\omega_\mu(b) &= \sum_b\left( \zeta(a,b)\sum_c \mu(b,c)\right)\\
 &=\sum_b\sum_c\zeta(a,b)\mu(b,c)\\
 &=\sum_c\left(\sum_b\zeta(a,b)\mu(b,c)\right)\\
 &=\sum_c \delta(a,c)\\
@@ -785,13 +789,15 @@ If $\Aa$ has M\"obius inversion, then $\omega_a = \sum_b \mu(a,b)$ is a weightin
 \end{align*}
 \end{proof}
 
+Note that even if $C$ does not admit M\"obius inversion, it might admit a weighting. For example, the category in example \ref{2_pt} admits the weighting $\omega(a) = \omega(b) = 0.5$, even though it does not admit M\"obius inversion.
+
 This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
 
 The following definition is due to \cite{Lein1}.
 \begin{defn}\label{cat_euler}
 Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler-Leinster characteristic}, or just the \emph{Euler characteristic}, of $A$, denoted by $\chi(A)$, is defined by
 \[
-\chi(A) = \sum_{a \in A} \omega_a
+\chi(A) = \sum_{a \in A} \omega(a)
 \]
 \end{defn}
 Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with \ref{mobius_is_weighting}, this implies the following:
@@ -852,7 +858,7 @@ This definition is consistent with the definition of the Euler characteristic of
 
 It turns out that there is a straightforward way of converting a simplicial complex into a category. We will find that the Euler-Leinster characteristic of the resulting category will be the same as the Euler characteristic of the simplicial complex. 
 \begin{defn}
-Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\gamma$ and $\omega$ are cells of $\sigma$, then $|(\gamma, \omega)| = 1$ if $\gamma \subseteq \omega$ and 0 else.
+Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\alpha$ and $\beta$ are cells of $\sigma$, then $|(\alpha, \beta)| = 1$ if $\alpha \subseteq \beta$ and 0 else.
 \end{defn}
 Note that a simplicial complex can be converted into a poset, where the cells are ordered by inclusion. Recall that we also defined $\cat(X)$ for a poset $X$ in \ref{cat_poset}. If $\sigma$ is a simplicial complex, and $X$ is the corresponding poset, then $\cat(\sigma) = \cat(X)$.
 
@@ -942,7 +948,7 @@ The most straightforward way to cluster points is based on some notion of distan
 The idea of hierarchical clustering is that instead of choosing a scale, we capture the data's structure at a variety of scales:
 
 \[
-\includegraphics[width = 0.5\paperwidth] {../Figures/multiscale_structure.png}
+\includegraphics[width = 0.4\paperwidth] {../Figures/multiscale_structure.png}
 \]
 
 We can see that here that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
@@ -1024,12 +1030,88 @@ As with ordinary categories, we usually will omit the subscripts on the composit
 For a full discussion of enriched categories, including a complete description of the commutation requirements, see \cite{Kelly1}. 
 \end{rmk}
 
-\section{Norms and Magnitude}
+\section{Norms and the Euler-Leinster Characteristic}
+The following constructions can be found in \cite{Lein4}.
 
+We would like to generalize the weightings and Euler-Leinster characteristic from chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
+\[
+\sum_{b \in C}|C(a,b)|\omega(b) = 1.
+\]
+
+The problem is that given an enriched category over some monoidal category $M$, for a pair $a,b$, $C(a,b)$ is no longer a set but an element of $M$. So it is no longer possible to use the function $|\cdot|$ as defined on sets. Instead, we must define our own \emph{norm} function on $M$. We define this as follows:
+\begin{defn}
+Let $(M,\otimes)$ be a monoidal category. Then the function $| \cdot |: M \rightarrow \Rr$ is a \emph{norm} on $M$ if, for any $a,b\in M$, and if $u$ is the unit object of $M$, it satisfies
+\[
+|a \otimes b| = |a||b|,
+\]
+\[
+|u| = 1.
+\]
+\end{defn}
+
+The usual cardinality function on the monoidal category \catname{set} does satisfy these requirements - for any two finite sets $A,B, |A \otimes B| = |A||B|$, and $|\{*\}|=1$.
+
+It's not clear why we require that the norm function be multiplicative. %TODO: If I get into products, discuss. Add more examples of norms
+
+We can consider some examples of norms.
+\begin{examp}
+Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Then, for all $t \in \Rr$, the function $|\cdot|:D \rightarrow \Rr$ defined by 
+\[
+|x| = e^{-tx}
+\]
+is a norm on $D$.
+
+We will explore this norm in detail shortly.
+\end{examp}
+
+Now that we know how to replace the norm function on sets, we can redefine the $\zeta$ function, M\"obius inversion, weightings, and the Euler-Leinster characteristic on enriched categories. We go through these definitions, and then we will explore their ramifications.
+\begin{defn}
+Let $C$ be a finite category enriched over a monoidal category $M$. Suppose that $|\cdot|$ is a norm on $M$. Then we define the similarity matrix $\zeta$ on $C$ by
+\[
+\zeta_{|\cdot|}(a,b) = |C(a,b)|.
+\]
+\end{defn}
+
+\begin{defn}
+Let $C$ be a finite category enriched over a monoidal category $M$. Let $|\cdot|$ be a norm on $M$, and let $\zeta_{|\cdot|}$ be the similarity matrix defined above. Then the M\"obius function on $C$, denoted $\mu_{|\cdot|}$, is defined by 
+\[
+\mu_{|\cdot|} = \zeta_{|\cdot|},
+\]
+if $\zeta$ is invertible. If $\mu$ exists, we say that $C$ admits M\"obius inversion.
+\end{defn}
+
+\begin{defn}
+Let $C$ be a finite category enriched over a monoidal category $M$, with a specificed norm $|\cdot|$. Then $\omega$ is a \emph{weighting} on $C$ if, for all $a \in C$, 
+\[
+\sum_{b \in C}|C(a,b)|\omega(b) = 1,
+\]
+or, equivalently, if
+\[
+\sum_{b \in C}\zeta_{|\cdot|}(a,b)\omega(b) = 1.
+\]
+\end{defn}
+
+\begin{defn}
+Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Let $\omega$ be a weighting on $C$. Then the \emph{Euler-Leinster characteristic} of $C$, denoted $\chi_{|\cdot|}(C)$, is defined by
+\[
+\chi_{|\cdot|}(C) = \sum_{a \in c} \omega(a).
+\]
+\end{defn}
+In the notation just introduced, we will sometimes omit the subscripts specifying the norm, if the norm is implied.
+\begin{rmk}
+When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we will soon introduce, and continue to refer to the general construction as the Euler-Leinster characteristic or the Euler characteristic of $C$.
+\end{rmk}
+\begin{rmk}
+As before, it is easy to show by rearranging terms that the value of $\chi_{|\cdot|}(C)$ is independent of the specific weighting chosen. However, it does depend on the norm we choose. This will become very important later.
+\end{rmk}
+%TODO: Examples of euler characteristics of non-metric space enriched categories
+
+\section{Magnitude}
+Recall that the motivation for this section was data clustering. So we would like to use the technology from the previous section to process data in the form of a metric space. We will use a particular enriched category for that purpose, called a \emph{generalized metric space}. This is a category enriched over a monoidal category whose objects are non-negative real numbers, allowing us to preserve a notion of distance. 
 \begin{defn}\label{gen_met}
 Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
 \end{defn}
-It can be difficult to untangle the definitions involved in enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
+There is a lot of technology buried in that definition, and it can be difficult to untangle the definitions involved in enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
 \begin{thm}\label{direct_def}
 A generalized metric space $C$ can be defined equivalently by the following:
 \begin{itemize}
@@ -1050,12 +1132,10 @@ Let $C$ be a generalized metric space as defined in \ref{gen_met}. Then \ref{en_
 It is also required that for any $a,b,c \in C$, there is a map $\circ_{abc}: C(b,c) + C(a,b) \rightarrow C(a,c)$. This is equivalent to saying that $C(b,c) + C(a,b) \geq C(a,c)$, which is the second requirement. So the definitions are indeed identical.
 \end{proof}
 
+This makes it clear why we call this construction a generalized metric space. It is a metric space, but without the restriction that distinct points have nonzero distance, and without the requirement of symmetry. Relaxing these constraints allows us to cleanly express this as an enriched category.  
 
-This makes it clear why we call this construction a generalized metric space. It is a metric space, but without the restriction that distinct points have nonzero distance, and without the requirement of symmetry. Relaxing these constraints allows us to cleanly express this as an enriched category. 
+Generalized metric spaces are, of course, more general than ordinary metric spaces. So we can always express a metric space as a generalized metric space. This allows us to find the Euler-Leinster characteristic of a finite set of data points in a metric space. But first we must decide on the norm we will use on $D$, our monoidal category, and to do that, we take a step back and consider why we are doing this.
 
-
-
-%TODO: Probably remove
 We are interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We do this by defining $\zeta$ appropriately: If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. 
 
 The definition for ordinary categories is fairly natural. The version for generalized metric spaces is less intuitive, but the definitions are surprisingly consistent. Consider three objects $a,b,c$ in an ordinary category. The numbers above the arrows indicate the number of morphisms between adjacent objects:

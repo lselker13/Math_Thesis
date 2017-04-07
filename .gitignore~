@@ -6,6 +6,7 @@ outline.pdf
 pres_1.pdf
 Drafts/templatefig1.pdf
 Drafts/Draft.pdf
+Presentation/slides.pdf
 
 *.aux
 *.log
@@ -16,4 +17,6 @@ Drafts/Draft.pdf
 *.toc
 *.bbl
 *.blg
+*#
+*~
 
