@@ -680,7 +680,7 @@ A category is an algebraic structure which generalizes ``objects'' and ``maps'' 
 A \textit{category} $C$ consists of:
 \begin{itemize}
 \item A collection $C_0$ of \emph{objects};
-\item For each $a,b \in C_0$, a collection $C(a,b)$ of \emph{morphisms from $x$ to $y$};
+\item For each $a,b \in C_0$, a set $C(a,b)$ of \emph{morphisms from $x$ to $y$}, sometimes called the \emph{hom-set} of $(a,b)$;
 \item For each $a,b,c \in C_0$, a \emph{composition operator}: A function $\circ_{abc} :C(a,b) \times C(b,c) \rightarrow C(a,c)$ (note that we usually omit the subscript, because they can be inferred); and
 \item For each $a \in C_0$, an \emph{identity morphism} $1_a \in C(a,a)$,
 \end{itemize}
@@ -806,7 +806,7 @@ If a finite category $A$ has a M\"obius inversion $\mu$, then
 \[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
 \]
 \end{cor}
-
+%TODO: Think of category w/ no euler char
 \section{Simplicial Complexes}
 Calling a new construction an Euler characteristic needs some intuitive justification. We will introduce a structure called a \textit{simplicial complex} to show that calling this value an Euler characteristic is reasonable. 
 
@@ -988,7 +988,7 @@ Let $C$ be an ordinary category. Let $x,y \in C$ be two of $C$'s objects. Suppos
 
 If two objects $a$ and $b$ are isomorphic, then for any morphism to or from either $a$ or $b$, we can use the isomorphisms to construct an ``equivalent'' map to or from the other object. As a result, $a$ and $b$ are equivalent in nearly every way. The next several definitions will replace requirements for - for example - associativity with requiring associativity up to isomorphism. This is common in category theory, and makes definitions more versatile, although it also makes them seem much more complicated at first. 
 
-\begin{defn}
+\begin{defn}\label{def_monoid}
 A \emph{monoidal category} is an ordinary category $A$, together with
 \begin{itemize}
 \item A \emph{monoidal product} $\otimes : A \times A \rightarrow A$;
@@ -998,10 +998,10 @@ such that
 \begin{itemize}
 \item For each ordered triple of objects $x,y,z \in A$, $(x \otimes y) \otimes z \cong x \otimes (y \otimes z)$
 \item For each $x \in A$, $u \otimes x \cong x \cong x \otimes u$,
+\item The function $\otimes$ is \emph{functorial}. This essentially means that if $x_1, x_2, y_1, y_2 \in M, f \in C(x_1, x_2), g \in C(y_1, y_2)$, then there exists a corresponding morphism in $C(x_1 \otimes y_1, x_2 \otimes y_2)$. We call that morphism $f \otimes g$, and require that it behave as we would expect (e.g. if $f,g$ are both isomorphisms, $f \otimes g$ also is).
 \end{itemize} 
-and all the isomorphisms commute appropriately.
 \end{defn}
-There are a variety of commutation requirements which we are not considering in detail here. For a full account, see \cite{Kelly1}.
+There are a variety of commutation requirements which we are not considering in detail here. The property of being functorial is also more involved. For a full account, see \cite{Kelly1}.
 
 We turn to several examples of monoidal categories.
 \begin{examp}
@@ -1054,13 +1054,16 @@ The usual cardinality function on the monoidal category \catname{set} does satis
 It's not clear why we require that the norm function be multiplicative. %TODO: If I get into products, discuss. Add more examples of norms
 
 We can consider some examples of norms.
-\begin{examp}
+\begin{examp}\label{exp_norm}
 Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Then, for all $t \in \Rr$, the function $|\cdot|:D \rightarrow \Rr$ defined by 
 \[
 |x| = e^{-tx}
 \]
-is a norm on $D$.
-
+is a norm on $D$. We can see that it satisfies the requirements:
+\[|0| = 1
+\]
+\[|x + y| = e^{-tx + ty} = |x||y|.
+\]
 We will explore this norm in detail shortly.
 \end{examp}
 
@@ -1136,35 +1139,172 @@ This makes it clear why we call this construction a generalized metric space. It
 
 Generalized metric spaces are, of course, more general than ordinary metric spaces. So we can always express a metric space as a generalized metric space. This allows us to find the Euler-Leinster characteristic of a finite set of data points in a metric space. But first we must decide on the norm we will use on $D$, our monoidal category, and to do that, we take a step back and consider why we are doing this.
 
-We are interested in a notion of how close together things are - and it will need to measure closeness rather than distance, in the sense that it will increase for objects which are closer together. The reason for this will become clear soon. We do this by defining $\zeta$ appropriately: If $C$ is a generalized metric space, then $\zeta(a,b) = e^{-C(a,b)}$. 
+%TODO: Sports crowd analogy
 
-The definition for ordinary categories is fairly natural. The version for generalized metric spaces is less intuitive, but the definitions are surprisingly consistent. Consider three objects $a,b,c$ in an ordinary category. The numbers above the arrows indicate the number of morphisms between adjacent objects:
+So we would like a norm on $D$, the monoidal category of real numbers, which decreases as its argument get large. Recall that in example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. In fact, we wills see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
 
+We have a special name for the Euler characteristic of a generalized metric space which results from this particular norm:
+\begin{defn}
+Let $M$ be a generalized metric space. Let $|\cdot|_t:D \rightarrow \Rr$ be defined by
 \[
-\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
-
-\node[label = below:{a}, circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
-\node[label = below:{b}, circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](2) at (3,0) {};
-\node[label = below:{c}, circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](3) at (6,0) {};                        
-
-\draw[-latex] (1) -- (2) node[midway, above = 3pt] {\textit{k}};
-\draw[-latex] (2) -- (3) node[midway, above = 3pt] {\textit{l}};
-
-\end{tikzpicture}\]
-Then, as a result of the composition axioms, there must be a morphism $g \circ f$ from $a$ to $c$ for each pair of morphisms $f \in C(a,b), g \in C(b,c)$. This means that there are $kl$ morphisms from $a$ to $c$ which are implied by the morphisms shown above. So $\zeta(a,c) \geq \zeta(a,b)  \zeta(b,c)$. 
-
-Now, consider the same situation in a generalized metric space. We know from one of the axioms that
-\[
-C(a,c) \leq C(a,b) + C(b,c).
+|x|_t = e^{-tx}.
 \]
-The inverse exponential function is monotonically decreasing. So we simply apply it to both sides and flip the inequality to get the same result, that $\zeta(a,c) \geq \zeta(a,b) \zeta(b,c)$.
-
-There is another way of looking at essentially the same property. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. We want a fact about addition to give us a fact about multiplication. Exponentiating is the most natural way to translate multiplication into addition, so we can apply the axiom.
+If it exists, let $\chi_t(M)$ be the Euler characteristic resulting from $|\cdot|$. Then $\chi_t(M)$ is called the \emph{$t$-magnitude} (or just \emph{magnitude} if $t=1$) of $M$, denoted $\magn_t(M)$ or just $\magn(M)$.
+\end{defn}
+%TODO: Small examples w/ graphs
 \section{Product Spaces and Approximations}
+
+Consider the following set of points $A$ in two-dimensional space:
+
+\[
+\includegraphics{../Figures/4x3.pdf}
+\]
+
+Let $M$ be this set:
+\[
+\includegraphics{../Figures/3.pdf}
+\]
+
+and $N$ this set:
+\[
+\includegraphics{../Figures/4.pdf}
+\]
+
+The set $A$ is what you would get if you replaced each point in $M$ with the set $N$. Suppose we choose a scale, and somehow count the number of clusters in $N$ and in $M$. 
+
+If the scale is very small -- if we ``zoom in'' so that points must be very close together before they are considered to be in the same cluster -- then every point will be in its own cluster. So $N$ will have four clusters, $M$ three, and $A$ will have 12.
+
+If we choose a middle scale, then it might be that the points in $N$ are clustered together, but $M$ remains discrete. Then $N$ has one cluster, $M$ has three, and $A$ has four, as each copy of $N$ forms a cluster.
+
+Finally, if our scale is large enough that $M$ is grouped into a single cluster, all three sets of points will have a single cluster.
+
+In all three cases, the number of clusters in $A$ is the product of the number of clusters in $M$ and in $N$. It appears that this remains the case as we change our scale. 
+
+$A$ is an approximation of what is called a \emph{tensor product category}. In this section, we define the construction formally, and explore how the Euler-Leinster characteristic behaves when two categories are combined in this way. In particular, we would like for the magnitude of a product space to be the product of the magnitudes of the original spaces - this is how the number of clusters seems like it should behave when we look at examples like $A$ above.
+
+Not all enriched categories can be used to construct product spaces. We first must define a restriction on the definition of a monoidal category.
+
+\begin{defn}
+Let $M$ be a monoidal category with monoidal product $\otimes$. Suppose that for all $a,b \in M, a \otimes b \cong b \otimes a$. Then $M$ is a \emph{symmetric monoidal category}.
+\end{defn}
+
+We add this restriction to allow us to prove the following lemma:
+
+\begin{lemma}
+Let $M$ be a symmetric monoidal category. Let $P,Q,R,S,T,U$ in $M$ be given. Suppose that we have morphisms
+\begin{align*}
+f&:(P \otimes Q) \rightarrow T\\
+g&:(R \otimes S) \rightarrow U.
+\end{align*}
+Then, if $f \otimes g$ is the morphism required by the functoriality requirement of definition \ref{def_monoid}, we have
+\[
+(f \otimes g):(P \otimes Q) \otimes (R \otimes S) \rightarrow T \otimes U.
+\]
+\end{lemma}
+\begin{proof}\label{prod_morph}
+Using the symmetry of $\otimes$, we can rearrange:
+\[
+(P \otimes Q) \otimes (R \otimes S) \cong (P \otimes R) \otimes (Q \otimes S).
+\]
+Then definition \ref{def_monoid} tells us that the desired morphism exists.
+\end{proof}
+This extra requirement is necessary for the product of two enriched categories to exist. In particular, the composition maps do not necessarily exist if the monoidal category is not symmetric. We can now define that:
+
+\begin{defn}
+Let $A,B$ be categories both enriched over a symmetric monoidal category $M$. Fix a norm on $M$. Then the \emph{tensor product} of $A$ and $B$, denoted $A \times B$, is the category enriched over $M$ defined as follows:
+\begin{itemize}
+\item The set of objects, $(A \times B)_0$, is $\{(a,b):a \in A_0, b \in  B_0\}$
+\item For $(a,b), (c,d) \in A_0, C((a,b), (c,d)) = C(a,b) \otimes C(c,d)$.
+\item The unit object is $u_A \otimes u_B$, where $u_A, u_B$ are the units of $A,B$ respectively
+\item The composition and identity morphisms are defined using Lemma \ref{prod_morph} (the details are not important for this discussion, but they are straightforward).
+\end{itemize}
+\begin{rmk}
+The tensor product of two categories enriched over $M$ is indeed a category enriched over $M$. There are many requirements to check, and we do not go through all of them here.
+\end{rmk}
+\end{defn}
+
+We consider some examples of simple product categories. Note that \catname{set} is a symmetric monoidal category, so ordinary categories are eligible to be used as factors of product categories. 
+\begin{examp}
+Let $A$ be the following category:
+\[
+\includegraphics{../Figures/cat_2_directed.pdf}
+\]
+Recall that we omit the identity morphisms when we draw categories. So $A$ has two points and three morphisms. Then $A \times A$ looks like this:
+\[
+\includegraphics{../Figures/cat_2_prod.pdf}
+\]
+To see why, recall that the monoidal product on \catname{set} is the direct product. So consider, for example, $(a,a)$ and $(a,b)$. There is one morphism from $a$ to $a$ and one from $a$ to $b$. So the direct product of the hom-sets also has one element, which is why there is one arrow from $(a,a)$ to $(a,b)$. On the other hand, because there is no morphism $b$ to $a$, there is also no morphism from $(a,b)$ to $(a,a)$. 
+\end{examp}
+\begin{examp}\label{met_prod_ex}
+We will be focusing on products of generalized metric spaces. So we consider an example of that. Let $A, B$ be the following:
+\[
+\includegraphics{../Figures/gen_met_small.pdf}
+\]
+So each space has two points, with $A(a_1, a_2) = 1, B(b_1, b_2) = 2$. Then the tensor product category $A \times B$ looks like this:
+\[
+\includegraphics[width=.4\paperwidth]{../Figures/gen_met_small_prod}
+\]
+It is impossible to draw this product space to scale because of the way distances behave. 
+
+We can observe the same behavior here as in the initial example. Suppose we used some clustering scheme where points within a threshold distance $t$ of each other were put into the same cluster. This is not how magnitude works, of course, but it is easier to visualize. Then we have three cases:
+\begin{description}
+\item[$t < 1$:] $A$ has two clusters, $B$ has two clusters, and $A \times B$ has four clusters.
+\item[$1 \leq t < 2$:] $A$ has one cluster, $B$ has two clusters, and $A \times B$ has two clusters.
+\item[$t \geq 2$:] $A, B$, and $A \times B$ each have just one cluster (note that $(a_1, b_2)$ and $(a_2, b_1)$ are in the same cluster in $A \times B$ even though their distance is 3, because both are in the same cluster as $(a_1, b_1)$).
+\end{description}
+So in all cases, the number of clusters in $A \times B$ is the product of the numbers of clusters in $A$ and $B$. We will see that this isn't a coincidence.
+\end{examp}
+
+Magnitude is obtained using $\zeta$, the similarity matrix. So we are interested in how the similarity matrix behaves under the tensor product. It turns out that the similarity matrix of a product category is obtained using the matrix \emph{Kronecker product}, not coincidentally (but confusingly) written using $\otimes$. 
+\begin{defn}
+Let $A$ be an $m \times n$ matrix and $B$ be a $q \times r$ matrix. Then the \emph{Kronecker product} of $A$ and $B$, denoted $A \otimes B$, is the $mq \times nr$ matrix defined by the following block matrix:
+\[
+A \otimes B = 
+\begin{bmatrix}
+A_{11}B & A_{12}B & \cdots & A_{1n}B \\
+A_{21}B & A_{22}B & \cdots & A_{2n}B \\
+\vdots & \vdots & \ddots & \vdots \\
+A_{m1}B & A_{m2}B & \cdots & A_{mn}B
+\end{bmatrix}.
+\]
+\end{defn}
+We show that this definition makes sense by connecting it immediately to the tensor product of categories.
+
+\begin{lemma}\label{tensor_kron}
+Let $A, B$ be categories both enriched over a monoidal category $M$. Fix some norm on $M$. Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$ under the chosen norm. If $a_1,\dots,a_m$ and $b_1,\dots,b_n$ are the orders chosen for the objects of $A$ and $B$ when constructing $\zeta_A, \zeta_B$, then fix the order \[a_1b_1, a_1b_2, \dots, a_1b_n, a_2b_1, \dots, a_mb_n\] for $A \times B$. Then
+\[
+\zeta_{A \times B} = \zeta_A \otimes \zeta_B.
+\]
+\end{lemma}
+\begin{proof}
+%TODO: Prove
+\end{proof}
+\begin{thm}
+Let $A, B$ be categories both enriched over a monoidal category $M$ . Fix some norm on $M$. Then, if $\chi(A), \chi(B)$ both exist,
+\[
+\chi(A \times B) = \chi(A)\chi(B).
+\]
+\end{thm}
+\begin{proof}
+Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$. Then, by theorem \ref{tensor_kron}, the similarity matrix of $A \times B$ is $\zeta_A \otimes \zeta_B$. 
+
+Because both Euler characteristics exist, there must exist a valid weighting on each category. Let $\omega_A, \omega_B$ be weightings on $A, B$ respectively. Let $1^{|A|}, 1^{|B|}$ be the ones vectors of lengths $|A|$ and $|B|$. Then, using facts about the Kronecker product, we have
+\begin{align*}
+1^{|A|}&= \zeta_A\omega_A \\
+1^{|B|}&= \zeta_B\omega_A \\
+1^{|A||B|} &= \zeta_A\omega_A \otimes \zeta_B\omega_B\\
+&= (\zeta_A \otimes \zeta_B)(\omega_A \otimes \omega_B)
+\end{align*}
+So the vector $\omega_A \otimes \omega_B$ is a weighting on $A \otimes B$. We have:
+\begin{align*}
+\chi(A \times B) &= \sum_{\alpha \in A \otimes B}(\omega_A \otimes \omega_B)(\alpha) \\
+&= \sum_{a \in A, b \in B} \omega_A(a)\omega_B(b) \\
+&= \left(\sum_{a \in A}\omega_A(a)\right)\left(\sum_{b \in B}\omega_B(b)\right) \\
+&= \chi(A)\chi(B).
+\end{align*}
+\end{proof}
 \section{Examples}
+%TODO: Necessary to be its own section?
 \end{chapter}
 
 
@@ -1175,7 +1315,7 @@ There is another way of looking at essentially the same property. The reason the
 
 % % % Extra stuff/deleted portions
 \iffalse
-\iffalse
+
 We can replace the vectors $f,g$ with matrices to get the following generalization, which :
 \begin{thm}[Two Variable M\"obius Inversion]\label{mob_inv_old}
 Let $X$ be a lower finite poset.  Let $f,g:X \times X \rightarrow \Rr$ be given. Let $\zeta:X \times X \rightarrow \Rr$ be defined as usual, and let $\mu = \zeta^{-1}$. Then:
@@ -1192,7 +1332,7 @@ Equivalently,
 Again, the result is trivial when we treat $f,g,\zeta,\mu$ as matrices.
 \end{proof}
 \end{thm}
-\fi
+
 
 \begin{defn}
 The \emph{incidence algebra} on a lower finite poset $X$ is over the set of functions from $X \times X$ to $\Rr$ which map $(a,b)$ to zero if $a \nleq b$. So the elements of the incidence algebra are 
@@ -1232,6 +1372,33 @@ The result follows directly from the definition of matrix multiplication. Let $i
 The \textbf{identity function} $\delta$ is defined by 
 \[\delta(a,b) = \begin{cases} 1 & a = b \\ 0 & else. \end{cases}
 \]
+
+
+The definition for ordinary categories is fairly natural. The version for generalized metric spaces is less intuitive, but the definitions are surprisingly consistent. Consider three objects $a,b,c$ in an ordinary category. The numbers above the arrows indicate the number of morphisms between adjacent objects:
+
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+
+\node[label = below:{a}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[label = below:{b}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (3,0) {};
+\node[label = below:{c}, circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (6,0) {};                        
+
+\draw[-latex] (1) -- (2) node[midway, above = 3pt] {\textit{k}};
+\draw[-latex] (2) -- (3) node[midway, above = 3pt] {\textit{l}};
+
+\end{tikzpicture}\]
+Then, as a result of the composition axioms, there must be a morphism $g \circ f$ from $a$ to $c$ for each pair of morphisms $f \in C(a,b), g \in C(b,c)$. This means that there are $kl$ morphisms from $a$ to $c$ which are implied by the morphisms shown above. So $\zeta(a,c) \geq \zeta(a,b)  \zeta(b,c)$. 
+
+Now, consider the same situation in a generalized metric space. We know from one of the axioms that
+\[
+C(a,c) \leq C(a,b) + C(b,c).
+\]
+The inverse exponential function is monotonically decreasing. So we simply apply it to both sides and flip the inequality to get the same result, that $\zeta(a,c) \geq \zeta(a,b) \zeta(b,c)$.
+
+There is another way of looking at essentially the same property. The reason the addition (+) operator appears in the second axiom in the generalized metric space definition is because addition is what is called the \textit{monoidal product} in the enriched category. The equivalent in an ordinary category is the tensor product, $\otimes$. In terms of number of morphisms, $\otimes$ behaves like multiplication. We want a fact about addition to give us a fact about multiplication. Exponentiating is the most natural way to translate multiplication into addition, so we can apply the axiom.
 \fi
 \end{document}
 
