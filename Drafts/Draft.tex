@@ -3,17 +3,19 @@
 \input{commands_packages}
 \usetikzlibrary{decorations.pathreplacing,angles,quotes}
 \usepackage{mathrsfs}
-\usepackage[euler-digits]{eulervm} %TODO: Maybe change this
+\usepackage[euler-digits]{eulervm} 
+\usepackage[font={small}]{caption}
+\usepackage{float}
 \author{Leo Selker}
 \advisor{Vin de Silva}
 \title{M\"obius Inversion: Construction and Applications}
-\newcommand{\fix}{\text{fix }}
-\newcommand{\cl}{\text{cl }}
+\newcommand{\kron}{\boldsymbol{\otimes}}
+\DeclareMathOperator{\fix}{Fix}
 \DeclareMathOperator{\cat}{cat}
 \DeclareMathOperator{\ps}{\mathscr{P}}
 \DeclareMathOperator{\sub}{Sub}
 \DeclareMathOperator{\stab}{Stab}
-\DeclareMathOperator{\orb}{Orb}
+\DeclareMathOperator{\orb}{\mathcal{O}}
 \DeclareMathOperator{\fixx}{fix}
 \DeclareMathOperator{\obj}{ob}
 \DeclareMathOperator{\im}{Im}
@@ -47,6 +49,7 @@
 \pagenumbering{arabic}
 \begin{chapter}{Introduction to M\"obius Inversion}\label{chap_intro}
 \section{Introduction and Motivation}
+%TODO: Capitalize "theorem, lemma,..."
 %TODO: Expand introduction with more explicit examples
 Suppose that we have the integer sequence $g$ of ones:
 \[
@@ -163,7 +166,7 @@ We are now ready to define the M\"obius function on partially ordered sets.
 Let $X$ be a lower finite poset. Let $\zeta$ be the indicator function defined above. Let $\mu = \zeta^{-1}$. Then $\mu$ is the \emph{M\"obius function} on $X$.
 \end{defn}
 \begin{rmk}
-Recall that $\zeta^{-1}$ is the matrix inverse rather than the functional inverse, and that it exists by \ref{inv_ex}.
+Recall that $\zeta^{-1}$ is the matrix inverse rather than the functional inverse, and that it exists by Lemma \ref{inv_ex}.
 \end{rmk}
 \begin{rmk}\label{sum_form}
 We can unpack the linear algebra to get a definition analagous to \eqref{sum_form_intro}: We can say that $\mu$ is the unique function from $X\times X$ to $\Rr$ such that, for all $x,y \in X$,
@@ -188,10 +191,10 @@ Equivalently,
 \end{align*}
 \end{thm}
 \begin{proof}
-Recall that by \ref{inv_ex}, $\mu = \zeta^{-1}$ exists. Given that, the result follows if we right-multiply both sides by $\mu$. The first statement becomes the second when the sums are made explicit.
+Recall that by Lemma \ref{inv_ex}, $\mu = \zeta^{-1}$ exists. Given that, the result follows if we right-multiply both sides by $\mu$. The first statement becomes the second when the sums are made explicit.
 \end{proof}
 
-This result is quite straightforward based on how we defined $\zeta$ and $\mu$. In fact, it feels strange that a supposedly central fact is just the inversion of a single matrix operation. In fact, the simplicity of the inversion step is the whole point of M\"obius inversion. The tricky part is formulating a given problem such that \ref{mob_inv} can be applied to it. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
+This result is quite straightforward based on how we defined $\zeta$ and $\mu$. In fact, it feels strange that a supposedly central fact is just the inversion of a single matrix operation. In fact, the simplicity of the inversion step is the whole point of M\"obius inversion. The tricky part is formulating a given problem such that Theorem \ref{mob_inv} can be applied to it. We will see many cases where values of $f$ from the theorem are readily attainable, but values of $g$ are what we really want. The M\"obius function allows us to obtain those values. This procedure - the use of the M\"obius function to reverse the process of summing terms as in theorem Theorem \ref{mob_inv} - is what is referred to as M\"obius inversion.
 
 We now have two equivalent definitions of the M\"obius function, one using matrices (or linear operators) and vectors, and one directly considering elements and sums. We will continue to move back and forth between these two approaches throughout this investigation. This is because although the two definitions are completely equivalent, they each have advantages. Working with sums and elements helps us see the details of what is going on, and reminds us of the structure of our poset. It is also often the perspective from which motivating problems arise. On the other hand, using matrices and vectors greatly simplifies the equations we have to deal with, makes the manipulations themselves easier, and allows us to keep the bigger picture - the idea of inversion - in mind more easily. 
 \section{Integer Lattices}
@@ -220,7 +223,7 @@ In this example, what is the interpretation of the poset relation? If $v_1, v_2 
 \begin{examp}
 Each integer can be uniquely represented by its prime factorization. In particular, if we consider the set of integers whose factorizations only include the first $n$ primes, we can write those factorizations as ordered $n$-tuples, capturing each prime's multiplicity in the factorization. As a result, the integers whose factorizations only include the first $n$ primes form a copy of the $n$-dimensional integer lattice. 
 
-In this case, if $\leq$ represents the poset relation from \ref{lattice}, then $m \leq n$ if, for each prime $p$, $m$'s factorization contains no more copies of $p$ than $n$'s factorization. This is the same as saying that $m|n$. So the poset relation becomes divisibility. We will explore this example more in the next sections.
+In this case, if $\leq$ represents the poset relation from Definition \ref{lattice}, then $m \leq n$ if, for each prime $p$, $m$'s factorization contains no more copies of $p$ than $n$'s factorization. This is the same as saying that $m|n$. So the poset relation becomes divisibility. We will explore this example more in the next sections.
 \end{examp}
 It turns out that several important posets have this lattice structure. So the goal is to determine the M\"obius function on certain subsets of the integer lattice, and then transfer those results to other partially ordered sets. To do so, we first need a lemma which applies to the M\"obius function on any poset.
 \begin{lemma}\label{recurse}
@@ -240,16 +243,15 @@ Note that the piecewise form is actually not necessary, because if $a \nleq b$ t
 \]
 \end{rmk}
 \begin{proof}
-We fix $a,b$, and then rearrange terms starting from \ref{sum_form}:
+We fix $a,b$, and then rearrange terms starting from Remark \ref{sum_form}:
 \begin{align*}
 \sum_{c \in X}\mu(a,c) \zeta(c,b) &= \delta(a,b)\\
 \sum_{c \in [a,b)} \mu(a,c) + \mu(a,b) &= \delta(a,b)\\
 \mu(a,b) &= \delta(a,b) - \sum_{c \in [a,b)} \mu(a,c) 
 \end{align*}
 \end{proof}
-We are now ready to write down $\mu$ on certain subsets of the integer lattice. In order to ensure that the sums involved are predictable, we need an additional condition on the subsets we consider:
-
-\begin{lemma}\label{int_lattice}
+We are now ready to write down $\mu$ on the integer lattice.
+\begin{thm}\label{int_lattice}
 Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. Let $\zeta, \mu$ be defined as usual on $L$. Let $x=(x_1,\dots,x_n),y = (y_1,\dots,y_n)$ be elements of $L$. Then:
 \[
 \mu(x,y) =
@@ -259,14 +261,14 @@ Let $L$ be the $n$-dimensional integer lattice, with the usual poset relation. L
 (-1)^{\sum_{i=1}^ny_i-x_i} & \text{otherwise}
 \end{cases}
 \]
-\end{lemma}
+\end{thm}
 
 \begin{proof}
-If $x \nleq y$, then by \ref{recurse}, $\mu(x,y) = 0$. This is the first case.
+If $x \nleq y$, then by Lemma \ref{recurse}, $\mu(x,y) = 0$. This is the first case.
 
-We now proceed by induction on $\sum_{i=1}^ny_i-x_i$. If $x \leq y$ and $\sum_{i=1}^ny_i-x_i = 0$, then $x = y$. So by \ref{recurse}, $\mu(x,y) = 1$. This is the base case.
+We now proceed by induction on $\sum_{i=1}^ny_i-x_i$. If $x \leq y$ and $\sum_{i=1}^ny_i-x_i = 0$, then $x = y$. So by Lemma \ref{recurse}, $\mu(x,y) = 1$. This is the base case.
 
-Suppose that we have \ref{int_lattice} for any $x \leq y$ where $\sum_{i=1}^ny_i-x_i \leq k-1$. Let $x \leq y$ be fixed such that $\sum_{i=1}^ny_i-x_i =k$. Suppose that for some $j \in \Nn, y_j-x_j \geq 2$. Let $y' = (y_1,\dots,y_j-1,\dots,y_n)$. Note that $x \leq y' < y$. So we can decompose the sum from $\ref{int_lattice}$. Let
+Suppose that we have Lemma \ref{int_lattice} for any $x \leq y$ where $\sum_{i=1}^ny_i-x_i \leq k-1$. Let $x \leq y$ be fixed such that $\sum_{i=1}^ny_i-x_i =k$. Suppose that for some $j \in \Nn, y_j-x_j \geq 2$. Let $y' = (y_1,\dots,y_j-1,\dots,y_n)$. Note that $x \leq y' < y$. So we can decompose the sum from Lemma $\ref{recurse}$. Let
 \begin{align*}
 \alpha &= \sum_{x \leq z \leq y'} \mu(x,z)\\
 \beta &= \sum_{y' < z < y}\mu(x,z).\\
@@ -280,11 +282,11 @@ Then
 We note that
 \[\alpha = \sum_{z \in L} \mu(x,z)\zeta(z,y').
 \]
-So by \ref{sum_form}, $\alpha=0$. 
+So by Remark \ref{sum_form}, $\alpha=0$. 
 
 Recall that for all $i \neq j, y'_i = y_i$. This means that for any $z \in L$ where $z>y'$ and $y > z, z_j = y_j$. So $z_j-x_j \geq 2$. By the inductive hypothesis, this implies that $\mu(z,x)=0$. So all the terms of $\beta$ are zero, so $\beta=0$. This implies that \[\mu(z,y)=-(\alpha+\beta)=0.\]
 
-Finally, suppose that for all $i = 1,\dots,n, y_i-x_i \leq 1$. Because $\sum_{i=1}^ny_i-x_i =k$, there must be $k$ indices where $x$ and $y$ differ by one, while at the other $n-k$ indices they are equal. So for each $j = 0,\dots,k-1$, there are $k \choose j$ elements $z$ of $X$ where $x \leq z < y$ and $\sum_{i = 1}^n y_i-z_i = j$. For each of these, by the inductive hypothesis, $\mu(x,z) = (-1)^j$. So, using \ref{sum_form}, we can write
+Finally, suppose that for all $i = 1,\dots,n, y_i-x_i \leq 1$. Because $\sum_{i=1}^ny_i-x_i =k$, there must be $k$ indices where $x$ and $y$ differ by one, while at the other $n-k$ indices they are equal. So for each $j = 0,\dots,k-1$, there are $k \choose j$ elements $z$ of $X$ where $x \leq z < y$ and $\sum_{i = 1}^n y_i-z_i = j$. For each of these, by the inductive hypothesis, $\mu(x,z) = (-1)^j$. So, using Remark \ref{sum_form}, we can write
 \begin{align*}
 \mu(x,y)& = -\sum_{j = 1}^k {k \choose j} (-1)^j\\
 &= (-1)^k.
@@ -307,9 +309,9 @@ Let $\mu_X, \mu_Y$ denote the M\"obius functions on $X$ and $Y$ respectively. Th
 \end{thm}
 This theorem tells us that if we can find a portion of a familiar poset which has identical structure to a portion of an unknown poset, we can transfer what we know about values of $\mu$ on that portion from one to the other.
 \begin{proof}
-We induct on $\#[x_1, x_2]$. Because $x_1 \leq x_2$, if $[x_1, x_2] = 1$, then $x_1 = x_2$. So by \ref{recurse}, $\mu_X(x_1, x_2) = 1$. Because $\phi(x_1) = \phi(x_2), \mu_Y(\phi(x_1), \phi(x)2) = 1$ also.
+We induct on $\#[x_1, x_2]$. Because $x_1 \leq x_2$, if $[x_1, x_2] = 1$, then $x_1 = x_2$. So by Lemma \ref{recurse}, $\mu_X(x_1, x_2) = 1$. Because $\phi(x_1) = \phi(x_2), \mu_Y(\phi(x_1), \phi(x)2) = 1$ also.
 
-Suppose the theorem is true if $\#[x_1, x_2] \leq k-1$ for some integer $k$. Fix $x_1, x_2$ such that $\#[x_1, x_2] = k$. Then by \ref{recurse},
+Suppose the theorem is true if $\#[x_1, x_2] \leq k-1$ for some integer $k$. Fix $x_1, x_2$ such that $\#[x_1, x_2] = k$. Then by Lemma \ref{recurse},
 \[
 \mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{y \in [\phi(x_1), \phi(x_2)]}\mu_Y(\phi(x_1), y)
 \]
@@ -335,7 +337,7 @@ In the next section, we explore a poset where this fact will be extremely useful
 \section{Integers with Divisibility Ordering}
 We are now able to justify the existence of, and find, the function $\mu$ from \eqref{init_mob}, with little work.
 
-We will consider the poset $(\Zz^{+}, |)$. This is the set of positive integers ordered by divisibility (recall that $d|n$ if $d$ divides $n$ without remainder). Note that this poset is lower finite: For any number $n$, the set $\{q \in \Zz^{+}: q|n\} \subseteq \{q \in \Zz^{+}: q \leq n\}$, and the latter set contains $n$ elements, which is finite (note that $d|n$ means that $d$ divides $n$ without remainder). This means we are able to use M\"obius inversion. Rather than compute the M\"obius function directly, we can use \ref{int_lattice} and \ref{mapping} to reuse what we already know.
+We will consider the poset $(\Zz^{+}, |)$. This is the set of positive integers ordered by divisibility (recall that $d|n$ if $d$ divides $n$ without remainder). Note that this poset is lower finite: For any number $n$, the set $\{q \in \Zz^{+}: q|n\} \subseteq \{q \in \Zz^{+}: q \leq n\}$, and the latter set contains $n$ elements, which is finite (note that $d|n$ means that $d$ divides $n$ without remainder). This means we are able to use M\"obius inversion. Rather than compute the M\"obius function directly, we can use Theorems \ref{int_lattice} and \ref{mapping} to reuse what we already know.
 
 \begin{thm}\label{mu_div}
 Let $\zeta, \mu$ be defined as usual on the poset $(\Zz^+, |)$. Then for all $d,n \in \Zz^+$,
@@ -350,7 +352,7 @@ Let $\zeta, \mu$ be defined as usual on the poset $(\Zz^+, |)$. Then for all $d,
 \end{thm}
 
 \begin{proof}
-Let $d,n \in \Zz^+$ be given. We set up the isomorphism required for \ref{mapping}: Index the primes $p_1, p_2, \dots$. So $p_1=2, p_2=3$, and so on. Let $k$ be the index of the largest prime which divides either $d$ or $n$. Then let $\phi : [d,n] \rightarrow \Nn^k$ be defined by
+Let $d,n \in \Zz^+$ be given. We set up the isomorphism required for Theorem \ref{mapping}: Index the primes $p_1, p_2, \dots$. So $p_1=2, p_2=3$, and so on. Let $k$ be the index of the largest prime which divides either $d$ or $n$. Then let $\phi : [d,n] \rightarrow \Nn^k$ be defined by
 \[
  p_1^{x_1}p_2^{x_2}\cdots p_k^{x_k} \mapsto (x_1, \cdots, x_k).
 \]
@@ -362,10 +364,10 @@ Let $x = (x_1,...,x_k) \in [\phi(d), \phi(n)]$ be given. Then $\phi(p_1^{x_1}\cd
 
 So $\phi:[d,n] \leftrightarrow [\phi(d), \phi(n)]$ is a bijection.
 
-This allows us to use \ref{mapping}, and the result immediately follows.
+This allows us to use Theorem \ref{mapping}, and the result immediately follows.
 \end{proof}
 
-This definition of $\mu$ depends only on $\frac nd$, which means that we can abuse notation to write $\mu(\frac nd)$ instead of $\mu(d,n)$. This allows us to use \ref{mob_inv} to arrive at \eqref{init_mob}:
+This definition of $\mu$ depends only on $\frac nd$, which means that we can abuse notation to write $\mu(\frac nd)$ instead of $\mu(d,n)$. This allows us to use Theorem \ref{mob_inv} to arrive at \eqref{init_mob}:
 \[
 f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac nd\right).
 \]
@@ -393,15 +395,85 @@ This sum gives us a value we have access to ($n$) in terms of a sum of values we
 \[
 \varphi(n) = \sum_{d|n} d\mu\left(\frac nd\right).
 \]
-Recall that \ref{mu_div} tells us how to write down values of $\mu$. Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
+Recall that Theorem \ref{mu_div} tells us how to write down values of $\mu$. Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
 \end{chapter}
 
-\begin{chapter}{Groups and Orbits} 
-\section{Background}
-Suppose that a group $G$ acts on a set $\Omega$. 
 
-I will use $G(x)$ to denote $x$'s orbit under $G$, and $\orb(\Omega, G)$ to denote the set of orbits in $\Omega$ under $G$'s action on it. 
-\section{M\"obius Inversion on Poset of Subgroups}
+\begin{chapter}{Groups and Orbits} \label{chap_groups}
+\section{Background}
+For this chapter, it is necessary to be familiar with a simple structure called a \emph{group}. In this section, we will define it and briefly establish the machinery we need without going into too much detail, omitting proofs. More detail on elementary group theory can be found in an abstract algebra textbook. Knowledge of groups is not needed for any other chapters in this investigation.
+
+\begin{defn}
+A \emph{group} is a set $G$ together with a group operation (denoted with the empty operator) $G \times G \rightarrow G$. This operation must satisfy three requirements.
+\begin{itemize}
+\item For all $a,b,c \in G, (ab)c = a(bc)$
+\item There exists an element $e \in G$, such that $ea=a=ae$ for all $a \in G$
+\item For each $a \in G$, there exists an $a^{-1} \in G$ such that $aa^{-1} = e = a^{-1}a$.
+\end{itemize} 
+\end{defn}
+\begin{defn}
+Let $G$ be a group. Then $H \subseteq G$ is a \emph{subgroup} of $G$ if $H$ is itself a group, with the same group operation as $G$. If $H$ is a subgroup of $G$, we write $H \leq G$.
+\end{defn}
+\begin{defn}
+Let $G$ be a group and let $\Omega$ be a set. Then an \emph{action} of $G$ on $\Omega$ is a map $\cdot:G \times \Omega \rightarrow \Omega$ which satisfies the following properties:
+\begin{itemize}
+\item $e \cdot x = x$ for all $x \in \Omega$
+\item $g \cdot (h \cdot x) = (gh) \cdot x$ for all $g,h \in G, x \in \Omega$.
+\end{itemize} 
+\end{defn}
+\begin{defn}
+Let a group $G$ act on a set $\Omega$. Let $x \in \Omega$ be given. Then the \emph{orbit of $x$ under $G$}, denoted by $\orb_G(x)$ or $Gx$, is defined by
+\[
+\orb_G(x) = \{ y \in G : \exists g \in G \text{ where } g\cdot x = y\}
+\]
+or, equivalently,
+\[
+\orb_G(x) = \{g\cdot x : g \in G\}.
+\]
+\end{defn}
+
+\begin{defn}
+Let a group $G$ act on a set $\Omega$. Let $x \in \Omega$ be given. Then the \emph{stabilizer of $x$ under $G$}, denoted by $\stab_G(x)$, is defined by
+\[
+\stab_G(x) = \{g \in G:g \cdot x = x\}.
+\]
+\end{defn}
+\begin{thm}
+Let a group $G$ act on a set $\Omega$. Then for every $x \in \Omega, \stab_G(x)$ is a subgroup of $G$.
+\end{thm}
+\begin{proof}
+This is easily checked.
+\end{proof}
+\begin{thm}
+Let a group $G$ act on a set $\Omega$. Then the orbits of $\Omega$ under $G$ partition $\Omega$.
+\end{thm}
+\begin{proof}
+Omitted, but straightforward.
+\end{proof}
+\begin{thm}[Fundamental Counting Principle]\label{fcp}
+Let a \textbf{finite} group $G$ act on a set $\Omega$. Let $x \in \Omega$ be given. Then
+\[
+|\stab_G(x)||\orb_G(x)| = |G|.
+\]
+\end{thm}
+\begin{proof}
+Omitted - requires technology we don't have here.
+\end{proof}
+\begin{defn}
+Let a group $G$ act on a set $\Omega$. Then $\Omega/G$ denotes the set of orbits in $\Omega$ under $G$.
+\end{defn}
+\begin{defn}
+Let a group $G$ act on a set $\Omega$. Let $A \leq G$. Then the \emph{fixed set} of $A$, or $\fix_A(\Omega)$, is equal to
+\[
+\{x \in \Omega : \forall g \in A, g \cdot x = x\}.
+\]
+We can also speak of the fixed set of a group element $g \in G$. In that case, we say
+\[
+\fix_g(\Omega) = \{x \in \Omega : g \cdot x = x \}.
+\]
+\end{defn}
+
+\section{M\"obius Inversion on the Poset of Subgroups}
 We want to apply M\"obius inversion to finite groups. This means we will need a poset. We will use the \emph{poset of subgroups} (or \emph{lattice of subgroups}):
 \begin{defn}
 Let $G$ be a finite group. Then let the \textit{poset of subgroups} of $G$, or $\sub(G)$, be the poset consisting of subgroups of $G$ \emph{reverse} ordered by inclusion. In other words, we say that $A \leq B$ if $A \supseteq B$.
@@ -412,6 +484,20 @@ Because $G$ is finite, $\sub(G)$ is finite (so lower finite).
 \begin{rmk}
 We are ordering the poset this way for reasons that will soon become clear. But to reduce confusion, we will continue to use inclusion notation to define $\zeta$, and so $\mu$, rather than using $\leq$. Also note that I will be using $\subseteq$ rather than $\leq$ to denote subgroups, also to reduce confusion with the poset relation.
 \end{rmk}
+\begin{examp}
+Consider the group $S_3$, the symmetric group of order 6. Then we can draw its lattice of subgroups:
+
+\begin{figure}[h]
+\[
+\includegraphics{../Figures/s3_lattice.pdf}
+\]
+\caption{The lattice of subgroups of $S_3$.}
+\end{figure}
+So, for example, $\langle (1,2) \rangle \leq \langle e \rangle$, because $\langle (1,2) \rangle \supseteq \langle e \rangle$. 
+\end{examp}
+\begin{rmk}
+We are ordering the poset this way for reasons that will soon become clear. But to reduce confusion, we will continue to use inclusion notation to define $\zeta$, and so $\mu$, rather than using $\leq$. I will be using $\subseteq$ rather than $\leq$ to denote subgroups, also to reduce confusion with the poset relation.
+\end{rmk}
 This puts us in the position to apply M\"obius inversion. We first define the usual functions on $\sub(G) \times \sub(G)$:
 \begin{itemize}
 \item Given a group $G$, let $\zeta:\sub(G) \times \sub(G) \rightarrow \Rr$ be defined by
@@ -421,11 +507,11 @@ This puts us in the position to apply M\"obius inversion. We first define the us
 0 & else
 \end{cases}
 \]
-\item Let $\mu = \zeta^{-1}$, which exists by \ref{inv_ex}.
+\item Let $\mu = \zeta^{-1}$, which exists by Lemma \ref{inv_ex}.
 \end{itemize}
-Recall that we manipulate $\zeta, \mu$ as if they were matrices.
+Recall that we manipulate $\zeta, \mu$ as matrices.
 
-Now, \ref{mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
+Now, Theorem \ref{mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
 \[
 f = g\zeta \iff g = f\mu.
 \]
@@ -433,23 +519,37 @@ Now, of course, the challenge is to determine how to formulate the problem such 
 \section{Counting Orbits}
 Throughout this section, let $G$ be a finite group acting on a set $\Omega$.
 
+The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\Omega/G|$. We will do that by finding a weighted sum of elements of $\Omega$. If we were to simply count the elements of $\Omega$, we would almost certainly overestimate the number of orbits. We would prefer it if each orbit could ``send a representative.'' If that were possible, counting those representatives would be the same as counting the number of orbits. But there is no clear way of accomplishing this -- how would we choose one element exactly from each orbit? It seems like this would require prior knowledge of the orbit structure of $\Omega$ under $G$, which is exactly what we are seeking.
+
+So we have to change our perspective. Suppose that every element of $\Omega$ were able to provide information telling us the size of its orbit. So suppose that given $x \in \Omega$, we had access to $|\orb_G(x)|$. 
+
+Now suppose that we are counting orbits by checking elements of $\Omega$ one at a time. Each time we see an element $x \in \Omega$, we ask it for the size of its orbit, and then add $\frac 1 {|\orb_G(x)|}$ to a running total. Let $O$ be a single orbit of $\Omega$ under $G$ where $|O|=n$. Then we will see $n$ elements of $\Omega$ which belong to $O$, and for each of them, we will add $\frac 1n$ to our running total. This means we add exactly 1 for $O$. The same is true of all the orbits in $\Omega$. So our final total will be the size of $G/X$.
+
+To formalize this, we have the following relationship:
+
+\begin{equation}\label{eq_counting}
+|G/X| = \sum_{x \in \Omega}\frac 1 {|\orb_G(x)|}.
+\end{equation}
+
+This is the central idea: We want to group elements of $\Omega$ by the size of their orbits. We will use the \emph{Fundamental Counting Principle}, Theorem \ref{fcp}, together with M\"obius inversion, to do this. Although we already justified \eqref{eq_counting}, we will prove it formally as well.
+
 We start by defining some functions/vectors, each with entries corresponding with subgroups of $G$, which we will be using. Let:
 \begin{align*}
 f(A) &= \#\{x \in \Sigma: \stab(x) \supseteq A\} = |\fix(A)|\\
-g(A) &= \#\{x \in \Sigma: \stab(x) = A\}
+g(A) &= \#\{x \in \Sigma: \stab(x) = A\}\\
 \sigma(A) &= |A|
 \end{align*}
 
-What now? The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\orb(\Omega, G)|$. We will start with the assumption that we are able to find $\sigma$, which is true if we know the structure of $\sub(G)$. We will also assume that we are able to carry out the group action, thereby determining which elements of $\Omega$ are fixed by given subgroups of $G$. This gives us access to $f$. Then there are two steps we will follow:
+We will operate with the assumption that we are able to find $\sigma$, which is true if we know the structure of $\sub(G)$. We will also assume that we are able to carry out the group action, thereby determining which elements of $\Omega$ are fixed by given subgroups of $G$. This gives us access to $f$. Then there are two steps we will follow:
 \begin{description}
 \item[Step 1:] Determine how to use $g$ and $\sigma$ to find $|\orb(\Omega, G)|$; and
 \item[Step 2:] Find $g$ from $f$ using M\"obius inversion.
 \end{description}
 
-Suppose we are handed $g$. In order to see how to find $|\orb(\Omega, G)|$, we recall a basic fact from group theory, which holds for any $x \in \Omega$:
-\begin{fact}
-\[|G| = |G(x)||\stab(x, G)|\]
-\end{fact}
+Suppose we are handed $g$. In order to see how to find $|\orb(\Omega, G)|$, we recall Theorem \ref{fcp}:
+
+\[|G| = |G(x)||\stab(x, G)|.\]
+
 Because $G$ is finite, this implies that \[|G(x)| = \frac{|G|}{|\stab(x, G)|}.\]
 
 Starting from a trivial fact, we have:
@@ -475,48 +575,142 @@ Using the definitions of $g$ and $\sigma$, we can rewrite to get the relationshi
 
 On to Step 2. It is clear that $f_A = \sum_{B \supseteq A} g_A$. Another way of putting that is that $f = g\zeta$. As usual, this implies that $g = f\mu$. So M\"obius inversion makes this step trivial. Putting it all together:
 
-\[
-|\orb(\Omega, G)| = \frac {1}{|G|}f\mu \cdot \sigma
-\]
-Recall that $\sigma$ and $\mu$ do not depend on the details of the group action, or on $\Omega$ at all. They only depend on $G$. So it is useful to rearrange this expression to isolate $f$, the only part which does depend on the action:
+\[|\orb(\Omega, G)| = \frac {1}{|G|}f\mu \cdot \sigma.\]
+
+Recall that $\sigma$ and $\mu$ do not depend on the details of the group action, or on $\Omega$ at all. They only depend on $G$. So it is useful to rearrange this expression to isolate $f$, the only part which does depend on the action. This gives us the central result of this chapter:
+\begin{thm}\label{orbit_count}
+Let $G$ act on a set $\Omega$. Let $f, \mu, \sigma$ be defined as above. Then
 \[
 |\orb(\Omega, G)| = \frac {1}{|G|}(\mu \cdot \sigma)^Tf^T
 \]
+\end{thm}
 
 By combining M\"obius inversion with basic group theory, we have a recipe for turning something readily obtainable (the function $f$) into something less obvious (the number of orbits of an action).
-\iffalse
-\section{Burnside's Lemma}
-A more familiar way of counting the orbits of a group is the following:
-\begin{thm}[Burnside's Lemma]\label{burnside} %TODO: omit?
-Let $G$ be a finite group acting on a finite set $\Omega$. Then:
+
+The reason Theorem \ref{orbit_count} is powerful is that we can do almost all of the work knowing only the structure of the group, before we know anything about the set or the action. If we are handed a group $G$, we can define the vector $\lambda$ by
+\begin{equation}\label{eq:lambda}
+\lambda = \frac {1}{|G|}(\mu \cdot \sigma)^T.
+\end{equation}
+Then, for any action of $G$ onto any set $\omega$, all we need to do is compute $f$, and then Theorem \ref{orbit_count} tells us that
 \[
-|\orb(\Omega, G) = \frac{1}{G}\sum_{g \in G}\fixx(g)
+|\Omega/G| = \lambda f^T.
 \]
-\end{thm}
-\fi
+In the next example, we will walk through all the steps involved in counting the orbits of a simple action.
+\begin{examp}\label{ex:2x2}
+Let $G = C_4 = \{e, \alpha, \alpha^2, \alpha^3\}$, the cyclic group of order 4.  
+\begin{figure}[h]
+\[
+\includegraphics{../Figures/c4_lattice.pdf}
+\]
+\caption{The lattice of subgroups of $C_4$}
+\label{fig:c4_lattice}
+\end{figure}We first compute $\lambda$ using the formula from \eqref{eq:lambda}. We start by finding the M\"obius function. $C_4$ has three subgroups: All of $C_4$, the subgroup generated by $\alpha^2$, and the identity. So $\zeta$ will be a $3 \times 3$ matrix. Because each subgroup contains the next, there is only one admissible total ordering we can use to construct our vectors:
+\[
+C_4 < \langle \alpha^2 \rangle < \langle e \rangle.
+\]
+We can go through all the pairs of subgroups to determine that
+\[
+\zeta = \begin{bmatrix} 1 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{bmatrix}.
+\]
+For example, because the first subgroup, $C_4$ contains the second, $\langle \alpha^2 \rangle$, the 1, 2 entry of $\zeta$ is equal to 1.
+
+This implies that
+\[
+\mu = \zeta^{-1} = \begin{bmatrix} 1 & -1 & 0\\ 0 & 1 & -1 \\ 0 & 0 & 1 \end{bmatrix}.
+\]
+Next, we find $\sigma$. Recall that $\sigma$ is the vector of subgroup sizes. So 
+\[
+\sigma = [4, 2, 1].
+\]
+Finally, note that $|C_4|=4$. So
+\begin{align*}
+\lambda &= \frac 14 \mu \sigma^T\\
+&= \frac 14 
+\begin{bmatrix} 1 & -1 & 0\\ 0 & 1 & -1 \\ 0 & 0 & 1 \end{bmatrix}
+\begin{bmatrix} 4 \\ 2 \\ 1 \end{bmatrix}\\
+&= \frac 14 \begin{bmatrix} 2 \\ 1 \\ 1\end{bmatrix}
+\end{align*}
+This $\lambda$ is independent of any set $G$ might act on. So let's try an example. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
+
+We can first solve this problem by inspection, or by "brute force," by just enumerating the possibilities:
+\begin{description}
+\item[Zero rooks:] There is one option with zero rooks: The empty board.
+\[
+\includegraphics{../Figures/zero_rooks.pdf}
+\]
+\item[One rook:] We can put one rook on any of the four squares. However, we can rotate the board to obtain any of these from the others. So there is just one distinct configuration. \\
+\[
+\makebox[\textwidth][c]{\includegraphics{../Figures/one_rook.pdf}}
+\]
+\item[Two rooks:] We can put rooks on opposite corners. There are two such pairs, but we can rotate the board and obtain either pair from the other. So, again, there is only one distinct possibility.
+\[
+\makebox[\textwidth][c]{\includegraphics{../Figures/two_rooks.pdf}}
+\]
+\end{description}
+So there are a total of three distinct arrangements of rooks. Now we can try to solve this problem using $\lambda$.
+
+Let $\Omega$ be the set of possible rook arrangements without regard for rotational equivalence. So putting a rook in the upper left hand corner and putting one in the lower left hand corner would be considered to be different arrangements. Now let $C_4$ act on $\Omega$ by rotating the board. So $\alpha$ rotates the board $90^\circ$ counterclockwise, $\alpha^2$ rotates it twice, etc. Then each distinct arrangement of rooks corresponds exactly with an orbit of $C_4$'s action on $\Omega$.
+
+Luckily, we know how to count orbits. All we have to do is find $f$. We go through the subgroups of $C_4$.
+\begin{itemize}
+\item $C_4$ only fixes the empty board. Any other arrangement can be changed by a rotation. So $f(1) = 1$.
+\item The subgroup $\langle \alpha^2 \rangle$ contains the identity element as well as the $180^\circ$ rotation. This subgroup fixes both arrangements with two rooks, as well as the empty board. So $f(2) = 3$.
+\item The subgroup $\langle e \rangle$ fixes all the arrangements. There are 2 ways to place two rooks, 4 ways to place one rook, and 1 way to place zero rooks. So $f(2) = 7$.
+\end{itemize}
+Then all we have to do is compute $\lambda f^T$.
+\begin{align*}
+\lambda f^T &= \frac 14 [2, 1, 1] \begin{bmatrix} 1 \\ 3 \\ 7\end{bmatrix} \\
+&= \frac 14 12\\
+&=3
+\end{align*}
+So we indeed find the correct answer. 
+\end{examp}
+
+In this example, it's not clear that using $\lambda$ actually saved work - in fact, it seemed to take longer. But if we were to increase $n$, we could still determine the number of distinct arrangements relatively easily, because $\lambda$ wouldn't change. Furthermore, in many situations (including this one) it is much easier to determine how many \emph{total} arrangements are fixed by a subgroup that it is to find the number of \emph{distinct} arrangements. As an example of that, we can look at another example, which is more difficult to solve by hand. 
+\begin{examp}
+Suppose we have a $4 \times 4$ board, and we would like to color each square one of $k$ colors. We would like to consider colorings identical if one can be obtained from the other by rotating the board. The goal is to count the number of distinct colorings.
+
+As in Example \ref{ex:2x2}, we let $C_4$ act on the total set of colorings, and count the orbits. This problem is different from the previous one, but because the group which is acting is the same, we can re-use $\lambda$ from the last example. This is one reason this method is powerful. All we have to do is find $f$ by finding the fixed set of each subgroup of $C_4$.
+
+\begin{description}
+\item[$C_4$:] We want the number of colorings which are fixed under any rotation. This means that all four quadrants must be symmetrically colored. So we color one quadrant, and then use symmetry to determine how to color the rest. There are four squares in each quadrant, so this subgroup fixes $k^4$ colorings.
+\item[$\langle \alpha^2 \rangle$:] We use a similar approach: We color half the board, and then determine the coloring on the other half using symmetry. This means we are coloring 8 squares however we want. So there are $k^8$ colorings.
+\item[$\langle e \rangle$:] The identity subgroup always fixes all elements. We have 16 squares, so the fixed set has size $k^{16}$.
+\end{description}
+So the number of distinct colorings is
+\begin{align*}
+\lambda f &= \frac 14 [2,1,1]\begin{bmatrix} k^4 \\ k^8 \\ k^{16}\end{bmatrix}\\
+&= \frac 14 (2k^4 + k^8 + k^{16}).
+\end{align*}
+\end{examp}
+It's not clear how we would have solved this problem by brute force, and we were able to solve it very quickly, reusing $\lambda$ to save even more work.
 \end{chapter}
 
 \begin{chapter}{Inclusion-Exclusion}
 \section{Introduction}
 We start by introducing the desired end result, the \emph{inclusion-exclusion principle}:
 \begin{thm}[Inclusion-Exclusion]\label{iep}
-Let $S$ be a set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
+Let $S$ be a finite set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is finite. Let $K \subseteq I$ be given. Then
 \[
 \left|\bigcup_{i \in K}A_i\right| = \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|
 .\]
 \end{thm}
-\section{Proof using M\"obius Inversion} %TODO: Motivate
-There are many proofs of this well-known fact. We will show it using M\"obius inversion. This means we will need a poset.
+This is a well-known fact. It allows us to find the size of unions of overlapping sets if we have information about intersections of those sets. There are many ways of proving the Inclusion-Exclusion Principle. %TODO: Explain why proving it with Mobius inversion is worthwhile
+
+\section{Proof using M\"obius Inversion} 
+We will need a poset.
 
 \begin{defn}
-For any set $X$, the \emph{power set} of $X$, denoted by $\ps(X)$, is the set of subsets of $X$. 
+For any set $I$, the \emph{power set} of $I$, denoted by $\ps(I)$, is the set of subsets of $I$. 
 \end{defn}
 \begin{rmk}\label{power_poset}
-Let $I$ be a finite set. Then $(\ps(X), \supseteq)$ is a lower finite partially ordered set.
+Let $I$ be a finite set. Then $(\ps(I), \supseteq)$ is a lower finite partially ordered set.
 \end{rmk}
-Note that the poset from \ref{power_poset} is ordered by reverse inclusion rather than simple inclusion. The poset axioms are easily checked.
+Note that the poset from Remark \ref{power_poset} is ordered by reverse inclusion rather than simple inclusion. The poset axioms are easily checked.
 
 Throughout this section, we will have the following setup: Let $S$ be a finite set. Let $I$ be a finite index set, and for all $i \in I$, let $A_i \subseteq S$. We will be manipulating functions on $(\ps(I), \supseteq)$, so this will be our poset. 
+
+There are two sets of subsets here, and it can be hard to keep them straight. $S$ is a set of elements, and for each $i$, $A_i$ is a subset of $S$. On the other hand, $I$ is our index set, and our partially ordered set consists of subsets of $I$. We will perform M\"obius inversion on subsets of $I$ in order to determine sizes of unions of subsets of $S$.
 
 The goal of the inclusion-exclusion principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could just consider
 \[
@@ -549,7 +743,7 @@ Finally, we recall that our goal is to find the union of the $A_i$ for $i$ in so
 \left| \bigcup_{i \in J=K} A_i \right| = |S| - \hat{f}(K).
 \]
 
-In order to find $\hat{f}$, we suppose that we have access to \emph{intersections} (but not unions) of the $A_i$ (it is apparent that this is required to use \ref{iep}). This means that we have access to $f$. 
+In order to find $\hat{f}$, we suppose that we have access to \emph{intersections} (but not unions) of the $A_i$ (it is apparent that this is required to use Theorem \ref{iep}). This means that we have access to $f$. 
 
 We can observe certain relationships, which will start to point the way for using M\"obius inversion:
 \begin{align*}
@@ -569,7 +763,7 @@ Let $\zeta$ be defined as usual on $(\ps(I), \supseteq)$. So let $\zeta:\ps(I) \
 \zeta(J,K) = \begin{cases} 1 & J \supseteq K \\ 0 & \text{otherwise}. \end{cases}
 \]
 
-Also, we define the \emph{complement} function/matrix $c$ as follows:
+Also, we define the \emph{complement} function/matrix $c$ as follows: %TODO: Change variable name
 \[
 c(J,K) = \begin{cases} 1 & J = K^c \\ 0 & \text{otherwise}. \end{cases}
 \]
@@ -584,7 +778,7 @@ g &= \hat{g}c\\
 \end{align*}
 The complement matrix is readily accessible and self-inverse, so we are able to move easily between $g$ and $\hat{g}$. It is also straightforward to determine $\hat{f}$ from $\hat{g}$ using $\zeta$. The only remaining step is to determine $g$ using $f$. As usual, we use M\"obius inversion to reverse multiplication by $\zeta$.
 
-Let $\mu = \zeta^{-1}$ (as usual, we mean the matrix inverse). Then we can add the following important fact, using \ref{mob_inv}:
+Let $\mu = \zeta^{-1}$ (as usual, we mean the matrix inverse). Then we can add the following important fact, using Theorem \ref{mob_inv}:
 \[
 g = f\mu.
 \]
@@ -594,7 +788,7 @@ Putting it all together, we can write $\hat{f}$ in terms of $f$ step-by-step:
 &= gc\zeta\\
 &= f\mu c\zeta.
 \end{align*}
-In a sense, we are done. We have determined how to find unions of sets of $A_i$ using $\hat{f}$, and we have written $\hat{f}$ in terms of values we have access to. But with a bit more work, we can show that what we have derived is really the inclusion-exclusion principle. The first step is to interpret values of $\mu$. We will again use \ref{int_lattice} and \ref{mapping}. 
+In a sense, we are done. We have determined how to find unions of sets of $A_i$ using $\hat{f}$, and we have written $\hat{f}$ in terms of values we have access to. But with a bit more work, we can show that what we have derived is really the Inclusion-Exclusion Principle. The first step is to interpret values of $\mu$. We will again use Theorems \ref{int_lattice} and \ref{mapping}. 
 
 \begin{thm}
 Let $\mu$ be defined as above. Then for all $J, K \in \ps(I)$,
@@ -612,14 +806,14 @@ Label the elements of $I$, so that $I = \{\iota_1, \dots, \iota_{|I|}\}$. Let $\
 \[
 \phi(x_1, \dots, x_{|I|}) = \{\iota_w : x_w = 0\}
 \]
-There are a variety of things we must check to use \ref{mapping}.
+There are a variety of things we must check to use Theorem \ref{mapping}.
 \begin{itemize}
 \item $X = [(0,\dots,0), (1,\dots,1)] \subset \Nn^{|I|}$, so $X$ is an interval, as required.
 \item Let $J \subseteq I$ be given. Then we can construct an element of $X$ which maps to $J$ by setting the appropriate elements to zeros and ones. So $\phi$ is surjective on $\ps(I)$. 
 \item Distinct elements of $X$ map to distinct subsets of $I$. So $\phi$ is injective. 
 \item It is straightforward to check that $\phi(x) \leq_{\ps(I)} \phi(y) \iff x \leq_{\Nn^{|I|}} y$.
 \end{itemize}
-This means that \begin{align*}
+This means that, if $\mu_{\Nn^{|I|}}$ is the M\"obius function on $\Nn^{|I|}$, \begin{align*}
 \mu_{\ps(I)}(J,K) &= \mu_{\Nn^{|I|}}(\phi(J), \phi(K)) \\
 &= \begin{cases}
 0 & J \not\supseteq K\\
@@ -638,7 +832,7 @@ and that earlier we observed that
 \left| \bigcup_{i \in J} A_i \right| &= |S| - \hat{f}(J)\\
 &= |S| - (f\mu c\zeta)(J).
 \end{align*}
-We consider the $J,K$ entry of $\mu c \zeta$. First we take the dot product of row $J$ of $\mu$ with column $K$ of $c$. Recall that column $K$ of $c$ is zero everywhere except in the row corresponding to $K^c$. So $(\mu c)(J,K) = \mu(J, K^c)$. 
+We can walk through the matrix algebra. We consider the $J,K$ entry of $\mu c \zeta$. First we take the dot product of row $J$ of $\mu$ with column $K$ of $c$. Recall that column $K$ of $c$ is zero everywhere except in the row corresponding to $K^c$. So $(\mu c)(J,K) = \mu(J, K^c)$. 
 
 Now we must consider the dot product of row $J$ of $(\mu c)$ and column $K$ of $\zeta$. Recall that $\zeta(L,K)$ is equal to one if and only if $L \supseteq K$, and zero otherwise. So, putting it all together:
 \begin{align*}
@@ -652,7 +846,7 @@ f\mu c\zeta(K) &= \sum_{J \in \ps(I)} f(J) \sum_{L \subseteq K^c} \mu(J,L)\\
 &= \sum_{J \in \ps(I)}\left( \sum_{L \subseteq K^c \cap J}(-1)^{|J| - |L|} \right) f(J)\\
 &= \sum_{J \in \ps(I)}\left( \sum_{L \subseteq K^c \cap J}\mu(\emptyset, L)\right) (-1)^{|J|}f(J)
 \end{align*}
-We now apply \ref{sum_form} to simplify the inner sum and insert the definition of $f$:
+We now apply Remark \ref{sum_form} to simplify the inner sum and insert the definition of $f$:
 \begin{align*}
 \hat{f}(K) &= f\mu c\zeta(K) \\
 &=  \sum_{J \in \ps(I)}(\delta(\emptyset, K^c \cap J)(-1)^{|J|} )f(J)\\
@@ -663,15 +857,15 @@ Recall that
 \[
 \left| \bigcup_{i \in K} A_i \right| = |S| - \hat{f}(K).
 \]
-So we can arrive at \ref{iep}:
+So we can arrive at Theorem \ref{iep}:
 \begin{align*}
 \left| \bigcup_{i \in K} A_i \right| &= |S| - \sum_{J \subseteq K}(-1)^{|J|}\left| \bigcap_{i \in J} A_i\right|\\
 &= \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|.
 \end{align*}
-\section{Generalizations}
-
+%TODO: Debrief
 
 \end{chapter}
+
 \begin{chapter}{Euler Characteristic of a Category}\label{chap_euler}
 \section{Introduction to Categories} \label{cat_defs}
 
@@ -712,7 +906,6 @@ It is straightforward to check that $C$ is indeed a category.
 
 
 \section{M\"obius Inversion on a Category}
-
 To define M\"obius inversion on a partially ordered set, we used an ``indicator function'' which was notated as $\zeta$. We will henceforth refer to this function as $\zeta'$, reserving $\zeta$ for a function we are about to define on categories. Recall that for $a,b$ in a poset $X$, $\zeta'(a,b)$ was defined to be 1 if $a \leq b$, and 0 otherwise. We would like to define something similar on categories. It turns out that categories are generalizations of partially ordered sets - any poset can be represented using a category.
 
 Given a poset $X$, we can construct a category by letting $C_0=X$, and adding a single morphism from elements $a,b \in C_0$ if and only if $a \leq b \in X$. We formalize this:
@@ -747,10 +940,13 @@ If such a $\mu$ exists, $C$ is said to \emph{have M\"obius inversion} or to \emp
 \end{defn}
 Note that $\mu$ may not exist. Unlike in the poset case, we have no way of ensuring that $\zeta$ is upper triangular or invertible. For example:
 \begin{examp}\label{2_pt}
-Let $C$ be the category with two objects $a$ and $b$, with exactly one morphism going each direction between $a$ and $b$, and with no other morphisms except the required identity morphisms. We can draw this category:
+Let $C$ be the category with two objects $a$ and $b$, with exactly one morphism going each direction between $a$ and $b$, and with no other morphisms except the required identity morphisms. 
+\begin{figure}[h]
 \[
 \includegraphics{../Figures/cat_2.pdf}
 \]
+\caption{Diagram of symmetric category with 2 points and 4 morphisms.}
+\end{figure}
 Note that whenever we draw a category, we omit the identity morphisms. They are implied, and serve only to clutter the diagram. We also omit implied compositions of morphisms. In this case, because the identity morphisms are the only elements of $C(a,a)$ and $C(b,b)$, it must be that the two drawn morphisms compose to the identity morphisms.
 
 
@@ -760,7 +956,7 @@ This is not an invertible matrix. So this simple category does not admit M\"obiu
 \end{examp} 
 
 \section{Euler-Leinster Characteristic of a Category}
-We are now ready to construct central definition of this section: the Euler-Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}. 
+We are now ready to construct central definition of this section: the Euler-Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}, and is due to Tom Leinster.
 
 \begin{defn}\label{def_weighting}
 A \emph{weighting} on a category $\Aa$ is a function $\omega$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
@@ -789,7 +985,7 @@ If $C$ has M\"obius inversion, then the weighting $\omega_\mu$ defined by $\omeg
 \end{align*}
 \end{proof}
 
-Note that even if $C$ does not admit M\"obius inversion, it might admit a weighting. For example, the category in example \ref{2_pt} admits the weighting $\omega(a) = \omega(b) = 0.5$, even though it does not admit M\"obius inversion.
+Note that even if $C$ does not admit M\"obius inversion, it might admit a weighting. For example, the category in Example \ref{2_pt} admits the weighting $\omega(a) = \omega(b) = 0.5$, even though it does not admit M\"obius inversion.
 
 This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
 
@@ -800,7 +996,7 @@ Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler-Leins
 \chi(A) = \sum_{a \in A} \omega(a)
 \]
 \end{defn}
-Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with \ref{mobius_is_weighting}, this implies the following:
+Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with Lemma \ref{mobius_is_weighting}, this implies the following:
 \begin{cor}\label{euler_mu}
 If a finite category $A$ has a M\"obius inversion $\mu$, then
 \[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
@@ -820,7 +1016,8 @@ Put another way, a simplicial complex over $V$  is a set of subsets of $V$ which
 
 If a set in a simplicial complex $\sigma$ has $k$ elements, we call it a \emph{$k-1$-simplex} or a \emph{$k-1$-cell}. We think of 0-cells as vertices, 1-cells as edges, 2-cells as faces, etc. This will become much clearer with some examples.
 \begin{examp}
-Let $V=\{a,b\}, \sigma_2 = \{\{a\},\{b\}, \{a,b\}\}$. Then $\sigma_2$ is a simplicial complex over $V$. We visualize $\sigma_2$ as follows:
+Let $V=\{a,b\}, \sigma_2 = \{\{a\},\{b\}, \{a,b\}\}$. Then $\sigma_2$ is a simplicial complex over $V$. 
+\begin{figure}[h]
 \[
 \begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
 
@@ -832,16 +1029,21 @@ Let $V=\{a,b\}, \sigma_2 = \{\{a\},\{b\}, \{a,b\}\}$. Then $\sigma_2$ is a simpl
 \draw[-latex] (1) -- (2) node[midway, above = 3pt] {$\{a,b\}$};
 
 \end{tikzpicture}\]
+\caption{The simplicial complex $\sigma_2$.}
+\end{figure}
 Because $\{a\} \subseteq \{a,b\}$, the vertex $\{a\}$ is an endpoint of the line $\{a,b\}$. Because $\sigma_2$ is closed under taking subsets, as all simplicial complexes must be, the line has both its endpoints.
 \end{examp}
 Going forward, when writing down simplicial complexes, we will not explicitly write down the set $V$ - it will implicitly be the set of all elements used in the simplicies. We will also omit the braces around the subsets to reduce clutter. So we would write $\sigma_2 = \{a,b,ab\}$.
 
 We saw in the previous example why it is that lines always have both their endpoints in the geometric representation of a simplicial complex. For the same reason, faces have all three edges. But the converse is not necessarily true - the outline of a triangle, for example, might exists without the triangle being filled.
 \begin{examp}
-Let $\sigma = \{a, b, c, d, ab, ac, bc, bd, cd, abc\}$. Then we draw $\sigma$ as follows:
+Let $\sigma = \{a, b, c, d, ab, ac, bc, bd, cd, abc\}$. Then the cell $bcd$ is not in $\sigma$, even though all of its sides and vertices are.
+\begin{figure}[h]
 \[
 \includegraphics[scale = 1.3]{../Figures/simp_1.pdf}
 \]
+\caption{$\sigma$ is an example of how a triangle can be outlined but not filled.}
+\end{figure}
 \end{examp}
 As these examples illustrate, a $k$-simplex, or a simplex with $k+1$ elements, is considered to be a $k$-dimensional feature.
 
@@ -852,7 +1054,7 @@ Let $\sigma$ be a simplicial complex. Then the \emph{Euler characteristic} of $\
 \sum_{\tau \in \sigma}(-1)^{|\tau|}.
 \]
 \end{defn}
-Note that this is a distinct (although related) definition to \ref{cat_euler}, yet we use $\chi$ for both. Which we mean will be determined by what kind of object we are applying $\chi$ to. 
+Note that this is a distinct (although related) definition from Definition \ref{cat_euler}, yet we use $\chi$ for both. Which we mean will be determined by what kind of object we are applying $\chi$ to. 
 
 This definition is consistent with the definition of the Euler characteristic of a polyhedron: If the largest cells of a simplicial complex are 2-cells, or two-dimensional faces, then the definitions are identical. 
 
@@ -860,16 +1062,18 @@ It turns out that there is a straightforward way of converting a simplicial comp
 \begin{defn}
 Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\alpha$ and $\beta$ are cells of $\sigma$, then $|(\alpha, \beta)| = 1$ if $\alpha \subseteq \beta$ and 0 else.
 \end{defn}
-Note that a simplicial complex can be converted into a poset, where the cells are ordered by inclusion. Recall that we also defined $\cat(X)$ for a poset $X$ in \ref{cat_poset}. If $\sigma$ is a simplicial complex, and $X$ is the corresponding poset, then $\cat(\sigma) = \cat(X)$.
+Note that a simplicial complex can be converted into a poset, where the cells are ordered by inclusion. Recall that we also defined $\cat(X)$ for a poset $X$ in Definition \ref{cat_poset}. If $\sigma$ is a simplicial complex, and $X$ is the corresponding poset, then $\cat(\sigma) = \cat(X)$.
 
 The notation for $\cat(\sigma)$ is a little tricky. If $\sigma$ is a simplicial complex, and $\alpha \in \sigma$ is a simplex, then we write $\cat(\alpha)$ to denote the object in $\cat(\sigma)$ corresponding with the simplex $\alpha \in \sigma$. We consider an example.
 \begin{examp}
-Let $\sigma = \{a, b, ab\}$. Then we can draw $\sigma, \cat(\sigma)$:
+Let $\sigma = \{a, b, ab\}$. Then $\cat(\sigma)$ has three objects and five morphisms, including the three identity morphisms.
+\begin{figure}[h]
 \[
 \includegraphics{../Figures/simp_cat.pdf}
 \]
+\caption{$\sigma$ and $\cat(\sigma)$. Recall that we omit identity morphisms when drawing a category.}
+\end{figure}
 \end{examp}
-Recall that we omit identity morphisms when drawing a category.
 
 To prove that this operation preserves the Euler characteristic, we start with two lemmas about $\mu$, the M\"obius function on a category. First, recall that categories do not necessarily admit M\"obius inversion. So $\mu$, a priori, might not exist on a given category. However, the following lemma will rule this possibility out in the case of the category generated by a simplicial complex.
 \begin{lemma}\label{mu_exists}
@@ -888,7 +1092,7 @@ We use induction. Base case: $\alpha = \beta$, and $\mu(\alpha, \beta)=1$.
 
 For the inductive step, suppose that if $|\beta-\alpha| \leq k$, the result is true.
 
-Suppose that $|\beta - \alpha| = k+1$. We know by \ref{cat_mob} that, because $\alpha \neq \beta$,
+Suppose that $|\beta - \alpha| = k+1$. We know by Definition \ref{cat_mob} that, because $\alpha \neq \beta$,
  \begin{align*}
 \sum_{\alpha \subseteq \sigma \subseteq \beta} \mu(\alpha, \sigma)&= 0\\
 \mu(\alpha, \beta) &=  - \sum_{\alpha \subseteq \sigma \subset \beta} \mu(\alpha, \sigma)\\
@@ -916,7 +1120,7 @@ Let $\sigma$ be a simplicial complex. Then
 
 \end{thm}
 \begin{proof}
-Recall that by \ref{cat_euler}, 
+Recall that by Definition \ref{cat_euler}, 
 \[
 \chi(\cat(\sigma)) = \sum_{\gamma \in \sigma} \sum_{\alpha \in \sigma} \mu(\cat(\alpha), \cat(\gamma)).
 \]
@@ -933,10 +1137,10 @@ So we have
 &= \chi(\sigma)
 \end{align*}
 \end{proof}
-The fact that $\chi(\cat(\sigma)) = \chi(\sigma)$ is comforting. It justifies calling using $\chi$ in \ref{cat_euler}, and calling this construction a type of Euler characteristic.
+The fact that $\chi(\cat(\sigma)) = \chi(\sigma)$ is comforting. It justifies calling using $\chi$ in Definition \ref{cat_euler}, and calling this construction a type of Euler characteristic.
 
 \section{Euler-Leinster Characteristic Examples}
-
+%TODO
 
 \end{chapter}
 \begin{chapter}{Metric Space Magnitude}\label{chap_magnitude}
@@ -945,15 +1149,19 @@ A common task in data analysis is clustering. Given a set of data points, it is 
 
 The most straightforward way to cluster points is based on some notion of distance between them. If we assign a distance to each pair of points, then we can cluster points which are close together. But there is often no clear threshold for which points are and aren't close enough together to be in the same cluster. It all depends on the scale of structure we are looking for. One common technique for avoiding choosing a scale is what is called \emph{hierarchical clustering}. 
 
-The idea of hierarchical clustering is that instead of choosing a scale, we capture the data's structure at a variety of scales:
-
+The idea of hierarchical clustering is that instead of choosing a scale, we capture the data's structure at a variety of scales.
+\begin{figure}
 \[
 \includegraphics[width = 0.4\paperwidth] {../Figures/multiscale_structure.png}
 \]
 
-We can see that here that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
+\caption{A graphical representation of hierarchical clustering.}
+\label{fig:hier}
+\end{figure}
 
-There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. We will explore an alternate method of clustering, which does not actually construct clusters, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler-Leinster characteristic from chapter \ref{chap_euler}. We start by building some important definitions.
+We can see in Figure \ref{fig:hier} that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
+
+There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler-Leinster characteristic from Chapter \ref{chap_euler}. We start by building some important definitions.
 
 A metric space is a space with a notion of distance between pairs of points. 
 \begin{defn}
@@ -970,9 +1178,7 @@ In almost all forms of hierarchical clustering, we represent data as a metric sp
 
 In the next section, we expand the Euler-Leinster characteristic to a generalization of categories called \emph{enriched categories}. We will connect this back to data and metric spaces in subsequent sections.
 \section{Enriched Categories}
-In chapter \ref{chap_euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
-
-%TODO: Fix Furthermore, the definitions and constructions we explore will be easy to apply directly to metric spaces. I point out that this construction is a type of category to justify dealing with them together with other categories in the next section. We will define the Euler characteristic of a category, and we will need to apply the definition to metric spaces by way of generalized metric spaces. This will make much more sense if we keep in mind that generalized metric spaces are categories.
+In Chapter \ref{chap_euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
 
 In order to define the next construction, we need to define a notion of isomorphism between objects in a category.
 \begin{defn}
@@ -1033,7 +1239,7 @@ For a full discussion of enriched categories, including a complete description o
 \section{Norms and the Euler-Leinster Characteristic}
 The following constructions can be found in \cite{Lein4}.
 
-We would like to generalize the weightings and Euler-Leinster characteristic from chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
+We would like to generalize the weightings and Euler-Leinster characteristic from Chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in Definition \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
 \[
 \sum_{b \in C}|C(a,b)|\omega(b) = 1.
 \]
@@ -1055,7 +1261,7 @@ It's not clear why we require that the norm function be multiplicative. %TODO: I
 
 We can consider some examples of norms.
 \begin{examp}\label{exp_norm}
-Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Then, for all $t \in \Rr$, the function $|\cdot|:D \rightarrow \Rr$ defined by 
+Let $D$ be the monoidal category of non-negative real numbers defined in example Example \ref{cat_real}. Then, for all $t \in \Rr$, the function $|\cdot|:D \rightarrow \Rr$ defined by 
 \[
 |x| = e^{-tx}
 \]
@@ -1112,9 +1318,9 @@ As before, it is easy to show by rearranging terms that the value of $\chi_{|\cd
 \section{Magnitude}
 Recall that the motivation for this section was data clustering. So we would like to use the technology from the previous section to process data in the form of a metric space. We will use a particular enriched category for that purpose, called a \emph{generalized metric space}. This is a category enriched over a monoidal category whose objects are non-negative real numbers, allowing us to preserve a notion of distance. 
 \begin{defn}\label{gen_met}
-Let $D$ be the monoidal category of non-negative real numbers defined in example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
+Let $D$ be the monoidal category of non-negative real numbers defined in Example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
 \end{defn}
-There is a lot of technology buried in that definition, and it can be difficult to untangle the definitions involved in enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
+There is a lot of technology buried in that definition, and it can be difficult to untangle definitions involving enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
 \begin{thm}\label{direct_def}
 A generalized metric space $C$ can be defined equivalently by the following:
 \begin{itemize}
@@ -1128,9 +1334,9 @@ such that, for all $a,b \in C_0$,
 \]
 \end{thm}
 \begin{proof}
-We will start with the definition from \ref{gen_met}, and argue that it is equivalent to the above. As defined originally, a generalized metric space consists of a set of objects $C_0$, with a non-negative real number $C(a,b)$ between any ordered pair of elements $a,b \in C_0$. So what remains is to show that the composition requirements from \ref{en_cat} are equivalent to the conditions in \ref{direct_def}. 
+We will start with the definition from Definition \ref{gen_met}, and argue that it is equivalent to the above. As defined originally, a generalized metric space consists of a set of objects $C_0$, with a non-negative real number $C(a,b)$ between any ordered pair of elements $a,b \in C_0$. So what remains is to show that the composition requirements from Definition \ref{en_cat} are equivalent to the conditions in Definition  \ref{direct_def}. 
 
-Let $C$ be a generalized metric space as defined in \ref{gen_met}. Then \ref{en_cat} requires that there be a morphism $i_a:0 \rightarrow C(a,a)$ for any $a \in C$. This exists if and only if $C(a,a) \leq 0$, which is equivalent to saying that $C(a,a)=0$. So the existence of $i_a$ for all $a$ is equivalent to the first requirement above.
+Let $C$ be a generalized metric space as defined in Definition \ref{gen_met}. Then Definition \ref{en_cat} requires that there be a morphism $i_a:0 \rightarrow C(a,a)$ for any $a \in C$. This exists if and only if $C(a,a) \leq 0$, which is equivalent to saying that $C(a,a)=0$. So the existence of $i_a$ for all $a$ is equivalent to the first requirement above.
 
 It is also required that for any $a,b,c \in C$, there is a map $\circ_{abc}: C(b,c) + C(a,b) \rightarrow C(a,c)$. This is equivalent to saying that $C(b,c) + C(a,b) \geq C(a,c)$, which is the second requirement. So the definitions are indeed identical.
 \end{proof}
@@ -1139,9 +1345,43 @@ This makes it clear why we call this construction a generalized metric space. It
 
 Generalized metric spaces are, of course, more general than ordinary metric spaces. So we can always express a metric space as a generalized metric space. This allows us to find the Euler-Leinster characteristic of a finite set of data points in a metric space. But first we must decide on the norm we will use on $D$, our monoidal category, and to do that, we take a step back and consider why we are doing this.
 
-%TODO: Sports crowd analogy
+We would like to estimate the number of clusters in a dataset. To justify the rather strange way in which we'll do that, we can turn to an analogy. Suppose each data point represented a spectator at a sports game, some of whom are sitting in groups. Each group would like to attain a particular level of excitement based on the energy levels of its members. But each group only needs to have the same total level of excitement, and the individual energy levels of the members of group add together to determine the group's excitement. The question is what level of energy each fan should have so that their group has the appropriate total level of excitement. 
+\begin{figure}[h]
+\[
+\includegraphics[width=.5\textwidth]{../Figures/no_weights.pdf}
+\]
+\caption{Seven sports spectators in groups}
+\label{fig:sports}
+\end{figure}
+In Figure \ref{fig:sports}, we have a group of two on the left, a group of one in the middle, and a group of three on the right. The goal is to assign each individual an energy level so that all three groups' excitement levels are equal to 1. This isn't hard to do - we give one example in Figure \ref{fig:sports_labeled}.
+\begin{figure}[h]
+\[
+\includegraphics[width=.5\textwidth]{../Figures/initial_weights.pdf}
+\]
+\caption{A possible allocation of energy}
+\label{fig:sports_labeled}
+\end{figure}
+Given these values, it's simple to count how many groups there are. Each group has total excitement equal to 1, so if we add the energy levels of each individual together, we will obtain the number of groups (in this case, 3).
 
-So we would like a norm on $D$, the monoidal category of real numbers, which decreases as its argument get large. Recall that in example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. In fact, we wills see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
+Of course, this is circular. We had to decide ahead of time which individuals were grouped together so that we could find the values to assign them. So we use a modification of this method: Each individual must have an excitement level of 1, and the excitement level of an individual is the sum of their own energy level together with a weighted sum of the levels of those around them. The closer two individuals are to each other, the more each of their energy levels contributes to the other's excitement. 
+
+Let $M$ be the set of spectators. Suppose that for each spectator $a \in M, \omega(a)$ is the energy level of $a$. Suppose that for any $a,b \in M$, $\zeta(a,b)$ is a measure of how close together those two people are. So if $a$ and $b$ are very close together, $\zeta(a,b)$ approaches 1, and as they move apart it approaches zero. Then we are asking that the following be true for each spectator $a \in M$:
+\[
+\sum_{b \in M}\zeta(a,b)\omega(b).
+\]
+
+This looks exactly like the requirement (from Definition \ref{def_weighting}) for $\omega$ to be a weighting on a category $M$! So adding up values of $\omega$ is the same as finding the Euler-Leinster characteristic of $M$, assuming we can properly encode the structure of the spectators into a category. This is the key motivation behind the use of the Euler characteristic to count clusters.
+
+We now move from our analogy back into the realm of categories. We will model the situation using a generalized metric space. We need a norm $|\cdot|$ on $D$ such that $|x|$ will be close to 1 as $x$ gets small, and will approach zero as it gets large. 
+
+Recall that in Example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. 
+\begin{figure}[h]
+\[
+\includegraphics[width = 0.4\paperwidth]{../Figures/exp.pdf}
+\]
+\caption{A graph of $e^{-x}$ against $x$.}
+\end{figure}
+And the larger the value of $t$, the quicker the function decays. In fact, we will see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
 
 We have a special name for the Euler characteristic of a generalized metric space which results from this particular norm:
 \begin{defn}
@@ -1149,30 +1389,66 @@ Let $M$ be a generalized metric space. Let $|\cdot|_t:D \rightarrow \Rr$ be defi
 \[
 |x|_t = e^{-tx}.
 \]
-If it exists, let $\chi_t(M)$ be the Euler characteristic resulting from $|\cdot|$. Then $\chi_t(M)$ is called the \emph{$t$-magnitude} (or just \emph{magnitude} if $t=1$) of $M$, denoted $\magn_t(M)$ or just $\magn(M)$.
+If it exists, let $\chi_t(M)$ be the Euler characteristic resulting from $|\cdot|$. Then $\chi_t(M)$ is called the \emph{$t$-magnitude} of $M$, denoted $\magn_t(M)$. We will refer to the 1-magnitude as simply the magnitude of $M$, denoted $\magn(M)$.
 \end{defn}
-%TODO: Small examples w/ graphs
+
+It makes sense that the magnitude of a metric space should capture the number of clusters it contains. We can consider a simple example to see how it behaves.
+\begin{examp}\label{ex:2pt}
+Consider the space $M_2$ of two points separated by distance $1$, shown in Figure \ref{fig:2pt}.
+\begin{figure}[h]
+                        \[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (4,0) {};
+
+\draw[decoration={brace,raise=7pt},decorate] (1) -- (2) node[midway, above = 10pt] {1};
+
+\end{tikzpicture}\]
+\caption{$M_2$, a simple generalized metric space with two points.}
+\label{fig:2pt}
+\end{figure}
+If $t$ indeed behaves as a zooming parameter, then we would expect that for small values of $t$, $\chi_t(M_2)$ should have a single cluster, because we are not zoomed in. But for large values of $t$, the number of clusters should approach 2, as the two points fully separate from each other.
+
+In this case, for $t \in (1,\infty),$ we can let the weighting of each point equal
+\[\frac{1}{1+e^{-t}}.\]
+It is straightforward to check that this is indeed a valid weighting. So for each $t$,
+\[
+ \chi_t(M_2) = \frac{2}{1+e^{-t}}.
+\]
+
+We are varying a parameter, $t$, in the exponent of the norm definition. So it is reasonable to expect that the behavior of the magnitude as $t$ varies will be logarithmic. If we plot $\chi_t(M_2)$ against $t$, we can see that it behaves just as we expect (see Figure \ref{fig:2pt_mag}).
+\begin{figure}[H]
+\[
+\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/2_point_.png}}
+\]
+\caption{A plot of $\chi_t(M_2)$ against $t$ on a logarithmic scale.}
+\label{fig:2pt_mag}
+\end{figure}
+\end{examp}
 \section{Product Spaces and Approximations}
+In Figure \ref{fig:3+4}, we see two sets of points, $M$ and $N$. $M$ has three points while $N$ has four.
 
-Consider the following set of points $A$ in two-dimensional space:
-
+\begin{figure}[h]
+\[
+\includegraphics{../Figures/4+3.pdf}
+\]
+\caption{Two sets of points.}
+\label{fig:3+4}
+\end{figure}
+In Figure \ref{fig:3x4}, we see another set of points, $A$.
+\begin{figure}[h]
 \[
 \includegraphics{../Figures/4x3.pdf}
 \]
+\caption{A set of points $A$: A copy of $N$ for each point in $M$.}
+\label{fig:3x4}
+\end{figure}
+The set $A$ is what you would get if you replaced each point in $M$ with the set $N$. 
 
-Let $M$ be this set:
-\[
-\includegraphics{../Figures/3.pdf}
-\]
-
-and $N$ this set:
-\[
-\includegraphics{../Figures/4.pdf}
-\]
-
-The set $A$ is what you would get if you replaced each point in $M$ with the set $N$. Suppose we choose a scale, and somehow count the number of clusters in $N$ and in $M$. 
-
-If the scale is very small -- if we ``zoom in'' so that points must be very close together before they are considered to be in the same cluster -- then every point will be in its own cluster. So $N$ will have four clusters, $M$ three, and $A$ will have 12.
+Suppose we choose a scale, and somehow count the number of clusters in $N$ and in $M$. If the scale is very small -- if we ``zoom in'' so that points must be very close together before they are considered to be in the same cluster -- then every point will be in its own cluster. So $N$ will have four clusters, $M$ three, and $A$ will have 12.
 
 If we choose a middle scale, then it might be that the points in $N$ are clustered together, but $M$ remains discrete. Then $N$ has one cluster, $M$ has three, and $A$ has four, as each copy of $N$ forms a cluster.
 
@@ -1196,7 +1472,7 @@ Let $M$ be a symmetric monoidal category. Let $P,Q,R,S,T,U$ in $M$ be given. Sup
 f&:(P \otimes Q) \rightarrow T\\
 g&:(R \otimes S) \rightarrow U.
 \end{align*}
-Then, if $f \otimes g$ is the morphism required by the functoriality requirement of definition \ref{def_monoid}, we have
+Then, if $f \otimes g$ is the morphism required by the functoriality requirement of Definition \ref{def_monoid}, we have
 \[
 (f \otimes g):(P \otimes Q) \otimes (R \otimes S) \rightarrow T \otimes U.
 \]
@@ -1206,7 +1482,7 @@ Using the symmetry of $\otimes$, we can rearrange:
 \[
 (P \otimes Q) \otimes (R \otimes S) \cong (P \otimes R) \otimes (Q \otimes S).
 \]
-Then definition \ref{def_monoid} tells us that the desired morphism exists.
+Then Definition \ref{def_monoid} tells us that the desired morphism exists.
 \end{proof}
 This extra requirement is necessary for the product of two enriched categories to exist. In particular, the composition maps do not necessarily exist if the monoidal category is not symmetric. We can now define that:
 
@@ -1226,25 +1502,37 @@ The tensor product of two categories enriched over $M$ is indeed a category enri
 We consider some examples of simple product categories. Note that \catname{set} is a symmetric monoidal category, so ordinary categories are eligible to be used as factors of product categories. 
 \begin{examp}
 Let $A$ be the following category:
+\begin{figure}[H]
 \[
 \includegraphics{../Figures/cat_2_directed.pdf}
 \]
-Recall that we omit the identity morphisms when we draw categories. So $A$ has two points and three morphisms. Then $A \times A$ looks like this:
+\caption{A category with two points and three morphisms. Recall that we omit the identity morphisms when we draw categories.}
+\end{figure}
+Then $A \times A$ looks like this:
+\begin{figure}[H]
 \[
 \includegraphics{../Figures/cat_2_prod.pdf}
 \]
+\caption{$A \times A$.}
+\end{figure}
 To see why, recall that the monoidal product on \catname{set} is the direct product. So consider, for example, $(a,a)$ and $(a,b)$. There is one morphism from $a$ to $a$ and one from $a$ to $b$. So the direct product of the hom-sets also has one element, which is why there is one arrow from $(a,a)$ to $(a,b)$. On the other hand, because there is no morphism $b$ to $a$, there is also no morphism from $(a,b)$ to $(a,a)$. 
 \end{examp}
 \begin{examp}\label{met_prod_ex}
-We will be focusing on products of generalized metric spaces. So we consider an example of that. Let $A, B$ be the following:
+We will be focusing on products of generalized metric spaces. So we consider an example of that. Let $A, B$ each be generalized metric spaces with two points. Label the objects of $A$ as $a_1, a_2$, and the objects of $B$ as $b_1, b_2$.
+\begin{figure}[h]
 \[
 \includegraphics{../Figures/gen_met_small.pdf}
 \]
-So each space has two points, with $A(a_1, a_2) = 1, B(b_1, b_2) = 2$. Then the tensor product category $A \times B$ looks like this:
+\caption{$A$ and $B$}
+\end{figure}
+Suppose that $A(a_1, a_2) = 1, B(b_1, b_2) = 2$. Recall that the monoidal product is $+$. So the tensor product category $A \times B$ looks like this:
+\begin{figure}[H]
 \[
 \includegraphics[width=.4\paperwidth]{../Figures/gen_met_small_prod}
 \]
-It is impossible to draw this product space to scale because of the way distances behave. 
+\caption{$A \times B$. It is impossible to draw this product space to scale because of the way distances behave under the tensor product.. }
+\end{figure}
+
 
 We can observe the same behavior here as in the initial example. Suppose we used some clustering scheme where points within a threshold distance $t$ of each other were put into the same cluster. This is not how magnitude works, of course, but it is easier to visualize. Then we have three cases:
 \begin{description}
@@ -1255,11 +1543,11 @@ We can observe the same behavior here as in the initial example. Suppose we used
 So in all cases, the number of clusters in $A \times B$ is the product of the numbers of clusters in $A$ and $B$. We will see that this isn't a coincidence.
 \end{examp}
 
-Magnitude is obtained using $\zeta$, the similarity matrix. So we are interested in how the similarity matrix behaves under the tensor product. It turns out that the similarity matrix of a product category is obtained using the matrix \emph{Kronecker product}, not coincidentally (but confusingly) written using $\otimes$. 
+Magnitude is obtained using $\zeta$, the similarity matrix. So we are interested in how the similarity matrix behaves under the tensor product. It turns out that the similarity matrix of a product category is obtained using the matrix \emph{Kronecker product}, not coincidentally (but confusingly) written using $\otimes$. Because this is the same notation used for the monoidal product, we will bold the operator when we are referring to the Kronecker product: $\kron$.
 \begin{defn}
-Let $A$ be an $m \times n$ matrix and $B$ be a $q \times r$ matrix. Then the \emph{Kronecker product} of $A$ and $B$, denoted $A \otimes B$, is the $mq \times nr$ matrix defined by the following block matrix:
+Let $A$ be an $m \times n$ matrix and $B$ be a $q \times r$ matrix. Then the \emph{Kronecker product} of $A$ and $B$, denoted $A \kron B$, is the $mq \times nr$ matrix defined by the following block matrix:
 \[
-A \otimes B = 
+A \kron B = 
 \begin{bmatrix}
 A_{11}B & A_{12}B & \cdots & A_{1n}B \\
 A_{21}B & A_{22}B & \cdots & A_{2n}B \\
@@ -1268,17 +1556,33 @@ A_{m1}B & A_{m2}B & \cdots & A_{mn}B
 \end{bmatrix}.
 \]
 \end{defn}
-We show that this definition makes sense by connecting it immediately to the tensor product of categories.
+
+\begin{rmk}\label{kron_prod}
+It is straightforward to show that, for any appropriately sized matrices $A, B, C, D$,
+\[
+(A \otimes B) \times (C \otimes D) = AC \otimes BD.
+\]
+We will use that fact soon.
+\end{rmk}
+We show that this definition is useful by connecting it immediately to the tensor product of categories.
 
 \begin{lemma}\label{tensor_kron}
-Let $A, B$ be categories both enriched over a monoidal category $M$. Fix some norm on $M$. Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$ under the chosen norm. If $a_1,\dots,a_m$ and $b_1,\dots,b_n$ are the orders chosen for the objects of $A$ and $B$ when constructing $\zeta_A, \zeta_B$, then fix the order \[a_1b_1, a_1b_2, \dots, a_1b_n, a_2b_1, \dots, a_mb_n\] for $A \times B$. Then
+Let $A, B$ be categories both enriched over a symmetric monoidal category $M$. Fix some norm on $M$. Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$ under the chosen norm. If $a_1,\dots,a_m$ and $b_1,\dots,b_n$ are the orders chosen for the objects of $A$ and $B$ when constructing $\zeta_A, \zeta_B$, then fix the order \[a_1b_1, a_1b_2, \dots, a_1b_n, a_2b_1, \dots, a_mb_n\] for $A \times B$. Then
 \[
-\zeta_{A \times B} = \zeta_A \otimes \zeta_B.
+\zeta_{A \times B} = \zeta_A \kron \zeta_B.
 \]
 \end{lemma}
 \begin{proof}
-%TODO: Prove
+Let $a_1, a_2 \in A, b_1, b_2 \in B$ be given. Recall that norms are multiplicative. Then the entry of $\zeta_{A \times B}$ corresponding with $(a_1, b_1), (a_2, b_2)$ should contain 
+\begin{align*}
+|(A \times B)((a_1, b_1), (a_2, b_2))|& = |A(a_i, a_j) \otimes B(b_k, b_l)|\\
+&= |A(a_i, a_j)| |B(b_k, b_l)|
+\end{align*}
+which is the value of the corresponding entry of $\zeta_A \kron \zeta_B$.
 \end{proof}
+
+Given this lemma, we can prove that the behavior we saw in Example \ref{met_prod_ex} occurs when we count clusters using the magnitude function. In fact, it turns out the for any category enriched over a symmetric monoidal category, the Euler-Leinster characteristic is multiplicative over the tensor product. 
+
 \begin{thm}
 Let $A, B$ be categories both enriched over a monoidal category $M$ . Fix some norm on $M$. Then, if $\chi(A), \chi(B)$ both exist,
 \[
@@ -1286,25 +1590,156 @@ Let $A, B$ be categories both enriched over a monoidal category $M$ . Fix some n
 \]
 \end{thm}
 \begin{proof}
-Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$. Then, by theorem \ref{tensor_kron}, the similarity matrix of $A \times B$ is $\zeta_A \otimes \zeta_B$. 
+Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$. Then, by Theorem \ref{tensor_kron}, the similarity matrix of $A \times B$ is $\zeta_A \kron \zeta_B$. 
 
-Because both Euler characteristics exist, there must exist a valid weighting on each category. Let $\omega_A, \omega_B$ be weightings on $A, B$ respectively. Let $1^{|A|}, 1^{|B|}$ be the ones vectors of lengths $|A|$ and $|B|$. Then, using facts about the Kronecker product, we have
+Because both Euler characteristics exist, there must exist a valid weighting on each category. Let $\omega_A, \omega_B$ be weightings on $A, B$ respectively. Let $1^{|A|}, 1^{|B|}$ be the ones vectors of lengths $|A|$ and $|B|$. Then, using the fact from Remark \ref{kron_prod}, we have
 \begin{align*}
 1^{|A|}&= \zeta_A\omega_A \\
 1^{|B|}&= \zeta_B\omega_A \\
-1^{|A||B|} &= \zeta_A\omega_A \otimes \zeta_B\omega_B\\
-&= (\zeta_A \otimes \zeta_B)(\omega_A \otimes \omega_B)
+1^{|A||B|} &= \zeta_A\omega_A \kron \zeta_B\omega_B\\
+&= (\zeta_A \kron \zeta_B)(\omega_A \kron \omega_B)
 \end{align*}
-So the vector $\omega_A \otimes \omega_B$ is a weighting on $A \otimes B$. We have:
+So the vector $\omega_A \kron \omega_B$ is a weighting on $A \times B$. We have:
 \begin{align*}
-\chi(A \times B) &= \sum_{\alpha \in A \otimes B}(\omega_A \otimes \omega_B)(\alpha) \\
+\chi(A \times B) &= \sum_{\alpha \in A \otimes B}(\omega_A \kron \omega_B)(\alpha) \\
 &= \sum_{a \in A, b \in B} \omega_A(a)\omega_B(b) \\
 &= \left(\sum_{a \in A}\omega_A(a)\right)\left(\sum_{b \in B}\omega_B(b)\right) \\
 &= \chi(A)\chi(B).
 \end{align*}
 \end{proof}
-\section{Examples}
-%TODO: Necessary to be its own section?
+\begin{examp}\label{ex:4pt}
+In Example \ref{ex:2pt}, we saw the behavior of two points. While $t$ was small, the magnitude was close to 1, and as $t$ increased, the magnitude approached 2, the number of points. Now, we let $M$ be the following space of four points:
+\begin{figure}[H]
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (5,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (0,-.5) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](4) at (5,-.5) {};
+\draw[decoration={brace,raise=7pt},decorate] (1) -- (2) node[midway, above = 10pt] {1};
+\draw[decoration={brace, mirror, raise = 7pt},decorate] (1) -- (3) node[midway, left = 10pt] {$\frac{1}{1,000}$};
+% \draw (2) -- (4);
+% \draw (3) -- (4);
+\end{tikzpicture}\]
+\caption{$M$, a generalized metric space with four points. $M$ contains structure at two very different scales.}
+\label{fig:4pt}
+\end{figure}
+$M$ is very nearly a product space of two 2-points spaces at different scales, one separated by a distance 1, and the other by $\frac 1 {1,000}$. If the magnitude behaves as we expect it to, we should see the magnitude of $M$ behaving very much like the magnitude of the products of those two 2-point spaces.
+\begin{figure}[h]
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (0,-.5) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (4, -.25) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](4) at (9,-.25) {};
+\node[] at (2, -0.25) {\huge{$\times$}};
+\draw[decoration={brace,mirror, raise=7pt},decorate] (1) -- (2) node[midway, left = 10pt] {$\frac{1}{1,000}$};
+\draw[decoration={brace, raise = 7pt},decorate] (3) -- (4) node[midway, above = 10pt] {1};
+% \draw (2) -- (4);
+% \draw (3) -- (4);
+\end{tikzpicture}\]
+\caption{Two spaces whose product should be very similar to $M$.}
+\label{fig:2_2pt}
+\end{figure}
+
+In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the magnitudes of the three spaces as we vary $t$. At every value of $t$, $\chi_t(M)$ is almost exactly the product of the magnitudes of the other two spaces at that $t$ value.
+\begin{figure}[H]
+\[
+\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/prod_mag.png}}
+\]
+\caption{The magnitude of $M$ alongside the magnitudes of the factor spaces, on a logarithmic scale.}
+\label{fig:prod_mag}
+\end{figure}
+\end{examp}
+\section{Approximations}
+In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. To do that, we need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
+
+\begin{defn}\label{def:spec}
+Let $n$ be given. Let $|v|$ denote the Euclidean vector norm. Then the \emph{spectral norm} on real- (or complex-) valued $n \times n$ matrices, denoted $||\cdot ||$, is defined by
+\[
+||M|| = \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\}.
+\]
+\end{defn}
+\begin{rmk}
+Definition \ref{def:spec} does not tell us how to find the spectral norm of a matrix. However, it is not difficult to do so. For a given $M$, we can find $||M||$ as follows:
+
+Let $M^*$ be the adjoint, or conjugate transpose, of $M$. Let $\lambda_1$ be the largest eigenvalue of the matrix $MM^*$. Then $\lambda_1$ will be real-valued, and $||M||=\sqrt{\lambda_1}$. 
+
+We will not prove or use this fact - it is simply here to assure readers that the spectral norm can be computed.
+\end{rmk}
+This norm is a common way of determining how ``large'' a matrix is. It will allow us to determine which matrices are ``small enough'' to satisfy some approximation theorems.
+
+There are some simple properties of the spectral norm which we will need.
+\begin{lemma}\label{lem:norm_prop}
+%TODO: Omit additivity if I don't need it.
+Let $A, B$ be $n \times n$ matrices. Then
+\begin{enumerate}[(a)]
+\item \[
+||A + B|| \leq ||A|| + ||B||.
+\]
+\item \[
+||AB|| \leq ||A||\times ||B||
+\]
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+\begin{enumerate}[(a)]
+\item Recall that if $|\cdot|$ is the Euclidean norm on vectors in $\Rr^n$, then for all $v,w \in \Rr^n$,
+\[
+|v + w| \leq |v| + |w|.
+\]
+This is the triangle inequality. So for all $v \in \Rr^n$, we have
+\begin{align*}
+|(A + B)v| &= |Av + Bv| \\
+&\leq |Av| + |Bv|.
+\end{align*} 
+\[\sup_{0 \neq x \in \Rr^n}\left\{ \frac{|(A + B)x|}{|x|} \right\} \leq \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\} + \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Bx|}{|x|} \right\}.
+\]
+\item Let $v \in \Rr^n$ be given. Then by the definition of the spectral norm,
+\begin{align*}
+|ABv| &\leq |A(||B|| \times |v|)|\\
+&\leq (||A|| \times ||B||)|v|.
+\end{align*}
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}
+Let $E$ be a real-valued $n \times n$ matrix. Suppose that $||E|| < 1$. Then:
+\[
+\lim_{i \rightarrow \infty}||(-1)^i E^i|| = 0.
+\]
+\end{lemma}
+\begin{proof}
+Let $\alpha = ||E|| <1$. We now use Lemma \ref{lem:norm_prop}:
+\begin{align*}
+\lim_{i \rightarrow \infty}||(-1)^i E^i|| &= \lim_{i \rightarrow \infty}||E||^i\\
+&= \lim_{i \rightarrow \infty}\alpha^i\\
+&= 0.
+\end{align*}
+This allows us to prove a useful fact about the inverses of matrices which are close to $I$.
+\end{proof}
+\begin{lemma}
+Let $E$ be an $n \times n$ matrix such that $||E|| < 1$. Then
+\begin{align*}
+(I + E)^{-1} &= I - E + E^2 - \cdots\\
+&= \sum_{i = 0}^\infty(-1)^i E^i.
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{align*}
+(I + E) \sum_{i = 0}^\infty(-1)^i E^i &=  \sum_{i = 0}^\infty (-1)^i E^i  + \sum_{i = 0}^\infty(-1)^i E^{i+1}\\
+&= I + \lim_{i \rightarrow \infty}(-1)^iE^i\\
+&= I
+\end{align*}
+\end{proof}
 \end{chapter}
 
 
@@ -1313,8 +1748,37 @@ So the vector $\omega_A \otimes \omega_B$ is a weighting on $A \otimes B$. We ha
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % % % Extra stuff/deleted portions
 \iffalse
+
+
+A more familiar way of counting the orbits of a group is the following:
+\begin{thm}[Burnside's Lemma]\label{burnside}
+Let $G$ be a finite group acting on a finite set $\Omega$. Then:
+\[
+|\orb(\Omega, G) = \frac{1}{G}\sum_{g \in G}\fix_g(\Omega).
+\]
+\end{thm}
+Burnside's Lemma allows us to compute the number of orbits of a group action if we have access to the size of the fixed sets of each group element. On the other hand, Theorem \ref{orbit_count} requires that we know $f$, the size of the fixed set of each \emph{subgroup}. These are two different perspectives on the same question, and each might be more or less useful depending on the situation. 
 
 We can replace the vectors $f,g$ with matrices to get the following generalization, which :
 \begin{thm}[Two Variable M\"obius Inversion]\label{mob_inv_old}

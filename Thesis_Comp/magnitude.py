@@ -9,3 +9,4 @@ class EuclideanSpace(object):
 
     def compute_distance_matrix(self):
         # Computes the distance matrix for the space
+        pass
