@@ -42,11 +42,11 @@ class MetricSpace(object):
         distance_matrix = dist.squareform(distance_matrix_compact)
         return MetricSpace(distance_matrix)
 
-    def magnitude(self, scale_factor=1):
+    def magnitude(self, t = 1):
 
         # Scale then exponentiate the distances
-        vector_inverse_exp = np.vectorize(lambda n: math.exp(-n))
-        exp_distance_matrix = vector_inverse_exp(self.distance_matrix * scale_factor)
+        vector_inverse_exp = np.vectorize(lambda n: math.exp(-(t *n)))
+        exp_distance_matrix = vector_inverse_exp(self.distance_matrix)
 
         cat_rep = cat.PartialEnrichedCategory(exp_distance_matrix)
         return np.sum(cat_rep.mobius_matrix())
@@ -55,43 +55,62 @@ class MetricSpace(object):
         magnitude_list = map(self.magnitude, scale_factor_iterable)
         return magnitude_list
 
+def euc_plots():
+    # Plot some euclidean metric space examples
+    test_arrays_euclidean = (
+        np.array(
+            [[0, 0],
+             [0, .001],
+             [1, 0],
+             [1, .001]]
+        ),
+        np.array(
+            [[0, 0],
+             [1, 0]]
+        ),
+    )
+
+    # test_distance_matrices = (
+    #     np.array(
+    #         [0,10]
+    #     ),
+    # )
+    scale_factors_low = np.arange(.1, 5, .1)
+    scale_factors_mid = np.arange(5, 1000, .5)
+    scale_factors_high = np.arange(1000, 50000, 100)
+    scale_factors = np.concatenate((scale_factors_low, scale_factors_mid, scale_factors_high))
+    scale_factors_small = scale_factors * (.001)
+    scale_factors_log = map(lambda x: math.log(x, 10), scale_factors)
+    # scale_factors_1000x_log = map(lambda x: math.log(x, 10), scale_factors_1000x)
+    
+    euclidean_space = MetricSpace.euclidean(test_arrays_euclidean[0])
+    two_space = MetricSpace.euclidean(test_arrays_euclidean[1])
+    magnitudes_euc = euclidean_space.multiscale_magnitude(scale_factors)
+    magnitudes_two = two_space.multiscale_magnitude(scale_factors)
+    magnitudes_two_small = two_space.multiscale_magnitude(scale_factors_small)
+
+    
+    #plt.subplot(211)
+    plt.title("Product Space Magnitude")
+    plt.xlabel("Scale factor, log scale")
+    plt.ylabel("Magnitude")
+    plt.plot(scale_factors_log, magnitudes_two, 'r', 
+             label='Two points separated by 1') 
+    plt.plot(scale_factors_log, magnitudes_two_small, 'b',
+             label='Two points separated by 0.001')
+    plt.plot(scale_factors_log, magnitudes_euc, 'm',
+             label='Four point space')
+
+    
+    # plt.subplot(212)
+    # plt.plot(scale_factors_log, magnitudes_two)
+    plt.axis([-1.0,4.5,1,4.1])
+    plt.legend(loc='ul')
+    plt.show()
+
+    
+
 if __name__ == '__main__':
-    if False: # Euclidean tests for 2- and 4-point spaces
-        test_arrays_euclidean = (
-            np.array(
-                [[0, 0],
-                 [0, .001],
-                 [1, 0],
-                 [1,.001]]
-            ),
-            np.array(
-                [[0, 0],
-                [1, 0]]
-            ),
-        )
-        # test_distance_matrices = (
-        #     np.array(
-        #         [0,10]
-        #     ),
-        # )
-        scale_factors = np.arange(.5, 10000, .5)
-        scale_factors_log = map(lambda x: math.log(x, 10), scale_factors)
-
-        euclidean_space = MetricSpace.euclidean(test_arrays_euclidean[0])
-        two_space = MetricSpace.euclidean(test_arrays_euclidean[1])
-        magnitudes_euc = euclidean_space.multiscale_magnitude(scale_factors)
-        magnitudes_two = two_space.multiscale_magnitude(scale_factors)
-
-        #plt.subplot(211)
-        plt.title("Four Point Space Magnitude")
-        plt.xlabel("Scale factor, log scale")
-        plt.ylabel("Magnitude")
-        plt.plot(scale_factors_log, magnitudes_euc)
-
-        # plt.subplot(212)
-        # plt.plot(scale_factors_log, magnitudes_two)
-
-        plt.show()
     if True:
         scale_factors = np.arange(.5, 10000, .5)
 

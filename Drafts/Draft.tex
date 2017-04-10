@@ -1377,7 +1377,7 @@ We now move from our analogy back into the realm of categories. We will model th
 Recall that in Example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. 
 \begin{figure}[h]
 \[
-\includegraphics[width = 0.4\paperwidth]{../Figures/exp.pdf}
+\includegraphics[width = 0.5\paperwidth]{../Figures/exp.pdf}
 \]
 \caption{A graph of $e^{-x}$ against $x$.}
 \end{figure}
@@ -1556,7 +1556,33 @@ A_{m1}B & A_{m2}B & \cdots & A_{mn}B
 \end{bmatrix}.
 \]
 \end{defn}
-
+\begin{examp}
+Let 
+\begin{align*}
+A &= \begin{bmatrix}
+1 & 2 \\
+3 & 1
+\end{bmatrix},\\
+B &= \begin{bmatrix}
+2  \\
+1 
+\end{bmatrix}.
+\end{align*}
+Then
+\begin{align*}
+A \otimes B &= 
+\begin{bmatrix}
+B & 2B\\
+3B & B
+\end{bmatrix}\\
+&= \begin{bmatrix}
+2 & 4 \\
+1 & 2 \\
+6 & 2\\
+3 & 1
+\end{bmatrix}.
+\end{align*}
+\end{examp}
 \begin{rmk}\label{kron_prod}
 It is straightforward to show that, for any appropriately sized matrices $A, B, C, D$,
 \[
@@ -1659,7 +1685,7 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 \label{fig:prod_mag}
 \end{figure}
 \end{examp}
-\section{Approximations}
+\section{Approximations and Error Bounding}
 In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. To do that, we need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
 
 \begin{defn}\label{def:spec}
@@ -1711,7 +1737,7 @@ This is the triangle inequality. So for all $v \in \Rr^n$, we have
 \end{enumerate}
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}\label{lem:lim0}
 Let $E$ be a real-valued $n \times n$ matrix. Suppose that $||E|| < 1$. Then:
 \[
 \lim_{i \rightarrow \infty}||(-1)^i E^i|| = 0.
@@ -1724,24 +1750,141 @@ Let $\alpha = ||E|| <1$. We now use Lemma \ref{lem:norm_prop}:
 &= \lim_{i \rightarrow \infty}\alpha^i\\
 &= 0.
 \end{align*}
-This allows us to prove a useful fact about the inverses of matrices which are close to $I$.
+This allows us to prove a useful fact which allows us to approximate the inverses of certain matrices.
 \end{proof}
-\begin{lemma}
-Let $E$ be an $n \times n$ matrix such that $||E|| < 1$. Then
+\begin{thm}\label{thm:approx}
+Let $A$ be an invertible $n \times n$ matrix, and let $E$ be an $n \times n$ matrix such that $||E|| < \frac 1{||A^{-1}||}$. Then $(A-E)$ is invertible, and
 \begin{align*}
-(I + E)^{-1} &= I - E + E^2 - \cdots\\
-&= \sum_{i = 0}^\infty(-1)^i E^i.
+(A - E)^{-1} &= A^{-1} + A^{-1}EA^{-1} + A^{-1}EA^{-1}EA^{-1} + \cdots\\
+&= A^{-1} + \sum_{i = 1}^\infty (EA^{-1})^i.
 \end{align*}
-\end{lemma}
+\end{thm}
 \begin{proof}
+We apply Lemma \ref{lem:lim0}
 \begin{align*}
-(I + E) \sum_{i = 0}^\infty(-1)^i E^i &=  \sum_{i = 0}^\infty (-1)^i E^i  + \sum_{i = 0}^\infty(-1)^i E^{i+1}\\
-&= I + \lim_{i \rightarrow \infty}(-1)^iE^i\\
+(A-E)  A^{-1}\sum_{i = 0}^\infty (EA^{-1})^i
+&= \left(\sum_{i = 0}^\infty (EA^{-1})^i\right) - \left( \sum_{i = 0}^\infty (EA^{-1})^{i+1}\right)\\
+&= I - \lim_{i \rightarrow \infty} (EA^{-1})^i\\
 &= I
 \end{align*}
 \end{proof}
-\end{chapter}
+This fact makes sense. The spectral norm of $A^{-1}$ is the inverse of the smallest eigenvalue of $AA^*$, and it tells us how much $A$ is capable of reducing the euclidean norm of a vector it multiplies. So if that value is very large, $A$ is very nearly not invertible. In that case, it makes sense that adding a relatively small error matrix might change the inverse significantly. 
 
+We can use this result to determine how different the magnitude of a space similar to the one from Example \ref{ex:4pt} differed from that of an actual product space. Given matrices $A$ and $E$ which satisfy Theorem \ref{thm:approx}, we know that 
+\[
+(A - E)^{-1} - A^{-1} = \sum_{i = 1}^\infty (EA^{-1})^i.
+\]
+This means that we can let $\Phi = \sum_{i = 1}^\infty (EA^{-1})^i$ be the ``error term.'' If we can bound the sum of the entries of the matrix $\Phi$, that is a bound on the difference between the magnitude of a space whose similarity matrix is $A$, and one whose similarity matrix is $A + E$. 
+
+We can walk through an example:
+\begin{examp}
+Let $M$ be the following generalized metric space:
+\begin{figure}[H]
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (5,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (0,-.5) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](4) at (5,-.5) {};
+\draw[decoration={brace,raise=7pt},decorate] (1) -- (2) node[midway, above = 10pt] {$d$};
+\draw[decoration={brace, mirror, raise = 7pt},decorate] (1) -- (3) node[midway, left = 10pt] {1};
+% \draw (2) -- (4);
+% \draw (3) -- (4);
+\end{tikzpicture}\]
+\caption{}
+\label{fig:prod}
+\end{figure}
+And define $A,B$ as follows:
+
+\begin{figure}[H]
+\[
+\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](1) at (9,0) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](2) at (9,-.5) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](3) at (0, -.25) {};
+\node[circle, draw, fill=black,
+                        inner sep=0pt, minimum width=4pt](4) at (5,-.25) {};
+\draw[decoration={brace,mirror, raise=7pt},decorate] (1) -- (2) node[midway, left = 10pt] {1};
+\draw[decoration={brace, raise = 7pt},decorate] (3) -- (4) node[midway, above = 10pt] {d};
+% \draw (2) -- (4);
+% \draw (3) -- (4);
+\end{tikzpicture}\]
+\caption{Again, two spaces whose product should be very similar to $M$.}
+\label{fig:factors}
+\end{figure}
+Let $\zeta_A, \zeta_B, \zeta_{A \times B}, \zeta_M$ be the similarity matrices of $A, B, A \times B$, and $M$ respectively. We can write each of them down:
+\begin{align*}
+\zeta_A &= 
+\begin{bmatrix}
+1 & e^{-d} \\
+e^{-d} & 1
+\end{bmatrix}\\
+\zeta_B &= 
+\begin{bmatrix}
+1 & e^{-1} \\
+e^{-1} & 1
+\end{bmatrix}\\
+\zeta_{A \times B} = \zeta_A \otimes \zeta_B &= 
+\begin{bmatrix}
+1 & e^{-1} & e^{- d} & e^{-(1 + d)}\\
+e^{-1} & 1 & e^{-(1 + d)}& e^{- d}\\
+e^{-d} &e^{-(1 + d)} & 1 & e^{-1}\\
+e^{-(1 + d)} & e^{-d} & e^{-1} & 1
+\end{bmatrix}\\
+\zeta_M &= 
+\begin{bmatrix}
+1 & e^{-1} & e^{- d} & e^{-\sqrt{1 + d^2}}\\
+e^{-1} & 1 & e^{-\sqrt{1 + d^2}}& e^{- d}\\
+e^{-d} & e^{-\sqrt{1 + d^2}}& 1 & e^{-1}\\
+e^{-\sqrt{1 + d^2}} & e^{-d} & e^{-1} & 1
+\end{bmatrix}
+\end{align*}
+The similarity matrices of $A \times B$ and $M$ have most entries identical. We can quantify the difference between them. For any $d \in (0, \infty)$, let 
+\begin{align*}
+\ep_d = e^{-(1 + d)} - e^{-\sqrt{1 + d^2}}\\
+E_d = \begin{bmatrix}
+0 & 0 & 0 & \ep \\
+0 & 0 & \ep & 0 \\
+0 & \ep & 0 & 0 \\
+\ep & 0 & 0 & 0
+\end{bmatrix}
+\end{align*}
+Then 
+\[
+\zeta_M = \zeta_{A \times B} - E_d.
+\]
+%TODO: Plot epsilon
+If we are interested in bounding the difference in magnitude of $M$ and $A \times B$, then we can apply Theorem \ref{thm:approx}. We fix a $d$ to determine the relative scales of the spaces. Then, for any $t \in (0, \infty):$
+\[
+\mu_M = \mu_{A \times B} + \sum_{i = 1}^\infty (E_d\zeta_{A \times B}^{-1})^i.
+\]
+
+This formula gives us a way of bounding how different the magnitude of the Euclidean spaces is from the product space. We can numerically calculate values for $\chi_t(M), \chi_t(A \times B)$, and the error term, and plot them.
+
+If $d = 0.1$, so the scales differ by a factor of ten, then we get the following as we vary $t$:
+\begin{figure}[H]
+\[
+\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_10.png}}
+\]
+\end{figure}
+We can see that the Euclidean space and the product space have very similar magnitude values, and the error bounds are quite tight. Note that the period where there are two clusters is much more subtle now, as the points merge together in faster succession.
+
+As we move the value of $d$ closer to 1, we expect both the error bounds and the actual error to increase. The product space and the Euclidean space will differ more as their scales become more similar. Here we see what happens when $d=1$, so our scales are identical. Both spaces move smoothly from having a single cluster to having four clusters, and there is much more significant error. In particular, $M$ now forms a square of points, and points at opposite corners have a distance equal to the diagonal of the square. On the other hand, in the product space, those points have a distance equal to twice the side of the square. This error is more significant the more similar the scales of the factor spaces. CLARIFY! %TODO: Clarify
+\begin{figure}[H]
+\[
+\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_1.png}}
+\]
+\end{figure}
+\end{examp}
+
+\end{chapter}
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography.bib}

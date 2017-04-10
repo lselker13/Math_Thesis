@@ -10,5 +10,4 @@ Chapter 4: Euler-Leinster characteristic
 Add examples?
 Chapter 5: Enriched categories and magnitude
 Examples of euler char on enriched categories other than over R+
-Approximations
 Examples
