@@ -42,7 +42,7 @@ def inv_with_error(d, scale=1, n_terms=3):
         
 def magnitudes_error(d, scale=1, n_terms=3):
     # returns (mag(A), mag(A-E), eb)
-    (Ainv, AEInv, eb) = inv_with_error(d, scale, nterms)
+    (Ainv, AEInv, eb) = inv_with_error(d, scale, n_terms)
     return (np.sum(Ainv), np.sum(AEInv), eb)
 
 def mp(A,n):
@@ -51,8 +51,37 @@ def mp(A,n):
 def inv(A):
     return np.linalg.inv(A)
 
-def make_plot():
-    x = np.arange(0,10,.1)
-    y = map(E, x)
-    plt.plot(x,y)
+def prod_approx_plots():
+    d = 1
+    scale_factors_low = np.arange(.1, 5, .1)
+    scale_factors_mid = np.arange(5, 1000, .5)
+    scale_factors_high = np.arange(1000, 50000, 100)
+    scale_factors = np.concatenate((scale_factors_low, scale_factors_mid, scale_factors_high))
+    
+
+    scale_factors_small = scale_factors * (.001)
+    scale_factors_log = map(lambda x: math.log(x, 10), scale_factors)
+    product_magnitudes = map(
+        lambda x: magnitudes_error(d,scale=x)[0], scale_factors)
+    euc_magnitudes = map(
+        lambda x: magnitudes_error(d,scale=x)[1], scale_factors)
+    errors = map(
+        lambda x: magnitudes_error(d,scale=x)[2], scale_factors)
+    
+    plt.title("Product Space Magnitude")
+    plt.xlabel("Scale factor, log scale")
+    plt.ylabel("Magnitude")
+    #plt.plot(scale_factors_log, product_magnitudes, 'r', 
+    #         label='Product Space') 
+    plt.plot(scale_factors_log, euc_magnitudes, 'r',
+             label='Euclidean Approximation')
+    plt.errorbar(scale_factors_log, product_magnitudes, yerr=errors,fmt='b',
+                 label='Product Space Magnitude, Error Bounds')
+    font = {'family' : 'normal',
+            'size'   : 24}
+
+    plt.rc('font', **font)
+    plt.axis([-1.0,1.2,1,4.1])
+    plt.legend(loc='ul')
     plt.show()
+

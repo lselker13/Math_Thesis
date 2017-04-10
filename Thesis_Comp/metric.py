@@ -6,6 +6,7 @@ from scipy.spatial import distance as dist
 import math
 from matplotlib import pyplot as plt
 import category as cat
+import matrix as mat
 
 EPSILON = 10**(-5)
 
@@ -55,6 +56,8 @@ class MetricSpace(object):
         magnitude_list = map(self.magnitude, scale_factor_iterable)
         return magnitude_list
 
+    
+
 def euc_plots():
     # Plot some euclidean metric space examples
     test_arrays_euclidean = (
@@ -91,21 +94,25 @@ def euc_plots():
 
     
     #plt.subplot(211)
-    plt.title("Product Space Magnitude")
+    plt.title("Two Point Space Magnitude")
     plt.xlabel("Scale factor, log scale")
     plt.ylabel("Magnitude")
-    plt.plot(scale_factors_log, magnitudes_two, 'r', 
-             label='Two points separated by 1') 
+    plt.plot(scale_factors_log, magnitudes_two, 'b', 
+             label='Two points separated by 1')
+    ''' 
     plt.plot(scale_factors_log, magnitudes_two_small, 'b',
              label='Two points separated by 0.001')
     plt.plot(scale_factors_log, magnitudes_euc, 'm',
-             label='Four point space')
+             label='Four point space')'''
+    font = {'family' : 'normal',
+            'size'   : 24}
 
+    plt.rc('font', **font)
     
     # plt.subplot(212)
     # plt.plot(scale_factors_log, magnitudes_two)
-    plt.axis([-1.0,4.5,1,4.1])
-    plt.legend(loc='ul')
+    plt.axis([-1.0,1.5,1,2.1])
+    #plt.legend(loc='ul')
     plt.show()
 
     
