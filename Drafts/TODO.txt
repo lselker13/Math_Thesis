@@ -10,4 +10,7 @@ Chapter 4: Euler-Leinster characteristic
 Add examples?
 Chapter 5: Enriched categories and magnitude
 Examples of euler char on enriched categories other than over R+
-Examples
+Questions I still have throughout
+Add _t to norms
+Work out non-series approximation
+

@@ -8,8 +8,8 @@
 \usepackage{float}
 \author{Leo Selker}
 \advisor{Vin de Silva}
-\title{M\"obius Inversion: Construction and Applications}
-\newcommand{\kron}{\boldsymbol{\otimes}}
+\title{M\"obius Inversion: From Posets to Categories}
+\newcommand{\kron}{\odot}
 \DeclareMathOperator{\fix}{Fix}
 \DeclareMathOperator{\cat}{cat}
 \DeclareMathOperator{\ps}{\mathscr{P}}
@@ -39,7 +39,7 @@
 
 \maketitle
 
-\begin{abstract} %TODO: Write a better abstract.  M\"obius inversion is a general approach to reversing certain kinds of sums. In many situations, we know that a value we have access to is equal to the sum over a poset interval of values we want. M\"obius inversion is a tool which allows us to access those summed values. Here, we first develop the theory of M\"obius inversion on arbitrary posets. Then, we investigate its application in various counting examples, including the inclusion-exclusion principle and counting orbits of group actions. Finally, we explore an application of M\"obius inversion to data clustering.\
+\begin{abstract}  M\"obius inversion is a general approach for reversing certain kinds of sums. We start by defining M\"obius inversion in its usual form, over a partially ordered set. We explore traditional applications in the integer divisibility lattice, including Euler's Totient. We then use the lattice of subgroups to count orbits under a group action. In the last two sections, we explore Tom Leinster's generalization of M\"obius inversion to categories and enriched categories, and investigate a data clustering algorithm.
 \end{abstract}
 
 \pagenumbering{roman}
@@ -49,8 +49,9 @@
 \pagenumbering{arabic}
 \begin{chapter}{Introduction to M\"obius Inversion}\label{chap_intro}
 \section{Introduction and Motivation}
-%TODO: Capitalize "theorem, lemma,..."
 %TODO: Expand introduction with more explicit examples
+We motivate M\"obius inversion using several examples.
+\begin{examp}
 Suppose that we have the integer sequence $g$ of ones:
 \[
 g : 1, 1, 1, \cdots
@@ -61,6 +62,7 @@ f: 1,2,3,\cdots
 \]
 In general, summing up values is easy. Finding values of $f$ from $g$ was not difficult. 
 
+
 If we knew $f$ and wanted to find values of $g$, we would subtract adjacent values of $f$. So we would use the fact that $g_k = f_k - f_{k-1}$. It seems clear that, when we are talking about integer sequences, if for all integers $k$,
 \[
 \forall k f_k = \sum_{i = 1}^k g_i,
@@ -69,14 +71,19 @@ then it is also true that
 \[\\
 g_k = f_k = f_{k-1}.
 \]
-This relationship is a result of the simple structure of the positive integers. However, it is possible to sum up values over more subsets of more complicated structures, such that this relationship isn't so obvious. For example, we could add up values of $g$ over a number's divisors, instead of over all numbers less than or equal to it:
+\end{examp}
+
+This relationship is a result of the simple structure of the positive integers. However, it is possible to sum up values over subsets of more complicated structures, such that this relationship isn't so obvious. For example, we could add up values of $g$ over a number's divisors, instead of over all numbers less than or equal to it.
+\begin{examp}
+Let $h, g$ be functions on the positive integers defined as follows:
 \[
 h_k = \sum_{l|k}g_l.
 \] 
 It is now much less clear how to obtain $g$ from $h$. In fact, we will see how to reverse this kind of sum soon.
+\end{examp}
 
 The goal of M\"obius inversion is to generalize the process of reversing sums over discrete, ordered structures called \emph{posets}. If sums like the above are a discrete analogue of integration (cumulatively summing over a region), then M\"obius inversion is discrete differentiation. In the same way that developing the theory of the derivative is useful for solving differential equations where functions are defined in terms of their integral, M\"obius inversion helps us extract values which are defined in terms of their cumulative sums. In addition to building the necessary machinery for M\"obius inversion, we will consider several applications of it, including a somewhat surprising one in data clustering.
-\section{Initial Example and Posets}
+\section{Initial Example and Partially Ordered Sets}
 M\"obius inversion is a general construct. The classical definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
 \begin{equation}\label{init_mob} 
 f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac dn\right)
@@ -218,7 +225,7 @@ We turn to several examples.
 \begin{examp}
 Consider the $n$-dimensional unit cube in $\Rr^n$, placed such that one corner is at the origin and all vertices have non-negative coordinates. Let $S$ denote the set of vertices of the cube. Then we can think of the vertices of the cube as ordered $n$-tuples of zeros and ones. So $S \subseteq \Nn^{n}$. 
 
-In this example, what is the interpretation of the poset relation? If $v_1, v_2 \subseteq S$, then $v_1 \leq v_2$ if $v_1$ has zeros in all of the coordinates where $v_2$ has zeros. So $v_1 \leq v_2$ if $v_1$ is part of a shortest path from $v_2$ to the origin along the edges of the cube. Equivalently, $v_1 \leq v_2$ if $v_1$ is the projection of $v_2$ onto some subset of the axes. %TODO: Make sure this is true
+In this example, what is the interpretation of the poset relation? If $v_1, v_2 \subseteq S$, then $v_1 \leq v_2$ if $v_1$ has zeros in all of the coordinates where $v_2$ has zeros. So $v_1 \leq v_2$ if $v_1$ is part of a shortest path from $v_2$ to the origin along the edges of the cube. Equivalently, $v_1 \leq v_2$ if $v_1$ is the projection of $v_2$ onto some subset of the axes. 
 \end{examp}
 \begin{examp}
 Each integer can be uniquely represented by its prime factorization. In particular, if we consider the set of integers whose factorizations only include the first $n$ primes, we can write those factorizations as ordered $n$-tuples, capturing each prime's multiplicity in the factorization. As a result, the integers whose factorizations only include the first $n$ primes form a copy of the $n$-dimensional integer lattice. 
@@ -371,8 +378,8 @@ This definition of $\mu$ depends only on $\frac nd$, which means that we can abu
 \[
 f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac nd\right).
 \]
-\section{Euler's Totient} %TODO: Fix \Zz^+
-Euler's Totient is a famous function in number theory, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Nn \rightarrow \Nn$, and its definition is:
+\section{Euler's Totient}
+Euler's Totient is a famous function in number theory, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Zz^+ \rightarrow \Zz^+$, and its definition is:
 \[
 \varphi(n) = \#\{1 \leq m \leq n : (m,n) = 1\},
 \]
@@ -382,7 +389,7 @@ We wonder how we can write down the value of $\varphi(n)$ given a particular int
 
 We start with an important fact:
 \begin{thm}[Gauss]\label{gauss}
-Let $n \in \Nn$ be given. Then 
+Let $n \in \Zz^+$ be given. Then 
 \[
 n = \sum_{d|n}\varphi(d).
 \]
@@ -595,7 +602,9 @@ Then, for any action of $G$ onto any set $\omega$, all we need to do is compute 
 \[
 |\Omega/G| = \lambda f^T.
 \]
-In the next example, we will walk through all the steps involved in counting the orbits of a simple action.
+In the next examples, we will walk through all the steps involved in counting the orbits of some simple actions.
+
+\section{Examples}
 \begin{examp}\label{ex:2x2}
 Let $G = C_4 = \{e, \alpha, \alpha^2, \alpha^3\}$, the cyclic group of order 4.  
 \begin{figure}[h]
@@ -630,7 +639,9 @@ Finally, note that $|C_4|=4$. So
 \begin{bmatrix} 4 \\ 2 \\ 1 \end{bmatrix}\\
 &= \frac 14 \begin{bmatrix} 2 \\ 1 \\ 1\end{bmatrix}
 \end{align*}
-This $\lambda$ is independent of any set $G$ might act on. So let's try an example. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
+This $\lambda$ is independent of any set $G$ might act on. 
+
+So let's try a particular action. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
 
 We can first solve this problem by inspection, or by "brute force," by just enumerating the possibilities:
 \begin{description}
@@ -763,7 +774,7 @@ Let $\zeta$ be defined as usual on $(\ps(I), \supseteq)$. So let $\zeta:\ps(I) \
 \zeta(J,K) = \begin{cases} 1 & J \supseteq K \\ 0 & \text{otherwise}. \end{cases}
 \]
 
-Also, we define the \emph{complement} function/matrix $c$ as follows: %TODO: Change variable name
+Also, we define the \emph{complement} function/matrix $c$ as follows: %TODO: Change variable name?
 \[
 c(J,K) = \begin{cases} 1 & J = K^c \\ 0 & \text{otherwise}. \end{cases}
 \]
@@ -862,7 +873,9 @@ So we can arrive at Theorem \ref{iep}:
 \left| \bigcup_{i \in K} A_i \right| &= |S| - \sum_{J \subseteq K}(-1)^{|J|}\left| \bigcap_{i \in J} A_i\right|\\
 &= \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|.
 \end{align*}
-%TODO: Debrief
+This is precisely the Inclusion-Exclusion principle.
+
+It makes sense that we would use M\"obius inversion to prove the Inclusion-Exclusion principle. The difficult aspect of counting how many elements are in the union of the sets is avoiding double-counting. %TODO: Finish this
 
 \end{chapter}
 
@@ -870,7 +883,7 @@ So we can arrive at Theorem \ref{iep}:
 \section{Introduction to Categories} \label{cat_defs}
 
 A category is an algebraic structure which generalizes ``objects'' and ``maps'' (or ``morphisms''), with composition. There are several equivalent definitions, all somewhat technical, but the construct itself is quite intuitive once you get used to it.  
-\begin{defn}
+\begin{defn}[\cite{Kelly1}]
 A \textit{category} $C$ consists of:
 \begin{itemize}
 \item A collection $C_0$ of \emph{objects};
@@ -890,7 +903,6 @@ Categories are extremely general constructions. Note that we did not even insist
 \begin{examp}
 If $f:X \rightarrow Y, g:Y\rightarrow Z$ are functions, then $g \circ f$ exists, and function composition is associative. So we can let \catname{set} be the category of all sets, with a morphism between sets $X,Y$ for each map $X \rightarrow Y$. 
 \end{examp}
-A \emph{small} category is a category whose collection of objects is a set.
 
 We present several examples.
 \begin{examp}
@@ -925,9 +937,9 @@ Let $C$ be a finite category. Then define the \emph{similarity matrix} or \emph{
 \end{defn}
 So $\zeta$ simply counts the number of morphism from $a$ to $b$. In $\cat(X)$, there is one morphism if $a \leq b \in X$ and zero otherwise. So $\zeta(a,b) = \zeta'(a,b)$ (note that here $a,b \in C$ and also $a,b \in X$).
 
-What is unclear at this point is what the purpose is of doing M\"obius inversion on a category. It is not clear what kind of sum we are attempting to reverse - unlike the poset case, we don't know why we would want to reverse the operation of multiplying by $\zeta$. It turns out that inverting $\zeta$ (if we are able to) will allow us to calculate what is called the \emph{Euler-Leinster characteristic} of a category, which is the analog of an Euler characteristic on other structures. We will explore this over the next few sections. First, we finish the definition of the M\"obius function on categories.
+What is unclear at this point is what the purpose is of doing M\"obius inversion on a category. It is not clear what kind of sum we are attempting to reverse - unlike the poset case, we don't know why we would want to reverse the operation of multiplying by $\zeta$. It turns out that inverting $\zeta$ (if we are able to) will allow us to calculate what is called the \emph{Euler--Leinster characteristic} of a category, which is the analog of an Euler characteristic on other structures. We will explore this over the next few sections. First, we finish the definition of the M\"obius function on categories.
 
-\begin{defn}\label{cat_mob} 
+\begin{defn}[\cite{Lein1}]\label{cat_mob} 
 Let $C$ be a finite category. Let $\zeta$ be the similarity matrix defined above. Then the \emph{M\"obius function} $\mu$ on $C$, if it exists, is defined by 
 \[
 \mu = \zeta^{-1}.
@@ -955,8 +967,8 @@ We observe $\zeta$ defined on $C$ is
 This is not an invertible matrix. So this simple category does not admit M\"obius inversion.
 \end{examp} 
 
-\section{Euler-Leinster Characteristic of a Category}
-We are now ready to construct central definition of this section: the Euler-Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}, and is due to Tom Leinster.
+\section{Euler--Leinster Characteristic of a Category}
+We are now ready to construct central definition of this section: the Euler--Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}, and is due to Tom Leinster.
 
 \begin{defn}\label{def_weighting}
 A \emph{weighting} on a category $\Aa$ is a function $\omega$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
@@ -989,9 +1001,8 @@ Note that even if $C$ does not admit M\"obius inversion, it might admit a weight
 
 This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
 
-The following definition is due to \cite{Lein1}.
-\begin{defn}\label{cat_euler}
-Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler-Leinster characteristic}, or just the \emph{Euler characteristic}, of $A$, denoted by $\chi(A)$, is defined by
+\begin{defn}[Leinster, \cite{Lein1}]\label{cat_euler}
+Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler--Leinster characteristic}, or just the \emph{Euler characteristic}, of $A$, denoted by $\chi(A)$, is defined by
 \[
 \chi(A) = \sum_{a \in A} \omega(a)
 \]
@@ -1058,7 +1069,7 @@ Note that this is a distinct (although related) definition from Definition \ref{
 
 This definition is consistent with the definition of the Euler characteristic of a polyhedron: If the largest cells of a simplicial complex are 2-cells, or two-dimensional faces, then the definitions are identical. 
 
-It turns out that there is a straightforward way of converting a simplicial complex into a category. We will find that the Euler-Leinster characteristic of the resulting category will be the same as the Euler characteristic of the simplicial complex. 
+It turns out that there is a straightforward way of converting a simplicial complex into a category. We will find that the Euler--Leinster characteristic of the resulting category will be the same as the Euler characteristic of the simplicial complex. 
 \begin{defn}
 Let $\sigma$ be a simplicial complex. Then the \emph{category generated by $\sigma$}, or $\cat(\sigma)$, is the category whose objects are the cells of $\sigma$. If $\alpha$ and $\beta$ are cells of $\sigma$, then $|(\alpha, \beta)| = 1$ if $\alpha \subseteq \beta$ and 0 else.
 \end{defn}
@@ -1139,8 +1150,8 @@ So we have
 \end{proof}
 The fact that $\chi(\cat(\sigma)) = \chi(\sigma)$ is comforting. It justifies calling using $\chi$ in Definition \ref{cat_euler}, and calling this construction a type of Euler characteristic.
 
-\section{Euler-Leinster Characteristic Examples}
-%TODO
+\section{Euler--Leinster Characteristic Examples}
+%TODO: Groups? Posets are boring... categories which look like other things?
 
 \end{chapter}
 \begin{chapter}{Metric Space Magnitude}\label{chap_magnitude}
@@ -1161,7 +1172,7 @@ The idea of hierarchical clustering is that instead of choosing a scale, we capt
 
 We can see in Figure \ref{fig:hier} that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
 
-There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler-Leinster characteristic from Chapter \ref{chap_euler}. We start by building some important definitions.
+There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler--Leinster characteristic from Chapter \ref{chap_euler}. We start by building some important definitions.
 
 A metric space is a space with a notion of distance between pairs of points. 
 \begin{defn}
@@ -1176,7 +1187,7 @@ We sometimes write just $M$ if the metric is unambiguous.
 
 In almost all forms of hierarchical clustering, we represent data as a metric space. Here, we will actually define a slightly different structure which will be quite similar to a metric space, and use that instead. However, it's useful to keep in mind this more fundamental definition of a set with distance.
 
-In the next section, we expand the Euler-Leinster characteristic to a generalization of categories called \emph{enriched categories}. We will connect this back to data and metric spaces in subsequent sections.
+In the next section, we expand the Euler--Leinster characteristic to a generalization of categories called \emph{enriched categories}. We will connect this back to data and metric spaces in subsequent sections.
 \section{Enriched Categories}
 In Chapter \ref{chap_euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
 
@@ -1201,17 +1212,19 @@ A \emph{monoidal category} is an ordinary category $A$, together with
 \item A \emph{unit object} $u \in A$;
 \end{itemize}
 such that
-\begin{itemize}
+\begin{enumerate}[(1)]
 \item For each ordered triple of objects $x,y,z \in A$, $(x \otimes y) \otimes z \cong x \otimes (y \otimes z)$
 \item For each $x \in A$, $u \otimes x \cong x \cong x \otimes u$,
 \item The function $\otimes$ is \emph{functorial}. This essentially means that if $x_1, x_2, y_1, y_2 \in M, f \in C(x_1, x_2), g \in C(y_1, y_2)$, then there exists a corresponding morphism in $C(x_1 \otimes y_1, x_2 \otimes y_2)$. We call that morphism $f \otimes g$, and require that it behave as we would expect (e.g. if $f,g$ are both isomorphisms, $f \otimes g$ also is).
-\end{itemize} 
+\item A variety of commutation/coherence conditions are satisfied. Here, we did not name the isomorphisms required in points (1) and (2), but in a more thorough definition they would be named. It would then be required that the various isomorphisms commute appropriately, along with other technical details.
+\end{enumerate} 
 \end{defn}
+
 There are a variety of commutation requirements which we are not considering in detail here. The property of being functorial is also more involved. For a full account, see \cite{Kelly1}.
 
 We turn to several examples of monoidal categories.
 \begin{examp}
-The category $\catname{set}$ is the prototypical example of a monoidal category. In that case, the monoidal product $\otimes$ is the tensor product on sets (hence the notation $\otimes$ for the monoidal product), and $u = \{*\}$, some set with a single element.
+The category $\catname{set}$ is the prototypical example of a monoidal category. In that case, the monoidal product $\otimes$ is the Cartesian product on sets (hence the notation $\otimes$ for the monoidal product), and $u = \{*\}$, some set with a single element.
 
 Here, we can consider what the required isomorphisms look like. It's required that for any set $X \in \catname{set}, \{*\} \otimes X \cong X$. Elements of $\{*\} \otimes X$ are of the form $(*, x)$ for $x \in X$. Also recall that an isomorphism is an invertible morphism, and that in \catname{set}, morphisms are just maps. So, because $|X| = |\{*\} \otimes X|$, the two sets are isomorphic in \catname{set}. The associativity isomorphisms are similar.
 \end{examp}
@@ -1220,8 +1233,8 @@ A monoidal category which will be very important here is $\Rr^{\geq 0}$, where t
 
 In this case, there are no need for isomorphisms, because for any $a,b,c \in \Rr^{\geq 0}, (a + b) + c = a + (b + c)$, and $0 + a = a = a + 0$. A monoidal category like this, where all the associativity and identity isomorphisms are the identity, is called a \emph{strict} monoidal category. In fact, in $D$, no two distinct elements are isomorphic. 
 \end{examp}
-We are now ready to partially define an important generalization on ordinary categories. This definition is highly technical, and a full understanding of it is not necessary for this investigation. So we will not spend much time exploring examples or intuition beyond the specific applications we need.
-\begin{defn}\label{en_cat}
+We are now ready to define an important generalization on ordinary categories. This definition is highly technical, and a full understanding of it is not necessary for this investigation. So we will not spend much time exploring examples or intuition beyond the specific applications we need.
+\begin{defn}[\cite{Nog1}]\label{en_cat}
 Let $M$ be a monoidal category. Then a \emph{category enriched by $M$} consists of
 \begin{itemize}
 \item A set $C_0$ of objects;
@@ -1236,16 +1249,16 @@ As with ordinary categories, we usually will omit the subscripts on the composit
 For a full discussion of enriched categories, including a complete description of the commutation requirements, see \cite{Kelly1}. 
 \end{rmk}
 
-\section{Norms and the Euler-Leinster Characteristic}
-The following constructions can be found in \cite{Lein4}.
+\section{Norms and the Euler--Leinster Characteristic}
+The following constructions can be found in \cite{Nog1, Lein4}.
 
-We would like to generalize the weightings and Euler-Leinster characteristic from Chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in Definition \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
+We would like to generalize the weightings and Euler--Leinster characteristic from Chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in Definition \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
 \[
 \sum_{b \in C}|C(a,b)|\omega(b) = 1.
 \]
 
 The problem is that given an enriched category over some monoidal category $M$, for a pair $a,b$, $C(a,b)$ is no longer a set but an element of $M$. So it is no longer possible to use the function $|\cdot|$ as defined on sets. Instead, we must define our own \emph{norm} function on $M$. We define this as follows:
-\begin{defn}
+\begin{defn}\label{def:norm}
 Let $(M,\otimes)$ be a monoidal category. Then the function $| \cdot |: M \rightarrow \Rr$ is a \emph{norm} on $M$ if, for any $a,b\in M$, and if $u$ is the unit object of $M$, it satisfies
 \[
 |a \otimes b| = |a||b|,
@@ -1257,7 +1270,7 @@ Let $(M,\otimes)$ be a monoidal category. Then the function $| \cdot |: M \right
 
 The usual cardinality function on the monoidal category \catname{set} does satisfy these requirements - for any two finite sets $A,B, |A \otimes B| = |A||B|$, and $|\{*\}|=1$.
 
-It's not clear why we require that the norm function be multiplicative. %TODO: If I get into products, discuss. Add more examples of norms
+It's not clear why we require that the norm function be multiplicative. We will see a reason why in Section \ref{sec:prod}, where we will explore a notion of a product category. There, it will be necessary that norms behave in this way.
 
 We can consider some examples of norms.
 \begin{examp}\label{exp_norm}
@@ -1273,7 +1286,7 @@ is a norm on $D$. We can see that it satisfies the requirements:
 We will explore this norm in detail shortly.
 \end{examp}
 
-Now that we know how to replace the norm function on sets, we can redefine the $\zeta$ function, M\"obius inversion, weightings, and the Euler-Leinster characteristic on enriched categories. We go through these definitions, and then we will explore their ramifications.
+Now that we know how to replace the norm function on sets, we can redefine the $\zeta$ function, M\"obius inversion, weightings, and the Euler--Leinster characteristic on enriched categories. We go through these definitions, and then we will explore their ramifications.
 \begin{defn}
 Let $C$ be a finite category enriched over a monoidal category $M$. Suppose that $|\cdot|$ is a norm on $M$. Then we define the similarity matrix $\zeta$ on $C$ by
 \[
@@ -1281,7 +1294,7 @@ Let $C$ be a finite category enriched over a monoidal category $M$. Suppose that
 \]
 \end{defn}
 
-\begin{defn}
+\begin{defn}[\cite{Nog1}]
 Let $C$ be a finite category enriched over a monoidal category $M$. Let $|\cdot|$ be a norm on $M$, and let $\zeta_{|\cdot|}$ be the similarity matrix defined above. Then the M\"obius function on $C$, denoted $\mu_{|\cdot|}$, is defined by 
 \[
 \mu_{|\cdot|} = \zeta_{|\cdot|},
@@ -1300,15 +1313,15 @@ or, equivalently, if
 \]
 \end{defn}
 
-\begin{defn}
-Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Let $\omega$ be a weighting on $C$. Then the \emph{Euler-Leinster characteristic} of $C$, denoted $\chi_{|\cdot|}(C)$, is defined by
+\begin{defn}[\cite{Nog1}]
+Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Let $\omega$ be a weighting on $C$. Then the \emph{Euler--Leinster characteristic} of $C$, denoted $\chi_{|\cdot|}(C)$, is defined by
 \[
 \chi_{|\cdot|}(C) = \sum_{a \in c} \omega(a).
 \]
 \end{defn}
 In the notation just introduced, we will sometimes omit the subscripts specifying the norm, if the norm is implied.
 \begin{rmk}
-When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we will soon introduce, and continue to refer to the general construction as the Euler-Leinster characteristic or the Euler characteristic of $C$.
+When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we will soon introduce, and continue to refer to the general construction as the Euler--Leinster characteristic or the Euler characteristic of $C$.
 \end{rmk}
 \begin{rmk}
 As before, it is easy to show by rearranging terms that the value of $\chi_{|\cdot|}(C)$ is independent of the specific weighting chosen. However, it does depend on the norm we choose. This will become very important later.
@@ -1316,8 +1329,9 @@ As before, it is easy to show by rearranging terms that the value of $\chi_{|\cd
 %TODO: Examples of euler characteristics of non-metric space enriched categories
 
 \section{Magnitude}
-Recall that the motivation for this section was data clustering. So we would like to use the technology from the previous section to process data in the form of a metric space. We will use a particular enriched category for that purpose, called a \emph{generalized metric space}. This is a category enriched over a monoidal category whose objects are non-negative real numbers, allowing us to preserve a notion of distance. 
-\begin{defn}\label{gen_met}
+Recall that the motivation for this section was data clustering. So we would like to use the technology from the previous section to process data in the form of a metric space. We will use a particular enriched category for that purpose, called a \emph{generalized metric space}. This is a category enriched over a monoidal category whose objects are non-negative real numbers, allowing us to preserve a notion of distance.  
+
+\begin{defn}[Lawvere, \cite{Lawv1}]\label{gen_met}
 Let $D$ be the monoidal category of non-negative real numbers defined in Example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
 \end{defn}
 There is a lot of technology buried in that definition, and it can be difficult to untangle definitions involving enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
@@ -1343,7 +1357,7 @@ It is also required that for any $a,b,c \in C$, there is a map $\circ_{abc}: C(b
 
 This makes it clear why we call this construction a generalized metric space. It is a metric space, but without the restriction that distinct points have nonzero distance, and without the requirement of symmetry. Relaxing these constraints allows us to cleanly express this as an enriched category.  
 
-Generalized metric spaces are, of course, more general than ordinary metric spaces. So we can always express a metric space as a generalized metric space. This allows us to find the Euler-Leinster characteristic of a finite set of data points in a metric space. But first we must decide on the norm we will use on $D$, our monoidal category, and to do that, we take a step back and consider why we are doing this.
+Generalized metric spaces are, of course, more general than ordinary metric spaces. So we can always express a metric space as a generalized metric space. This allows us to find the Euler--Leinster characteristic of a finite set of data points in a metric space. But first we must decide on the norm we will use on $D$, our monoidal category, and to do that, we take a step back and consider why we are doing this.
 
 We would like to estimate the number of clusters in a dataset. To justify the rather strange way in which we'll do that, we can turn to an analogy. Suppose each data point represented a spectator at a sports game, some of whom are sitting in groups. Each group would like to attain a particular level of excitement based on the energy levels of its members. But each group only needs to have the same total level of excitement, and the individual energy levels of the members of group add together to determine the group's excitement. The question is what level of energy each fan should have so that their group has the appropriate total level of excitement. 
 \begin{figure}[h]
@@ -1370,12 +1384,13 @@ Let $M$ be the set of spectators. Suppose that for each spectator $a \in M, \ome
 \sum_{b \in M}\zeta(a,b)\omega(b).
 \]
 
-This looks exactly like the requirement (from Definition \ref{def_weighting}) for $\omega$ to be a weighting on a category $M$! So adding up values of $\omega$ is the same as finding the Euler-Leinster characteristic of $M$, assuming we can properly encode the structure of the spectators into a category. This is the key motivation behind the use of the Euler characteristic to count clusters.
+This looks exactly like the requirement (from Definition \ref{def_weighting}) for $\omega$ to be a weighting on a category $M$! So adding up values of $\omega$ is the same as finding the Euler--Leinster characteristic of $M$, assuming we can properly encode the structure of the spectators into a category. This is the key motivation behind the use of the Euler characteristic to count clusters.
 
 We now move from our analogy back into the realm of categories. We will model the situation using a generalized metric space. We need a norm $|\cdot|$ on $D$ such that $|x|$ will be close to 1 as $x$ gets small, and will approach zero as it gets large. 
 
 Recall that in Example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. 
 \begin{figure}[h]
+%TODO: Replace plot
 \[
 \includegraphics[width = 0.5\paperwidth]{../Figures/exp.pdf}
 \]
@@ -1384,7 +1399,7 @@ Recall that in Example \ref{exp_norm}, we observed that the function $|x|=e^{-tx
 And the larger the value of $t$, the quicker the function decays. In fact, we will see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
 
 We have a special name for the Euler characteristic of a generalized metric space which results from this particular norm:
-\begin{defn}
+\begin{defn}[\cite{Lein4}]
 Let $M$ be a generalized metric space. Let $|\cdot|_t:D \rightarrow \Rr$ be defined by
 \[
 |x|_t = e^{-tx}.
@@ -1424,11 +1439,11 @@ We are varying a parameter, $t$, in the exponent of the norm definition. So it i
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/2_point_.png}}
 \]
-\caption{A plot of $\chi_t(M_2)$ against $t$ on a logarithmic scale.}
+\caption{A plot of $\chi_t(M_2)$ against $\log(t)$, where $t$ is the scale factor.}
 \label{fig:2pt_mag}
 \end{figure}
 \end{examp}
-\section{Product Spaces and Approximations}
+\section{Product Spaces and Approximations}\label{sec:prod}
 In Figure \ref{fig:3+4}, we see two sets of points, $M$ and $N$. $M$ has three points while $N$ has four.
 
 \begin{figure}[h]
@@ -1456,7 +1471,7 @@ Finally, if our scale is large enough that $M$ is grouped into a single cluster,
 
 In all three cases, the number of clusters in $A$ is the product of the number of clusters in $M$ and in $N$. It appears that this remains the case as we change our scale. 
 
-$A$ is an approximation of what is called a \emph{tensor product category}. In this section, we define the construction formally, and explore how the Euler-Leinster characteristic behaves when two categories are combined in this way. In particular, we would like for the magnitude of a product space to be the product of the magnitudes of the original spaces - this is how the number of clusters seems like it should behave when we look at examples like $A$ above.
+$A$ is an approximation of what is called a \emph{Cartesian product category}. In this section, we define the construction formally, and explore how the Euler--Leinster characteristic behaves when two categories are combined in this way. In particular, we would like for the magnitude of a product space to be the product of the magnitudes of the original spaces - this is how the number of clusters seems like it should behave when we look at examples like $A$ above.
 
 Not all enriched categories can be used to construct product spaces. We first must define a restriction on the definition of a monoidal category.
 
@@ -1487,7 +1502,8 @@ Then Definition \ref{def_monoid} tells us that the desired morphism exists.
 This extra requirement is necessary for the product of two enriched categories to exist. In particular, the composition maps do not necessarily exist if the monoidal category is not symmetric. We can now define that:
 
 \begin{defn}
-Let $A,B$ be categories both enriched over a symmetric monoidal category $M$. Fix a norm on $M$. Then the \emph{tensor product} of $A$ and $B$, denoted $A \times B$, is the category enriched over $M$ defined as follows:
+
+Let $A,B$ be categories both enriched over a symmetric monoidal category $M$. Fix a norm on $M$. Then the \emph{Cartesian product} (or simply the \emph{product}) of $A$ and $B$, denoted $A \times B$, is the category enriched over $M$ defined as follows:
 \begin{itemize}
 \item The set of objects, $(A \times B)_0$, is $\{(a,b):a \in A_0, b \in  B_0\}$
 \item For $(a,b), (c,d) \in A_0, C((a,b), (c,d)) = C(a,b) \otimes C(c,d)$.
@@ -1495,7 +1511,7 @@ Let $A,B$ be categories both enriched over a symmetric monoidal category $M$. Fi
 \item The composition and identity morphisms are defined using Lemma \ref{prod_morph} (the details are not important for this discussion, but they are straightforward).
 \end{itemize}
 \begin{rmk}
-The tensor product of two categories enriched over $M$ is indeed a category enriched over $M$. There are many requirements to check, and we do not go through all of them here.
+The Cartesian product of two categories enriched over $M$ is indeed a category enriched over $M$. There are many requirements to check, and we do not go through all of them here.
 \end{rmk}
 \end{defn}
 
@@ -1525,25 +1541,24 @@ We will be focusing on products of generalized metric spaces. So we consider an 
 \]
 \caption{$A$ and $B$}
 \end{figure}
-Suppose that $A(a_1, a_2) = 1, B(b_1, b_2) = 2$. Recall that the monoidal product is $+$. So the tensor product category $A \times B$ looks like this:
+Suppose that $A(a_1, a_2) = 1, B(b_1, b_2) = 2$. Recall that the monoidal product is $+$. So the product category $A \times B$ looks like this:
 \begin{figure}[H]
 \[
 \includegraphics[width=.4\paperwidth]{../Figures/gen_met_small_prod}
 \]
-\caption{$A \times B$. It is impossible to draw this product space to scale because of the way distances behave under the tensor product.. }
+\caption{$A \times B$. It is impossible to draw this product space to scale because of the way distances behave under the Cartesian product.}
 \end{figure}
 
-
-We can observe the same behavior here as in the initial example. Suppose we used some clustering scheme where points within a threshold distance $t$ of each other were put into the same cluster. This is not how magnitude works, of course, but it is easier to visualize. Then we have three cases:
+We can observe the same behavior here as in the initial example. Suppose we used some clustering scheme where points within a threshold distance $t$ of each other were put into the same cluster. This is not how magnitude works, but it is easier to visualize. Then we have three cases:
 \begin{description}
 \item[$t < 1$:] $A$ has two clusters, $B$ has two clusters, and $A \times B$ has four clusters.
 \item[$1 \leq t < 2$:] $A$ has one cluster, $B$ has two clusters, and $A \times B$ has two clusters.
 \item[$t \geq 2$:] $A, B$, and $A \times B$ each have just one cluster (note that $(a_1, b_2)$ and $(a_2, b_1)$ are in the same cluster in $A \times B$ even though their distance is 3, because both are in the same cluster as $(a_1, b_1)$).
 \end{description}
-So in all cases, the number of clusters in $A \times B$ is the product of the numbers of clusters in $A$ and $B$. We will see that this isn't a coincidence.
+So in all cases, the number of clusters in $A \times B$ is the product of the numbers of clusters in $A$ and $B$. We will see that if we count clusters using the magnitude of the space, the same thing happens.
 \end{examp}
 
-Magnitude is obtained using $\zeta$, the similarity matrix. So we are interested in how the similarity matrix behaves under the tensor product. It turns out that the similarity matrix of a product category is obtained using the matrix \emph{Kronecker product}, not coincidentally (but confusingly) written using $\otimes$. Because this is the same notation used for the monoidal product, we will bold the operator when we are referring to the Kronecker product: $\kron$.
+Magnitude is obtained using $\zeta$, the similarity matrix. So we are interested in how the similarity matrix behaves under the Cartesian product. It turns out that the similarity matrix of a product category is obtained using the matrix \emph{Kronecker product}, not coincidentally (but confusingly) written using $\otimes$. Because this is the same notation used for the monoidal product, we will use non-standard notation for the Kronecker product: $\kron$.
 \begin{defn}
 Let $A$ be an $m \times n$ matrix and $B$ be a $q \times r$ matrix. Then the \emph{Kronecker product} of $A$ and $B$, denoted $A \kron B$, is the $mq \times nr$ matrix defined by the following block matrix:
 \[
@@ -1586,20 +1601,20 @@ B & 2B\\
 \begin{rmk}\label{kron_prod}
 It is straightforward to show that, for any appropriately sized matrices $A, B, C, D$,
 \[
-(A \otimes B) \times (C \otimes D) = AC \otimes BD.
+(A \otimes B) (C \otimes D) = AC \otimes BD.
 \]
 We will use that fact soon.
 \end{rmk}
-We show that this definition is useful by connecting it immediately to the tensor product of categories.
+We show that this definition is useful by connecting it immediately to the Cartesian product of categories.
 
-\begin{lemma}\label{tensor_kron}
+\begin{lemma}\label{prod_kron}
 Let $A, B$ be categories both enriched over a symmetric monoidal category $M$. Fix some norm on $M$. Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$ under the chosen norm. If $a_1,\dots,a_m$ and $b_1,\dots,b_n$ are the orders chosen for the objects of $A$ and $B$ when constructing $\zeta_A, \zeta_B$, then fix the order \[a_1b_1, a_1b_2, \dots, a_1b_n, a_2b_1, \dots, a_mb_n\] for $A \times B$. Then
 \[
 \zeta_{A \times B} = \zeta_A \kron \zeta_B.
 \]
 \end{lemma}
 \begin{proof}
-Let $a_1, a_2 \in A, b_1, b_2 \in B$ be given. Recall that norms are multiplicative. Then the entry of $\zeta_{A \times B}$ corresponding with $(a_1, b_1), (a_2, b_2)$ should contain 
+Let $a_1, a_2 \in A, b_1, b_2 \in B$ be given. Recall that norms are multiplicative (see Definition \ref{def:norm}). Then the entry of $\zeta_{A \times B}$ corresponding with $(a_1, b_1), (a_2, b_2)$ should contain 
 \begin{align*}
 |(A \times B)((a_1, b_1), (a_2, b_2))|& = |A(a_i, a_j) \otimes B(b_k, b_l)|\\
 &= |A(a_i, a_j)| |B(b_k, b_l)|
@@ -1607,7 +1622,7 @@ Let $a_1, a_2 \in A, b_1, b_2 \in B$ be given. Recall that norms are multiplicat
 which is the value of the corresponding entry of $\zeta_A \kron \zeta_B$.
 \end{proof}
 
-Given this lemma, we can prove that the behavior we saw in Example \ref{met_prod_ex} occurs when we count clusters using the magnitude function. In fact, it turns out the for any category enriched over a symmetric monoidal category, the Euler-Leinster characteristic is multiplicative over the tensor product. 
+Given this lemma, we can prove that the behavior we saw in Example \ref{met_prod_ex} occurs when we count clusters using the magnitude function. In fact, it turns out the for any category enriched over a symmetric monoidal category, the Euler--Leinster characteristic is multiplicative over the product. 
 
 \begin{thm}
 Let $A, B$ be categories both enriched over a monoidal category $M$ . Fix some norm on $M$. Then, if $\chi(A), \chi(B)$ both exist,
@@ -1616,7 +1631,7 @@ Let $A, B$ be categories both enriched over a monoidal category $M$ . Fix some n
 \]
 \end{thm}
 \begin{proof}
-Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$. Then, by Theorem \ref{tensor_kron}, the similarity matrix of $A \times B$ is $\zeta_A \kron \zeta_B$. 
+Let $\zeta_A, \zeta_B$ be the similarity matrices of $A,B$. Then, by Theorem \ref{prod_kron}, the similarity matrix of $A \times B$ is $\zeta_A \kron \zeta_B$. 
 
 Because both Euler characteristics exist, there must exist a valid weighting on each category. Let $\omega_A, \omega_B$ be weightings on $A, B$ respectively. Let $1^{|A|}, 1^{|B|}$ be the ones vectors of lengths $|A|$ and $|B|$. Then, using the fact from Remark \ref{kron_prod}, we have
 \begin{align*}
@@ -1681,7 +1696,7 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/prod_mag.png}}
 \]
-\caption{The magnitude of $M$ alongside the magnitudes of the factor spaces, on a logarithmic scale.}
+\caption{The magnitude of $M$ alongside the magnitudes of the factor spaces against $\log(t)$.}
 \label{fig:prod_mag}
 \end{figure}
 \end{examp}
@@ -1689,74 +1704,140 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. To do that, we need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
 
 \begin{defn}\label{def:spec}
-Let $n$ be given. Let $|v|$ denote the Euclidean vector norm. Then the \emph{spectral norm} on real- (or complex-) valued $n \times n$ matrices, denoted $||\cdot ||$, is defined by
+Let $n$ be given. Let $|v|$ denote the Euclidean vector norm. Then the \emph{spectral norm} on real- (or complex-) valued $n \times n$ matrices, denoted $||\cdot ||_s$, is defined by
 \[
-||M|| = \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\}.
+||M||_s = \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\}.
 \]
 \end{defn}
 \begin{rmk}
-Definition \ref{def:spec} does not tell us how to find the spectral norm of a matrix. However, it is not difficult to do so. For a given $M$, we can find $||M||$ as follows:
+Definition \ref{def:spec} does not tell us how to find the spectral norm of a matrix. However, it is not difficult to do so. For a given $M$, we can find $||M||_s$ as follows:
 
-Let $M^*$ be the adjoint, or conjugate transpose, of $M$. Let $\lambda_1$ be the largest eigenvalue of the matrix $MM^*$. Then $\lambda_1$ will be real-valued, and $||M||=\sqrt{\lambda_1}$. 
+Let $M^*$ be the adjoint, or conjugate transpose, of $M$. Let $\lambda_1$ be the largest eigenvalue of the matrix $MM^*$. Then $\lambda_1$ will be real-valued, and $||M||_s=\sqrt{\lambda_1}$. 
 
 We will not prove or use this fact - it is simply here to assure readers that the spectral norm can be computed.
 \end{rmk}
 This norm is a common way of determining how ``large'' a matrix is. It will allow us to determine which matrices are ``small enough'' to satisfy some approximation theorems.
 
-There are some simple properties of the spectral norm which we will need.
+We also define a second matrix norm, called the $L_1$ norm.
+\begin{defn}
+Let $A$ be an $n \times n$ matrix. Then the \emph{$L_1$ norm} of $A$, denoted $||A||_2$, is the sum of the absolute values of entries of $A$. In other words,
+\[
+||A||_2 = \sum_{i = 1}^n\sum_{j = 1}^n |A_{ij}|.
+\]
+\end{defn}
+\begin{rmk}
+This is one of an infinite number of $L_p$ norms, one for each positive integer $p$. For any matrix $A$ and positive integer $p$, 
+\[
+||A||_p = \sqrt[p]{\sum_{i = 1}^n\sum_{j = 1}^n |A_{ij}|^p}.
+\]
+\end{rmk}
+
+
+
+
+
+There are three simple properties of both norms which we will need.
 \begin{lemma}\label{lem:norm_prop}
-%TODO: Omit additivity if I don't need it.
-Let $A, B$ be $n \times n$ matrices. Then
-\begin{enumerate}[(a)]
+Let $A, B$ be $n \times n$ matrices. Let $||\cdot||$ be \emph{either} the spectral norm or the $L_1$ norm. Then
+\begin{enumerate}
 \item \[
+||AB|| \leq ||A||\times ||B||,
+\]
+
+\item
+\[
 ||A + B|| \leq ||A|| + ||B||.
 \]
-\item \[
-||AB|| \leq ||A||\times ||B||
+\item 
+\[
+||A|| = 0 \iff A = 0.
 \]
 \end{enumerate}
 \end{lemma}
 \begin{proof}
-\begin{enumerate}[(a)]
-\item Recall that if $|\cdot|$ is the Euclidean norm on vectors in $\Rr^n$, then for all $v,w \in \Rr^n$,
-\[
-|v + w| \leq |v| + |w|.
-\]
-This is the triangle inequality. So for all $v \in \Rr^n$, we have
+\begin{description}
+\item[Spectral Norm:]
+\begin{enumerate}
+\item By the definition of the spectral norm, for any $v \in \Rr^n$,
 \begin{align*}
-|(A + B)v| &= |Av + Bv| \\
-&\leq |Av| + |Bv|.
-\end{align*} 
-\[\sup_{0 \neq x \in \Rr^n}\left\{ \frac{|(A + B)x|}{|x|} \right\} \leq \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\} + \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Bx|}{|x|} \right\}.
-\]
-\item Let $v \in \Rr^n$ be given. Then by the definition of the spectral norm,
-\begin{align*}
-|ABv| &\leq |A(||B|| \times |v|)|\\
-&\leq (||A|| \times ||B||)|v|.
+|ABv| &\leq |A(||B||_s \times |v|)|\\
+&\leq (||A||_s \times ||B||_s)|v|.
 \end{align*}
+It follows that 
+ \[
+||AB|| \leq ||A||_s\times ||B||.
+\]
+\item For any $v \in \Rr^n$,
+\begin{align*}
+|(A + B)v| &= |Av + Bv|\\
+ &\leq |Av| + |Bv|\\
+ &\leq ||A||_s + ||B||_s)v.
+\end{align*}
+\item It is clear that if $A=0$ then $||A||_s=0$. Now suppose that $A$ is not zero. Then the column space of $A$ has nonzero dimension, so there exists a $v$ such that $Av \neq 0$. So $||A||_s \geq \frac{|Av|}{|v|} > 0$.
 \end{enumerate}
+\item[$L_1$ Norm:]
+\begin{enumerate}
+\item We have
+\begin{align*}
+|AB_ij| &= \left| \sum_{k = 1}^nA_{ik}B{kj}\right|\\
+&\leq \sum_{k = 1}^n|A_{ik}||B{kj}|. \text{ Therefore}\\
+||AB||_1 &\leq \sum_{i = 1}^n\sum_{j=1}^n\sum_{k=1}^n|A_{ik}||B{kj}|\\
+&\leq \sum_{i = 1}^n\sum_{j=1}^n\sum_{k=1}^n\sum_{l=1}^n|A_{ik}||B_{lj}|\\
+&= ||A||_1||B||.
+\end{align*}
+\item For each $i,j$, $|(A + B)_{ij}| = |A_{ij} + B_{ij}| \leq |A_{ij}| + |B_{ij}|$. The result follows.
+\item If $A=0$ then $||A||_1=0$. On the other hand, if any entry of $A$ is nonzero, then $||A||_1 > 0$ by definition.
+\end{enumerate}
+\end{description}
 \end{proof}
 
-\begin{lemma}\label{lem:lim0}
-Let $E$ be a real-valued $n \times n$ matrix. Suppose that $||E|| < 1$. Then:
+
+
+
+
+We would like to show some results about limits and series convergence of matrices. To do that, we need to establish some notation. 
+\begin{defn}\label{def:mat_conv}
+Let $A_i$ be an infinite sequence of $m \times n$ matrices, and let $||\cdot||$ be some matrix norm (the spectral norm, the $L_1$ norm, or another matrix norm). Suppose we have an $m \times n$ matrix $L$ such that 
 \[
-\lim_{i \rightarrow \infty}||(-1)^i E^i|| = 0.
+\lim_{i \rightarrow \infty} ||A_i - L|| = 0.
+\]
+Then we say that 
+\[
+\lim_{i \rightarrow \infty} A_i = L.
+\]
+\end{defn}
+It turns out that if the matrices involved are finite-dimensional, the choice of norm does not matter - a sequence will either always converge or always diverge. So there is no need to specify the norm when stating a fact about matrix convergence.
+
+This is an instance of the general definition of a convergent sequence in a metric space, where our chosen norm induces a metric. Furthermore, for this discussion, we will be concerned primarily with norms of matrices, so this definition of convergence makes sense for us to use.
+
+\begin{lemma}\label{lem:lim0}
+Let $E$ be a real-valued $n \times n$ matrix.  Suppose that $||E||_s < 1$. Then:
+\[
+\lim_{i \rightarrow \infty}E^i = 0.
 \]
 \end{lemma}
 \begin{proof}
-Let $\alpha = ||E|| <1$. We now use Lemma \ref{lem:norm_prop}:
+Recall that the meaning of this statement is determined by Definition \ref{def:mat_conv}.
+
+Let $||E|| < 1$. Let $\vec{0}$ represent be the zero matrix. We now use Lemma \ref{lem:norm_prop}:
 \begin{align*}
-\lim_{i \rightarrow \infty}||(-1)^i E^i|| &= \lim_{i \rightarrow \infty}||E||^i\\
-&= \lim_{i \rightarrow \infty}\alpha^i\\
+\lim_{i \rightarrow \infty}|| E^i - \vec{0}|| &\leq \lim_{i \rightarrow \infty}|| E^i|| - ||\vec{0}|| \\
+&\leq \lim_{i \rightarrow \infty}|| E||^i\\
 &= 0.
 \end{align*}
-This allows us to prove a useful fact which allows us to approximate the inverses of certain matrices.
+Then, by Definition \ref{def:mat_conv},
+\[
+\lim_{i \rightarrow \infty} E^i = 0.
+\]
 \end{proof}
+We actually could have used any norm instead of the spectral norm. But the spectral norm is always less than or equal to the $L_1$ norm, as well as most other matrix norms, so the more general result is implied.
+
+This allows us to prove a useful fact which allows us to approximate the inverses of certain matrices.
 \begin{thm}\label{thm:approx}
 Let $A$ be an invertible $n \times n$ matrix, and let $E$ be an $n \times n$ matrix such that $||E|| < \frac 1{||A^{-1}||}$. Then $(A-E)$ is invertible, and
 \begin{align*}
 (A - E)^{-1} &= A^{-1} + A^{-1}EA^{-1} + A^{-1}EA^{-1}EA^{-1} + \cdots\\
-&= A^{-1} + \sum_{i = 1}^\infty (EA^{-1})^i.
+&= A^{-1} + A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i.
 \end{align*}
 \end{thm}
 \begin{proof}
@@ -1768,17 +1849,25 @@ We apply Lemma \ref{lem:lim0}
 &= I
 \end{align*}
 \end{proof}
+\begin{rmk}
+Recall that, because we rely on Lemma \ref{lem:lim0}, the meaning of this theorem is governed by Definition \ref{def:mat_conv}. That is what the equals sign really means. 
+\end{rmk}
 This fact makes sense. The spectral norm of $A^{-1}$ is the inverse of the smallest eigenvalue of $AA^*$, and it tells us how much $A$ is capable of reducing the euclidean norm of a vector it multiplies. So if that value is very large, $A$ is very nearly not invertible. In that case, it makes sense that adding a relatively small error matrix might change the inverse significantly. 
 
 We can use this result to determine how different the magnitude of a space similar to the one from Example \ref{ex:4pt} differed from that of an actual product space. Given matrices $A$ and $E$ which satisfy Theorem \ref{thm:approx}, we know that 
 \[
-(A - E)^{-1} - A^{-1} = \sum_{i = 1}^\infty (EA^{-1})^i.
+(A - E)^{-1} - A^{-1} = A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i.
 \]
-This means that we can let $\Phi = \sum_{i = 1}^\infty (EA^{-1})^i$ be the ``error term.'' If we can bound the sum of the entries of the matrix $\Phi$, that is a bound on the difference between the magnitude of a space whose similarity matrix is $A$, and one whose similarity matrix is $A + E$. 
+This means that we can let $\Phi = A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i$ be the ``error term.'' If we can bound the sum of the entries of the matrix $\Phi$, that is a bound on the difference between the magnitude of a space whose similarity matrix is $A$, and one whose similarity matrix is $A + E$. Of course, this approximation scheme only works if both spaces admit M\"obius inversion.
 
-We can walk through an example:
+
+Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\chi(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $E$ satisfies the condition of Theorem \ref{thm:approx}. 
+
+The magnitude of $A$ is equal to $||\mu_A||_1 = ||\zeta_A^{-1}||_1$, where $||\cdot||_1$ is the $L_1$ matrix norm.
+
+We demonstrate this approximation of magnitude through an example:
 \begin{examp}
-Let $M$ be the following generalized metric space:
+We will consider a situation quite similar to Example \ref{ex:4pt}. Let $M$ be the following generalized metric space:
 \begin{figure}[H]
 \[
 \begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
@@ -1819,51 +1908,54 @@ And define $A,B$ as follows:
 \caption{Again, two spaces whose product should be very similar to $M$.}
 \label{fig:factors}
 \end{figure}
-Let $\zeta_A, \zeta_B, \zeta_{A \times B}, \zeta_M$ be the similarity matrices of $A, B, A \times B$, and $M$ respectively. We can write each of them down:
+Suppose that we are trying to approximate $M$ using a product space of $A$ and $B$. We are interested in finding a bound on the error of our estimate.
+
+Let $\zeta_A, \zeta_B, \zeta_{A \times B}, \zeta_M$ be the similarity matrices of $A, B, A \times B$, and $M$ respectively. Recall that we are using the norm $|x| = e^{-tx}$, where we will vary $t$. So the matrices are as follows:
 \begin{align*}
 \zeta_A &= 
 \begin{bmatrix}
-1 & e^{-d} \\
-e^{-d} & 1
+1 & e^{-td} \\
+e^{-td} & 1
 \end{bmatrix}\\
 \zeta_B &= 
 \begin{bmatrix}
-1 & e^{-1} \\
-e^{-1} & 1
+1 & e^{-t} \\
+e^{-t} & 1
 \end{bmatrix}\\
 \zeta_{A \times B} = \zeta_A \otimes \zeta_B &= 
 \begin{bmatrix}
-1 & e^{-1} & e^{- d} & e^{-(1 + d)}\\
-e^{-1} & 1 & e^{-(1 + d)}& e^{- d}\\
-e^{-d} &e^{-(1 + d)} & 1 & e^{-1}\\
-e^{-(1 + d)} & e^{-d} & e^{-1} & 1
+1 & e^{-t} & e^{- td} & e^{-t(1 + d)}\\
+e^{-t} & 1 & e^{-t(1 + d)}& e^{- td}\\
+e^{-td} & e^{-t(1 + d)} & 1 & e^{-t}\\
+e^{-t(1 + d)} & e^{-td} & e^{-t} & 1
 \end{bmatrix}\\
 \zeta_M &= 
 \begin{bmatrix}
-1 & e^{-1} & e^{- d} & e^{-\sqrt{1 + d^2}}\\
-e^{-1} & 1 & e^{-\sqrt{1 + d^2}}& e^{- d}\\
-e^{-d} & e^{-\sqrt{1 + d^2}}& 1 & e^{-1}\\
-e^{-\sqrt{1 + d^2}} & e^{-d} & e^{-1} & 1
+1 & e^{-t} & e^{- td} & e^{-t\sqrt{1 + d^2}}\\
+e^{-t} & 1 &  e^{-t\sqrt{1 + d^2}}& e^{- td}\\
+e^{-td} &  e^{-t\sqrt{1 + d^2}} & 1 & e^{-t}\\
+ e^{-t\sqrt{1 + d^2}}& e^{-td} & e^{-t} & 1
 \end{bmatrix}
 \end{align*}
-The similarity matrices of $A \times B$ and $M$ have most entries identical. We can quantify the difference between them. For any $d \in (0, \infty)$, let 
+The similarity matrices of $A \times B$ and $M$ have most entries identical. We can quantify the difference between them. For any $d, t \in (0, \infty)$, let 
 \begin{align*}
-\ep_d = e^{-(1 + d)} - e^{-\sqrt{1 + d^2}}\\
-E_d = \begin{bmatrix}
-0 & 0 & 0 & \ep \\
-0 & 0 & \ep & 0 \\
-0 & \ep & 0 & 0 \\
-\ep & 0 & 0 & 0
+\ep_{dt} = e^{-t(1 + d)} - e^{-t\sqrt{1 + d^2}}\\
+E_{dt} = \begin{bmatrix}
+0 & 0 & 0 & \ep_{dt} \\
+0 & 0 & \ep_{dt} & 0 \\
+0 & \ep_{dt} & 0 & 0 \\
+\ep_{dt} & 0 & 0 & 0
 \end{bmatrix}
 \end{align*}
-Then 
+Then for each $d,t$,
 \[
-\zeta_M = \zeta_{A \times B} - E_d.
+\zeta_M = \zeta_{A \times B} - E_{dt}.
 \]
-%TODO: Plot epsilon
+Note that I am omitting the $d,t$ subscripts from the similarity matrices to avoid clutter, but they do depend on $d$ and $t$.
+
 If we are interested in bounding the difference in magnitude of $M$ and $A \times B$, then we can apply Theorem \ref{thm:approx}. We fix a $d$ to determine the relative scales of the spaces. Then, for any $t \in (0, \infty):$
 \[
-\mu_M = \mu_{A \times B} + \sum_{i = 1}^\infty (E_d\zeta_{A \times B}^{-1})^i.
+\mu_M = \mu_{A \times B} + \mu_{A \times B}\sum_{i = 1}^\infty (E_{dt}\zeta_{A \times B}^{-1})^i.
 \]
 
 This formula gives us a way of bounding how different the magnitude of the Euclidean spaces is from the product space. We can numerically calculate values for $\chi_t(M), \chi_t(A \times B)$, and the error term, and plot them.
@@ -1873,16 +1965,26 @@ If $d = 0.1$, so the scales differ by a factor of ten, then we get the following
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_10.png}}
 \]
+\caption{Magnitudes and error bounds, $d = 0.1$, error calculated to third term, against $\log(t)$ where $t$ is the scale factor.}
+\label{fig:approx10}
 \end{figure}
-We can see that the Euclidean space and the product space have very similar magnitude values, and the error bounds are quite tight. Note that the period where there are two clusters is much more subtle now, as the points merge together in faster succession.
+We can see that the Euclidean space and the product space have very similar magnitude values, and the error bounds are quite tight. Note that the period where there are two clusters is much more subtle now, as the points merge together in faster succession. 
 
-As we move the value of $d$ closer to 1, we expect both the error bounds and the actual error to increase. The product space and the Euclidean space will differ more as their scales become more similar. Here we see what happens when $d=1$, so our scales are identical. Both spaces move smoothly from having a single cluster to having four clusters, and there is much more significant error. In particular, $M$ now forms a square of points, and points at opposite corners have a distance equal to the diagonal of the square. On the other hand, in the product space, those points have a distance equal to twice the side of the square. This error is more significant the more similar the scales of the factor spaces. CLARIFY! %TODO: Clarify
+If we were trying to approximate $M$ with $A \times B$, then we would not have access to the orange line in Figure \ref{fig:approx10}. But in this case, we can see that we could determine the line with good accuracy using only $A \times B$ and the error bounds.
+
+As we move the value of $d$ closer to 1, we expect both the error bounds and the actual error to increase. The product space and the Euclidean space will differ more as their scales become more similar. Recall that the only pairs of points which differ at all in distance between $A \times B$ and $M$ are points at opposite corners (see Figure \ref{fig:4pt}). When one dimension is extremely small, that diagonal distance is very close to the length of the longer side. On the other hand, in the product space the distance is the sum of the dimensions. When the small dimension is small enough, that, too, is essentially the distance of the longer side.
+
+On the other hand, as $d$ approaches 1, the space becomes square. If $d=1$, then the distance of opposite points in $M$ will be $\sqrt{2}$, while in the product space the distance will be 2. This is quite a significant difference. In the next example, we look at exactly this case.
+
+Here we see what happens when $d=1$, so our dimensions are identical. Both spaces move smoothly from having a single cluster to having four clusters, and there is more error. 
 \begin{figure}[H]
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_1.png}}
 \]
+\caption{Magnitudes and error bounds, $d = 1$, error calculated to third term, against $\log(t)$ where $t$ is the scale factor.}
 \end{figure}
 \end{examp}
+However, even if the orange line were removed, we would still have a good idea of the cluster structure of $M$. We would know that $M$ starts with one cluster, and then at a scale factor of approximately $10^{-\frac12} \approx 3$, the points begin to move apart. They smoothly separate until four clusters form. Because of the error bounds, we know that given the behavior of $A \times B$, the magnitude of $M$ can't differ too much from that behavior.
 
 \end{chapter}
 
