@@ -1,3 +1,4 @@
+from __future__ import division
 from matplotlib import pyplot as plt
 import numpy as np
 import math 
@@ -14,10 +15,33 @@ def calc_E(d, scale=1):
         Em[i,j] = epsilon
     return Em
 
+def l2(A):
+    # L_2 norm of a matrix
+    total = 0
+    for row in A:
+        for el in row:
+            total += abs(el)
+    return total
+
+def error_bounds(A, E):
+    # returns (bounded 1-norm of phi, 1-norm of phi). 1-norm of EA^-1
+    # must be less than one.
+    ET = 0
+    inv_A = inv(A)
+    l2_EAinv = l2(E*inv_A)
+    assert l2_EAinv < 1, "L2 norm is too large"
+    for i in range(1, n_terms):
+        ET = ET + inv_A*mp((E *  inv_A ),i)
+    actual = abs(np.sum(ET))
+    limit = l2_EAinv / (1 - l2_EAinv)
+    return l2(inv_A) * limit
+    
+    
+
 def inv_with_error(d, scale=1, n_terms=3):
     """ 
     Returns a tuple
-    (A^1, (A - E)^-1, Magnitude Error Bound)
+    (A^1, (A - E)^-1, Magnitude Error Bound, Actual Error)
     """
     # Put together A
     A = np.empty((4,4))
@@ -31,14 +55,10 @@ def inv_with_error(d, scale=1, n_terms=3):
         A[i,j] = math.exp(-scale*(1 + d))
     A = np.matrix(A)
     E = calc_E(d, scale)
-    ET = 0
-    for i in range(1, n_terms):
-        ET = ET + mp((E * (inv(A))),i)
-    eb = abs(np.sum(ET))
-    inv_A = inv(A)
+    eb, actual = error_bounds(A, E)
     inv_AE = inv(A - E)
     # actual = np.sum(inv_A - inv_AE)
-    return (inv_A, inv_AE, eb)
+    return (inv_A, inv_AE, eb, actual)
         
 def magnitudes_error(d, scale=1, n_terms=3):
     # returns (mag(A), mag(A-E), eb)
@@ -77,11 +97,10 @@ def prod_approx_plots():
              label='Euclidean Approximation')
     plt.errorbar(scale_factors_log, product_magnitudes, yerr=errors,fmt='b',
                  label='Product Space Magnitude, Error Bounds')
-    font = {'family' : 'normal',
-            'size'   : 24}
+    font = {'size'   : 22}
 
     plt.rc('font', **font)
-    plt.axis([-1.0,1.2,1,4.1])
+    plt.axis([-1.0,1.3,1,4.1])
     plt.legend(loc='ul')
     plt.show()
 

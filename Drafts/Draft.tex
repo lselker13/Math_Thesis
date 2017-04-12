@@ -1700,8 +1700,11 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 \label{fig:prod_mag}
 \end{figure}
 \end{examp}
+
 \section{Approximations and Error Bounding}
 In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. To do that, we need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
+
+There are many norms on matrices. Formally, a matrix norm is simply a function from matrices to the non-negative real numbers which satisfies certain properties.
 
 \begin{defn}\label{def:spec}
 Let $n$ be given. Let $|v|$ denote the Euclidean vector norm. Then the \emph{spectral norm} on real- (or complex-) valued $n \times n$ matrices, denoted $||\cdot ||_s$, is defined by
@@ -1790,12 +1793,9 @@ It follows that
 \end{enumerate}
 \end{description}
 \end{proof}
+Again, there are many other matrix norms. For our purposes, when a theorem uses an arbitrary matrix norm, we will assume that it satisfies Lemma \ref{lem:norm_prop}. 
 
-
-
-
-
-We would like to show some results about limits and series convergence of matrices. To do that, we need to establish some notation. 
+Now that we have some basic technology for working with matrix norms, we would like to show some results about limits and series convergence of matrices. To do that, we need to establish some notation. 
 \begin{defn}\label{def:mat_conv}
 Let $A_i$ be an infinite sequence of $m \times n$ matrices, and let $||\cdot||$ be some matrix norm (the spectral norm, the $L_1$ norm, or another matrix norm). Suppose we have an $m \times n$ matrix $L$ such that 
 \[
@@ -1811,13 +1811,13 @@ It turns out that if the matrices involved are finite-dimensional, the choice of
 This is an instance of the general definition of a convergent sequence in a metric space, where our chosen norm induces a metric. Furthermore, for this discussion, we will be concerned primarily with norms of matrices, so this definition of convergence makes sense for us to use.
 
 \begin{lemma}\label{lem:lim0}
-Let $E$ be a real-valued $n \times n$ matrix.  Suppose that $||E||_s < 1$. Then:
+Let $E$ be a real-valued $n \times n$ matrix.  Suppose that for some matrix norm $||\cdot||$, $||E|| < 1$. Then:
 \[
 \lim_{i \rightarrow \infty}E^i = 0.
 \]
 \end{lemma}
 \begin{proof}
-Recall that the meaning of this statement is determined by Definition \ref{def:mat_conv}.
+Recall that we are supposing that any norm we use satisfies Lemma \ref{lem:norm_prop}.
 
 Let $||E|| < 1$. Let $\vec{0}$ represent be the zero matrix. We now use Lemma \ref{lem:norm_prop}:
 \begin{align*}
@@ -1830,11 +1830,10 @@ Then, by Definition \ref{def:mat_conv},
 \lim_{i \rightarrow \infty} E^i = 0.
 \]
 \end{proof}
-We actually could have used any norm instead of the spectral norm. But the spectral norm is always less than or equal to the $L_1$ norm, as well as most other matrix norms, so the more general result is implied.
 
 This allows us to prove a useful fact which allows us to approximate the inverses of certain matrices.
 \begin{thm}\label{thm:approx}
-Let $A$ be an invertible $n \times n$ matrix, and let $E$ be an $n \times n$ matrix such that $||E|| < \frac 1{||A^{-1}||}$. Then $(A-E)$ is invertible, and
+Let $A$ be an invertible $n \times n$ matrix, let $||\cdot||$ be some matrix norm, and let $E$ be an $n \times n$ matrix such that $||E|| < \frac 1{||A^{-1}||}$. Then $(A-E)$ is invertible, and
 \begin{align*}
 (A - E)^{-1} &= A^{-1} + A^{-1}EA^{-1} + A^{-1}EA^{-1}EA^{-1} + \cdots\\
 &= A^{-1} + A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i.
@@ -1852,18 +1851,45 @@ We apply Lemma \ref{lem:lim0}
 \begin{rmk}
 Recall that, because we rely on Lemma \ref{lem:lim0}, the meaning of this theorem is governed by Definition \ref{def:mat_conv}. That is what the equals sign really means. 
 \end{rmk}
-This fact makes sense. The spectral norm of $A^{-1}$ is the inverse of the smallest eigenvalue of $AA^*$, and it tells us how much $A$ is capable of reducing the euclidean norm of a vector it multiplies. So if that value is very large, $A$ is very nearly not invertible. In that case, it makes sense that adding a relatively small error matrix might change the inverse significantly. 
+This fact makes sense, in particular if we consider the spectral norm. $||A^{-1}||_s$ is the inverse of the smallest eigenvalue of $AA^*$, and it tells us how much $A$ is capable of reducing the euclidean norm of a vector it multiplies. So if that value is very large, $A$ is very nearly not invertible. In that case, it makes sense that adding a relatively small error matrix might change the inverse significantly. 
 
-We can use this result to determine how different the magnitude of a space similar to the one from Example \ref{ex:4pt} differed from that of an actual product space. Given matrices $A$ and $E$ which satisfy Theorem \ref{thm:approx}, we know that 
+Next, we use Theorem \ref{thm:approx} to find a closed-form bound on how much a perturbation matrix changes the magnitude of a generalized metric space.
+
+Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\chi(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $||EA^{-1}|| < 1$ for some matrix norm, so we can use Theorem \ref{thm:approx}.
+
+The magnitude of $A$ is equal to the sum of the entries of $\zeta_A^{-1}$. So the $L_1$ norm of the difference between $\zeta_A$ and $\zeta_A + E$ will be an upper bound on how much adding $E$ changes the magnitude of $A$. We can repeatedly use Lemma \ref{lem:norm_prop} to isolate the error term:
+\begin{align}
+\left|\left|\zeta_A^{-1} - \zeta_A^{-1} - \zeta_A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i\right|\right|_1 \nonumber 
+&= \left|\left|\zeta_A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i\right|\right|_1 \nonumber \\
+&\leq ||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})^i||_1. \label{eq:series}
+\end{align}
+
+Suppose that $||EA^{-1}||_1 <1$. Then we can convert \eqref{eq:series} to a closed form. 
+\begin{align*}
+||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||EA^{-1}||_1^i &\leq
+||\zeta_A^{-1}||_1 \sum_{i = 1}^\infty||(\zeta_A + E)^{-1}||_1^i\\
+ &\leq ||\zeta_A^{-1}||\frac{||EA^{-1}||_1}{1-||EA^{-1}||_1}.
+\end{align*}
+
+However, as we mentioned earlier, all matrix norms are equivalent when it comes to convergence. So if $||EA^{-1}||_1 \geq 1$ but, for example, $||EA^{-1}||_s <1$, the above would no longer work, but we would still expect \eqref{eq:series} to converge. This might be useful, because the spectral norm is often smaller than the $L_1$ norm. To make this work, we will need some way of replacing the $L_2$ norm with a spectral norm. It turns out we can do that:
+\begin{lemma}\label{lem:norm_switch}
+Let $A$ be an $n \times n$ matrix. Then
 \[
-(A - E)^{-1} - A^{-1} = A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i.
+||A||_1 \leq n^2||A||_s.
 \]
-This means that we can let $\Phi = A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i$ be the ``error term.'' If we can bound the sum of the entries of the matrix $\Phi$, that is a bound on the difference between the magnitude of a space whose similarity matrix is $A$, and one whose similarity matrix is $A + E$. Of course, this approximation scheme only works if both spaces admit M\"obius inversion.
+\end{lemma}
+\begin{proof}
+Let $m$ be the absolute value of the largest element of $A$. Suppose that for some $i,j, |A_{ij}| > ||A||_s$. Let $e_j$ be the column vector with a one in index $j$ and zeros everywhere else. Then $Ae_j$ will have $A_{ij}$ in its $i$'th index, so $|Ae_j| \geq |A_{ij}| >||A||_s$. Because $|e_j|=1$, this is a contradiction. So $m \leq ||A||_1$. $||A||_1 \leq n^2m$, so $||A||_1 \leq n^2||A||_s$.
+\end{proof}
 
+This means that we can rewrite \eqref{eq:series} in the following way:
+\begin{align*}
+||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||EA^{-1}||_1^i &\leq n^2||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})^i||_s^i\\
+&\leq n^2||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})||_s^i\\
+&\leq n^2||\zeta_A^{-1}||\frac{||EA^{-1}||_s}{1-||EA^{-1}||_s}.
+\end{align*}
 
-Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\chi(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $E$ satisfies the condition of Theorem \ref{thm:approx}. 
-
-The magnitude of $A$ is equal to $||\mu_A||_1 = ||\zeta_A^{-1}||_1$, where $||\cdot||_1$ is the $L_1$ matrix norm.
+We have (possibly) reduced the value of the norm, at the price of a factor of $n^2$. We can exchange the $L_1$ norm for other matrix norms in a similar fashion, using different constants.
 
 We demonstrate this approximation of magnitude through an example:
 \begin{examp}
@@ -1934,7 +1960,7 @@ e^{-t(1 + d)} & e^{-td} & e^{-t} & 1
 1 & e^{-t} & e^{- td} & e^{-t\sqrt{1 + d^2}}\\
 e^{-t} & 1 &  e^{-t\sqrt{1 + d^2}}& e^{- td}\\
 e^{-td} &  e^{-t\sqrt{1 + d^2}} & 1 & e^{-t}\\
- e^{-t\sqrt{1 + d^2}}& e^{-td} & e^{-t} & 1
+e^{-t\sqrt{1 + d^2}}& e^{-td} & e^{-t} & 1
 \end{bmatrix}
 \end{align*}
 The similarity matrices of $A \times B$ and $M$ have most entries identical. We can quantify the difference between them. For any $d, t \in (0, \infty)$, let 
