@@ -1,16 +1,11 @@
-Add abstract
-Check finiteness conditions overall
 Chapter 1: Mobius Inversion
-More initial examples
 Chapter 2: Groups/orbits
-Introduce
 Chapter 3: Inc/exc
-Justify
+Check over
 Chapter 4: Euler-Leinster characteristic
 Add examples?
 Chapter 5: Enriched categories and magnitude
 Examples of euler char on enriched categories other than over R+
 Questions I still have throughout
-Add _t to norms
-Work out non-series approximation
+Edit explicit approximation section
 

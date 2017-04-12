@@ -39,7 +39,7 @@
 
 \maketitle
 
-\begin{abstract}  M\"obius inversion is a general approach for reversing certain kinds of sums. We start by defining M\"obius inversion in its usual form, over a partially ordered set. We explore traditional applications in the integer divisibility lattice, including Euler's Totient. We then use the lattice of subgroups to count orbits under a group action. In the last two sections, we explore Tom Leinster's generalization of M\"obius inversion to categories and enriched categories, and investigate a data clustering algorithm.
+\begin{abstract} M\"obius inversion is a general approach for reversing certain kinds of sums. We start by defining M\"obius inversion in its usual form, over a partially ordered set. We explore traditional applications in the integer divisibility lattice, including Euler's Totient. We then use the lattice of subgroups to count orbits under a group action. In the last two sections, we explore Tom Leinster's generalization of M\"obius inversion to categories and enriched categories, and investigate a data clustering algorithm.
 \end{abstract}
 
 \pagenumbering{roman}
@@ -49,7 +49,6 @@
 \pagenumbering{arabic}
 \begin{chapter}{Introduction to M\"obius Inversion}\label{chap_intro}
 \section{Introduction and Motivation}
-%TODO: Expand introduction with more explicit examples
 We motivate M\"obius inversion using several examples.
 \begin{examp}
 Suppose that we have the integer sequence $g$ of ones:
@@ -84,12 +83,16 @@ It is now much less clear how to obtain $g$ from $h$. In fact, we will see how t
 
 The goal of M\"obius inversion is to generalize the process of reversing sums over discrete, ordered structures called \emph{posets}. If sums like the above are a discrete analogue of integration (cumulatively summing over a region), then M\"obius inversion is discrete differentiation. In the same way that developing the theory of the derivative is useful for solving differential equations where functions are defined in terms of their integral, M\"obius inversion helps us extract values which are defined in terms of their cumulative sums. In addition to building the necessary machinery for M\"obius inversion, we will consider several applications of it, including a somewhat surprising one in data clustering.
 \section{Initial Example and Partially Ordered Sets}
-M\"obius inversion is a general construct. The classical definition of a M\"obius function is a function $\mu$ on the positive integers which satisfies the following for functions $f,g$ on the positive integers:
+M\"obius inversion is a general construction. It refers to the process of using what is called a \emph{M\"obius function} to access individual terms of a sum over some structure. We would like the M\"obius function to depend only on that structure, and not on the specific values being added up. 
+
+The classical definition of a M\"obius function is a real-valued function $\mu$ on the positive integers which satisfies the following for any functions $f,g$:
 \begin{equation}\label{init_mob} 
-f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac dn\right)
+f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac dn\right).
 \end{equation}
 
-Our first goal is to prove the existence of, and find, this function $\mu$. We will do this using by developing M\"obius inversion in general and then applying it. We start with several definitions.
+Then M\"obius inversion is simply the process of using $\mu$ to obtain values of $g$ from values of $f$. Without knowing anything about either function other than how they relate to each other, we are able to write down $g$ in terms of $f$. 
+
+In fact, this function $\mu$ does exist. We will prove that, and find $\mu$, by developing M\"obius inversion in general and then applying it. We start with several definitions.
 
 \begin{defn}
 A \emph{partially ordered set}, often called a \emph{poset}, is a set $X$ together with a binary relation $\leq$, such that, for all $a,b,c \in X$:
@@ -135,11 +138,11 @@ f(a) = \sum_{b \in X}g(b)\zeta(b,a)
 Each value of $f$, therefore, takes on precisely the structure of a dot product. We will use this structure to leverage linear algebra: 
 \begin{itemize}
 \item Totally order $X$ such that the partial order is respected;
-\item Write $g$ as a row vector which contains the values $g$ takes on elements of $X$, with respect to the total ordering;
-\item Write $\zeta$ as a matrix whose $i,j$ entry is equal to $\zeta(a_i, a_j)$, where $a_i, a_j$ are the $i$'th and $j$'th elements of $X$ under the total ordering.
+\item Write $g$ as a (possibly infinite) row vector which contains the values $g$ takes on elements of $X$, with respect to the total ordering;
+\item Write $\zeta$ as a (possibly infinite) matrix whose $i,j$ entry is equal to $\zeta(a_i, a_j)$, where $a_i, a_j$ are the $i$'th and $j$'th elements of $X$ under the total ordering.
 \end{itemize}
 
-Going forward, we will not explicitly define the vector/matrix forms of functions in this way. Instead, when we refer to functions on one or two elements of a partially ordered set, we will implicitly think of them as (row) vectors and as matrices. We will also implicitly assume a total ordering, and identify an element $a$ of $X$ with its index in the total ordering. So if we write $g(a)$, we are referring to the function $g$ applied to $a$ and also to the element of the corresponding vector containing that value - they are equivalent. We will also use this perspective for function multiplication and inversion. Going forward, $g\zeta$ will refer to the vector/matrix product of $g$ and $\zeta$ rather than function composition, and $\zeta^{-1}$ will refer to the matrix inverse of $\zeta$ rather than the inverse function under composition.
+The matrices and vectors we construct in this way might be infinite, so we have to be careful. In this chapter, all possibly infinite matrices we consider will be upper triangular (it is clear from the definition of $\zeta$ that this is the case here). Each term of the product of two upper triangular matrices is can be calculated from a finite number of matrix elements, even if the factor matrices are infinite. The same is true when an upper triangular matrix is left-multiplied by a row vector. Finally, because our matrices will be upper triangular and have ones on the diagonal, they will automatically be invertible (see Lemma \ref{inv_ex}), and can be inverted even if infinite. In subsequent chapters, we will restrict our attention to M\"obius inversion which uses only finite matrices.
 
 We now are able to define our desired function (or vector) $f$ more succinctly:
 \[
@@ -147,6 +150,8 @@ f = g \zeta
 \]
 
 If the matrix multiplication is explicitly written out, what we get is identical to \eqref{sum_form_intro}.
+
+Going forward, we will not explicitly define the vector/matrix forms of functions in this way. Instead, when we refer to functions on one or two elements of a partially ordered set, we will implicitly think of them as (row) vectors and as matrices. We will also implicitly assume a total ordering, and identify an element $a$ of $X$ with its index in the total ordering. So if we write $g(a)$, we are referring to the function $g$ applied to $a$ and also to the element of the corresponding vector containing that value - they are equivalent. We will also use this perspective for function multiplication and inversion. Going forward, $g\zeta$ will refer to the vector/matrix product of $g$ and $\zeta$ rather than function composition, and $\zeta^{-1}$ will refer to the matrix inverse of $\zeta$ rather than the inverse function under composition.
 
 The goal of M\"obius inversion is to obtain $g$ given $f$. If $\zeta$ were invertible, we would be able to do that. It turns out that $\zeta$ always is invertible. Because the total ordering respects the partial ordering, the matrix $\zeta$ is upper triangular and has ones on the diagonal. This implies the following straightforward but crucial fact:
 \begin{lemma}\label{inv_ex}
@@ -378,8 +383,9 @@ This definition of $\mu$ depends only on $\frac nd$, which means that we can abu
 \[
 f(n) = \sum_{d | n} g(d) \iff g(n) = \sum_{d | n}  f(d)\mu\left(\frac nd\right).
 \]
-\section{Euler's Totient}
-Euler's Totient is a famous function in number theory, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Zz^+ \rightarrow \Zz^+$, and its definition is:
+This is a powerful, versatile result in number theory. As an example, we will walk through how this application of M\"obius inversion is related to Euler's Totient function.
+\begin{examp}[Euler's Totient]
+One of the most fundamental functions of number theory is Euler's Totient, which counts the how many numbers are relatively prime to a particular value. We denote the function by $\varphi : \Zz^+ \rightarrow \Zz^+$, and its definition is:
 \[
 \varphi(n) = \#\{1 \leq m \leq n : (m,n) = 1\},
 \]
@@ -403,12 +409,15 @@ This sum gives us a value we have access to ($n$) in terms of a sum of values we
 \varphi(n) = \sum_{d|n} d\mu\left(\frac nd\right).
 \]
 Recall that Theorem \ref{mu_div} tells us how to write down values of $\mu$. Depending on what information we have access to, this might be much easier than just counting the number of values relatively prime to $n$. This is a straightforward example of how M\"obius inversion's ability to reverse a sum can be useful.
+\end{examp}
 \end{chapter}
 
 
-\begin{chapter}{Groups and Orbits} \label{chap_groups}
-\section{Background}
-For this chapter, it is necessary to be familiar with a simple structure called a \emph{group}. In this section, we will define it and briefly establish the machinery we need without going into too much detail, omitting proofs. More detail on elementary group theory can be found in an abstract algebra textbook. Knowledge of groups is not needed for any other chapters in this investigation.
+\begin{chapter}{Groups and Orbits} \label{chap:groups}
+\section{Motivation and Definitions}
+A \emph{group} is one of the simplest possible algebraic structures. It is a set with a binary operation, analogous to addition or multiplication. Groups are useful for encoding symmetries and permutations, using a construction called a \emph{group action}, which we will define shortly. After we build some machinery, we can consider a motivating problem, which this chapter will give us the tools to solve.
+
+For this chapter, it is necessary to be familiar with groups, including some basic facts about them. In this section, we will define it and briefly establish the machinery we need without going into too much detail, omitting proofs. More detail on elementary group theory can be found in an abstract algebra textbook. Knowledge of groups is not needed for any other subsequent chapters.
 
 \begin{defn}
 A \emph{group} is a set $G$ together with a group operation (denoted with the empty operator) $G \times G \rightarrow G$. This operation must satisfy three requirements.
@@ -438,6 +447,17 @@ or, equivalently,
 \orb_G(x) = \{g\cdot x : g \in G\}.
 \]
 \end{defn}
+
+This is enough terminology for a motivating problem.
+
+\begin{examp}\label{ex:coloring_init}
+Suppose we have a $4 \times 4$ board, and we would like to color each of the 16 squares using one of $k$ possible colors. We want to count the possible colorings. However, the board is symmetric, and we would like to consider colorings equivalent if the board can be rotated to obtain one coloring from the other. So our goal is to count how many \emph{distinct} colorings there are, where two colorings are distinct if they never coincide even if the board is rotated.
+
+Our first guess is $k^{16}$, the number of ways of coloring the board without regard for rotations. But we will end up counting some colorings multiple times. Dividing by 4 is no good, because some colorings are not counted four times but two times or once. 
+
+One solution is to let a particular group act on the set of $k^{16}$ initial colorings, and count the number of orbits. If the group properly captures the symmetry of the board, colorings will be in the same group if and only if they are equivalent. So we need to develop the technology to count the orbits of a group action. This will occupy the next several sections, and we will use the tools we develop to solve this particular problem in Example \ref{ex:coloring}.
+\end{examp}
+
 
 \begin{defn}
 Let a group $G$ act on a set $\Omega$. Let $x \in \Omega$ be given. Then the \emph{stabilizer of $x$ under $G$}, denoted by $\stab_G(x)$, is defined by
@@ -639,11 +659,11 @@ Finally, note that $|C_4|=4$. So
 \begin{bmatrix} 4 \\ 2 \\ 1 \end{bmatrix}\\
 &= \frac 14 \begin{bmatrix} 2 \\ 1 \\ 1\end{bmatrix}
 \end{align*}
-This $\lambda$ is independent of any set $G$ might act on. 
+We determined $\lambda$ before even deciding what set $G$ might act on. So all the work we have done so far can be reused for a variety of actions.
 
-So let's try a particular action. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
+Let's try a particular action. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
 
-We can first solve this problem by inspection, or by "brute force," by just enumerating the possibilities:
+We can first solve this problem by inspection, or by "brute force," by just enumerating the possibilities. This way, when we solve it with $\lambda$, we can determine whether we found the right answer.
 \begin{description}
 \item[Zero rooks:] There is one option with zero rooks: The empty board.
 \[
@@ -672,14 +692,14 @@ Then all we have to do is compute $\lambda f^T$.
 \begin{align*}
 \lambda f^T &= \frac 14 [2, 1, 1] \begin{bmatrix} 1 \\ 3 \\ 7\end{bmatrix} \\
 &= \frac 14 12\\
-&=3
+&=3.
 \end{align*}
-So we indeed find the correct answer. 
+So we indeed get the correct answer. 
 \end{examp}
 
-In this example, it's not clear that using $\lambda$ actually saved work - in fact, it seemed to take longer. But if we were to increase $n$, we could still determine the number of distinct arrangements relatively easily, because $\lambda$ wouldn't change. Furthermore, in many situations (including this one) it is much easier to determine how many \emph{total} arrangements are fixed by a subgroup that it is to find the number of \emph{distinct} arrangements. As an example of that, we can look at another example, which is more difficult to solve by hand. 
-\begin{examp}
-Suppose we have a $4 \times 4$ board, and we would like to color each square one of $k$ colors. We would like to consider colorings identical if one can be obtained from the other by rotating the board. The goal is to count the number of distinct colorings.
+In this example, it's not clear that using $\lambda$ actually saved work - in fact, it seemed to take longer. But if we were to increase $n$, we could still determine the number of distinct arrangements relatively easily, because $\lambda$ wouldn't change. Furthermore, in many situations (including this one) it is much easier to determine how many \emph{total} arrangements are fixed by a subgroup that it is to count the number of \emph{distinct} arrangements. We can look at another example, which is more difficult to solve by enumeration. 
+\begin{examp}[Example \ref{ex:coloring_init}, cont]\label{ex:coloring}
+We now have the tools to solve the problem from Example \ref{ex:coloring_init}. We briefly restate the setup: Suppose we have a $4 \times 4$ board, and we would like to color each square one of $k$ colors. We would like to consider colorings identical if one can be obtained from the other by rotating the board. The goal is to count the number of distinct colorings.
 
 As in Example \ref{ex:2x2}, we let $C_4$ act on the total set of colorings, and count the orbits. This problem is different from the previous one, but because the group which is acting is the same, we can re-use $\lambda$ from the last example. This is one reason this method is powerful. All we have to do is find $f$ by finding the fixed set of each subgroup of $C_4$.
 
@@ -697,7 +717,7 @@ So the number of distinct colorings is
 It's not clear how we would have solved this problem by brute force, and we were able to solve it very quickly, reusing $\lambda$ to save even more work.
 \end{chapter}
 
-\begin{chapter}{Inclusion-Exclusion}
+\begin{chapter}{Inclusion-Exclusion}\label{chap:iep}
 \section{Introduction}
 We start by introducing the desired end result, the \emph{inclusion-exclusion principle}:
 \begin{thm}[Inclusion-Exclusion]\label{iep}
@@ -706,7 +726,7 @@ Let $S$ be a finite set. Let $A_i \subseteq S$ for each $i \in I$ where $I$ is f
 \left|\bigcup_{i \in K}A_i\right| = \sum_{\emptyset \neq J \subseteq K}(-1)^{|J| + 1}\left|\bigcap_{i \in J}A_j\right|
 .\]
 \end{thm}
-This is a well-known fact. It allows us to find the size of unions of overlapping sets if we have information about intersections of those sets. There are many ways of proving the Inclusion-Exclusion Principle. %TODO: Explain why proving it with Mobius inversion is worthwhile
+This is a well-known fact. It allows us to find the size of unions of overlapping sets if we have information about intersections of those sets. There are many ways of proving the Inclusion-Exclusion Principle. We will prove it using M\"obius inversion. What is important here is not the result itself -- Theorem \ref{iep} is not hard to prove -- but establishing a connection. In fact, the Inclusion-Exclusion principle is in some sense a special case of M\"obius inversion, and the proof we walk through in this chapter is one way of looking at that connection.
 
 \section{Proof using M\"obius Inversion} 
 We will need a poset.
@@ -723,7 +743,7 @@ Throughout this section, we will have the following setup: Let $S$ be a finite s
 
 There are two sets of subsets here, and it can be hard to keep them straight. $S$ is a set of elements, and for each $i$, $A_i$ is a subset of $S$. On the other hand, $I$ is our index set, and our partially ordered set consists of subsets of $I$. We will perform M\"obius inversion on subsets of $I$ in order to determine sizes of unions of subsets of $S$.
 
-The goal of the inclusion-exclusion principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could just consider
+The goal of the Inclusion-Exclusion Principle is, given a subset $K$ of $I$, to find the size of the union of the sets $A_i$ for $i \in K$. The difficulty arises from counting elements multiple times. For example, if we knew that the $A_i$ were disjoint, we could just consider
 \[
 \sum_{i \in K}\left|A_i\right|.
 \]
@@ -774,7 +794,7 @@ Let $\zeta$ be defined as usual on $(\ps(I), \supseteq)$. So let $\zeta:\ps(I) \
 \zeta(J,K) = \begin{cases} 1 & J \supseteq K \\ 0 & \text{otherwise}. \end{cases}
 \]
 
-Also, we define the \emph{complement} function/matrix $c$ as follows: %TODO: Change variable name?
+Also, we define the \emph{complement} function/matrix $c$ as follows: 
 \[
 c(J,K) = \begin{cases} 1 & J = K^c \\ 0 & \text{otherwise}. \end{cases}
 \]
@@ -875,11 +895,15 @@ So we can arrive at Theorem \ref{iep}:
 \end{align*}
 This is precisely the Inclusion-Exclusion principle.
 
-It makes sense that we would use M\"obius inversion to prove the Inclusion-Exclusion principle. The difficult aspect of counting how many elements are in the union of the sets is avoiding double-counting. %TODO: Finish this
+It makes sense that we would use M\"obius inversion to prove the Inclusion-Exclusion principle. The difficult aspect of counting how many elements were in the union of the sets was avoiding counting elements multiple times. Given a particular set of subsets of $S$, it was easy to determine how many elements were in all of them, because we had access to intersections of the subsets. But what we really needed to know was how many elements were in those subsets and \emph{only} those subsets. 
+
+This was a similar problem to what we confronted in Chapter \ref{chap:groups}. There, we were easily able to find elements of the set which were fixed by at \emph{least} some subgroup, but we needed M\"obius inversion to find the precise subgroup that fixed each element, so we could properly count orbits. 
+
+In this chapter, we used M\"obius inversion to determine precisely which subsets of $S$ the various set elements were in. This allowed us to determine exactly how many times each element was being counted, and then use facts about binomial coefficients to cancel those extra counts. That was what we did when we found $g$ using $f$ -- the step involving M\"obius inversion. The rest of the proof was simply rearranging terms to arrive at precisely the Inclusion-Exclusion Principle. 
 
 \end{chapter}
 
-\begin{chapter}{Euler Characteristic of a Category}\label{chap_euler}
+\begin{chapter}{Categories and Euler Characteristics}\label{chap:euler}
 \section{Introduction to Categories} \label{cat_defs}
 
 A category is an algebraic structure which generalizes ``objects'' and ``maps'' (or ``morphisms''), with composition. There are several equivalent definitions, all somewhat technical, but the construct itself is quite intuitive once you get used to it.  
@@ -905,14 +929,14 @@ If $f:X \rightarrow Y, g:Y\rightarrow Z$ are functions, then $g \circ f$ exists,
 \end{examp}
 
 We present several examples.
-\begin{examp}
-Let $G$ be a group. Then we can represent $G$ as a category $C$ as follows: 
+\begin{examp}\label{ex:grp_cat}
+Let $G$ be a group. Then we can represent $G$ as a category, which we write as $\star^G$:
 \begin{itemize}
-\item Let $C_0 = \{*\}$, a single object
-\item Let $C(*, *) = G$. In other words, let the set of morphisms from $*$ to $*$ be equal to the set of group elements. 
-\item Use the group operation for multiplication. In other words, if $g,h \in C(*,*)$, then, because $g,h \in G$, we can write $gh$. So let $g \circ h = gh$. 
+\item Let $(\star^G)_0 = \{\star\}$, a single object
+\item Let $C(\star, \star) = G$. In other words, let the set of morphisms from $\star$ to $\star$ be equal to the set of group elements.
+\item Use the group operation for composition. In other words, if $g,h \in C(\star,\star)$, then, because $g,h \in G$, we can write $gh$. So let $g \circ h = gh$. 
 \end{itemize}
-It is straightforward to check that $C$ is indeed a category. 
+It is straightforward to check that $\star^G$ is indeed a category. 
 \end{examp}
 
 
@@ -971,7 +995,7 @@ This is not an invertible matrix. So this simple category does not admit M\"obiu
 We are now ready to construct central definition of this section: the Euler--Leinster characteristic (or just Euler characteristic) of a category. The entire construction can be found in \cite{Lein1, Lein2, Lein4}, and is due to Tom Leinster.
 
 \begin{defn}\label{def_weighting}
-A \emph{weighting} on a category $\Aa$ is a function $\omega$ on $\obj(\Aa)$ such that for all $a \in \Aa$,
+A \emph{weighting} on a category $C$ is a function $\omega$ on $C_0$, the objects of $C$ such that for all $a \in C$,
 \[
 \sum_{b \in C}|C(a,b)|\omega(b) = 1,
 \]
@@ -979,13 +1003,21 @@ or, equivalently, if
 \[
 \sum_{b \in C}\zeta(a,b)\omega(b) = 1.
 \]
+A \emph{coweighting} on $C$ is a function $\kappa$ on $C_0$ such that for all $b \in C$, 
+\[
+\sum_{a \in C}\kappa(a)|C(a,b)| = 1,
+\]
+or, equivalently, if
+\[
+\sum_{a \in C}\kappa(a)\zeta(a, b) = 1.
+\]
 \end{defn}
 
-One of the first questions we ask when we see this definition is how we can write find valid weightings. Luckily, this definition looks familiar. We have a value we know (1) expressed as the sum of function we are seeking ($\omega$). So we can use M\"obius inversion! The situation is slightly more complicated, because we don't know for sure that $\zeta$ is invertible. We formalize that:
+One of the first questions we ask when we see this definition is how we can write find valid weightings/coweightings. Luckily, this definition looks familiar. We have a value we know (1) expressed as the sum of function we are seeking ($\omega$). So we can use M\"obius inversion! The situation is slightly more complicated, because we don't know for sure that $\zeta$ is invertible. We formalize that:
 
 \begin{lemma}
 \label{mobius_is_weighting}
-If $C$ has M\"obius inversion, then the weighting $\omega_\mu$ defined by $\omega_\mu(a) = \sum_b \mu(a,b)$ is a weighting on $C$.
+If $C$ has M\"obius inversion, then the function $\omega_\mu$ defined by $\omega_\mu(a) = \sum_b \mu(a,b)$ is a weighting on $C$. The function $\kappa_\mu$ defined by $\kappa_\mu(b) = \sum_a \mu(a,b)$ is a coweighting on $C$.
 \end{lemma}
 \begin{proof} For all $a \in C$,
 \begin{align*}
@@ -995,25 +1027,41 @@ If $C$ has M\"obius inversion, then the weighting $\omega_\mu$ defined by $\omeg
 &=\sum_c \delta(a,c)\\
 &=1.
 \end{align*}
+The proof is almost identical for $\kappa_\mu$.
 \end{proof}
-
-Note that even if $C$ does not admit M\"obius inversion, it might admit a weighting. For example, the category in Example \ref{2_pt} admits the weighting $\omega(a) = \omega(b) = 0.5$, even though it does not admit M\"obius inversion.
 
 This is important. It provides a way in which we can write down weightings on metric spaces, since the similarity matrix $\zeta$ is invertible in many cases. We will investigate exactly which cases when we discuss positive semidefinite matrices.
 
+Note that even if $C$ does not admit M\"obius inversion, it might admit a weighting and/or a coweighting. For example, the category in Example \ref{2_pt} admits the weighting and coweighting $\omega(a) =\kappa(a)= \omega(b) = 0.5$, even though it does not admit M\"obius inversion.
+
+\begin{lemma}\label{lem:weight_eq}
+Let $C$ be a finite category. Suppose that $\omega$ and $\kappa$ are a weighting and a coweighting respectively on $C$. Then 
+\[\sum_{b \in C} \omega(b) = \sum_{a \in C} \kappa(a).
+\]
+\end{lemma}
+\begin{proof}
+\begin{align*}
+\sum_{b \in C} \omega(b) &= \sum_{b \in C}\left( \sum_{a \in C} \kappa(a)\zeta(a,b)\right)\omega(b) \\
+&= \sum_{a \in C}\left(\sum_{b \in C} \zeta(a,b)\omega(b)\right)  \kappa(a) \\
+&= \sum_{a \in C}\kappa(a).
+\end{align*}
+\end{proof}
+
 \begin{defn}[Leinster, \cite{Lein1}]\label{cat_euler}
-Let $\omega$ be a weighting on a finite category $A$. Then the \emph{Euler--Leinster characteristic}, or just the \emph{Euler characteristic}, of $A$, denoted by $\chi(A)$, is defined by
+$C$ be a category with a weighting $\omega$ and a coweighting $\kappa$. Then the \emph{Euler--Leinster characteristic}, or just the \emph{Euler characteristic}, of $C$, denoted by $\chi(C)$, is defined by
 \[
-\chi(A) = \sum_{a \in A} \omega(a)
+\chi(A) = \sum_{b \in C} \omega(b) = \sum_{a \in C} \kappa(a).
 \]
 \end{defn}
-Note that even if a category admits several weightings, they all lead to the same Euler characteristic by a simple sum rearrangement argument. Together with Lemma \ref{mobius_is_weighting}, this implies the following:
+Lemma \ref{lem:weight_eq} tells us that which weighting or coweighting we choose does not change the value of the Euler characteristic.
+
+Together with Lemma \ref{mobius_is_weighting}, we have the following:
 \begin{cor}\label{euler_mu}
 If a finite category $A$ has a M\"obius inversion $\mu$, then
 \[\chi(A) = \sum_{a \subseteq A} \sum_{b \subseteq A} \mu(a, b).
 \]
 \end{cor}
-%TODO: Think of category w/ no euler char
+%TODO: Think of category w/ no euler char?
 \section{Simplicial Complexes}
 Calling a new construction an Euler characteristic needs some intuitive justification. We will introduce a structure called a \textit{simplicial complex} to show that calling this value an Euler characteristic is reasonable. 
 
@@ -1077,12 +1125,13 @@ Note that a simplicial complex can be converted into a poset, where the cells ar
 
 The notation for $\cat(\sigma)$ is a little tricky. If $\sigma$ is a simplicial complex, and $\alpha \in \sigma$ is a simplex, then we write $\cat(\alpha)$ to denote the object in $\cat(\sigma)$ corresponding with the simplex $\alpha \in \sigma$. We consider an example.
 \begin{examp}
-Let $\sigma = \{a, b, ab\}$. Then $\cat(\sigma)$ has three objects and five morphisms, including the three identity morphisms.
+Let $\sigma = \{a, b, ab\}$. Then $\cat(\sigma)$ has three objects and five morphisms, including the three identity morphisms. See Figure \ref{fig:catsigma}.
 \begin{figure}[h]
 \[
 \includegraphics{../Figures/simp_cat.pdf}
 \]
 \caption{$\sigma$ and $\cat(\sigma)$. Recall that we omit identity morphisms when drawing a category.}
+\label{fig:catsigma}
 \end{figure}
 \end{examp}
 
@@ -1118,7 +1167,7 @@ We can add and subtract $(-1)^{|\beta - \alpha|}$ and apply a binomial identity 
 \begin{align*}
 \mu(\alpha, \beta) &= - \sum_{\gamma \subseteq (\beta - \alpha)} (-1)^{|\gamma|} + (-1)^{|\beta - \alpha|} \\ 
 &= (-1)^{|\beta - \alpha|} -  \sum_{i = 0}^{|\beta - \alpha|}(-1)^i{|\beta- \alpha| \choose i}\\ 
-&= (-1)^{|\beta - \alpha|} \\ 
+&= (-1)^{|\beta - \alpha|} .\\ 
 \end{align*}
 \end{proof}
 We are now ready to prove that the two definitions of the Euler characteristic coincide.
@@ -1131,7 +1180,7 @@ Let $\sigma$ be a simplicial complex. Then
 
 \end{thm}
 \begin{proof}
-Recall that by Definition \ref{cat_euler}, 
+Recall that by Corrolary \ref{euler_mu}, 
 \[
 \chi(\cat(\sigma)) = \sum_{\gamma \in \sigma} \sum_{\alpha \in \sigma} \mu(\cat(\alpha), \cat(\gamma)).
 \]
@@ -1150,8 +1199,9 @@ So we have
 \end{proof}
 The fact that $\chi(\cat(\sigma)) = \chi(\sigma)$ is comforting. It justifies calling using $\chi$ in Definition \ref{cat_euler}, and calling this construction a type of Euler characteristic.
 
-\section{Euler--Leinster Characteristic Examples}
-%TODO: Groups? Posets are boring... categories which look like other things?
+\begin{examp}
+In Example \ref{ex:grp_cat}, we saw how a group can be represented in a category. Let $G$ be a group, and let $\star^G$ be the corresponding category. Then $\zeta_{\star^G} = \begin{bmatrix}|G|\end{bmatrix}$. So $\mu_{\star^G} = \begin{bmatrix} \frac 1{|G|}\end{bmatrix}$, meaning that $\chi(\star^G)=\frac 1{|G|}$.
+\end{examp}
 
 \end{chapter}
 \begin{chapter}{Metric Space Magnitude}\label{chap_magnitude}
@@ -1172,7 +1222,7 @@ The idea of hierarchical clustering is that instead of choosing a scale, we capt
 
 We can see in Figure \ref{fig:hier} that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
 
-There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler--Leinster characteristic from Chapter \ref{chap_euler}. We start by building some important definitions.
+There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler--Leinster characteristic from Chapter \ref{chap:euler}. We start by building some important definitions.
 
 A metric space is a space with a notion of distance between pairs of points. 
 \begin{defn}
@@ -1189,7 +1239,7 @@ In almost all forms of hierarchical clustering, we represent data as a metric sp
 
 In the next section, we expand the Euler--Leinster characteristic to a generalization of categories called \emph{enriched categories}. We will connect this back to data and metric spaces in subsequent sections.
 \section{Enriched Categories}
-In Chapter \ref{chap_euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
+In Chapter \ref{chap:euler}, we defined a structure called a category. It turns out that this construction - which we will now call an \emph{ordinary} category - can be generalized further, to become an \emph{enriched} category. The idea is that we replace the sets of morphisms with objects from an ordinary category of a certain type, and adapt the definition of composition accordingly. 
 
 In order to define the next construction, we need to define a notion of isomorphism between objects in a category.
 \begin{defn}
@@ -1224,9 +1274,9 @@ There are a variety of commutation requirements which we are not considering in 
 
 We turn to several examples of monoidal categories.
 \begin{examp}
-The category $\catname{set}$ is the prototypical example of a monoidal category. In that case, the monoidal product $\otimes$ is the Cartesian product on sets (hence the notation $\otimes$ for the monoidal product), and $u = \{*\}$, some set with a single element.
+The category $\catname{set}$ is the prototypical example of a monoidal category. In that case, the monoidal product $\otimes$ is the Cartesian product on sets (hence the notation $\otimes$ for the monoidal product), and $u = \{\star\}$, some set with a single element.
 
-Here, we can consider what the required isomorphisms look like. It's required that for any set $X \in \catname{set}, \{*\} \otimes X \cong X$. Elements of $\{*\} \otimes X$ are of the form $(*, x)$ for $x \in X$. Also recall that an isomorphism is an invertible morphism, and that in \catname{set}, morphisms are just maps. So, because $|X| = |\{*\} \otimes X|$, the two sets are isomorphic in \catname{set}. The associativity isomorphisms are similar.
+Here, we can consider what the required isomorphisms look like. It's required that for any set $X \in \catname{set}, \{\star\} \otimes X \cong X$. Elements of $\{\star\} \otimes X$ are of the form $(\star, x)$ for $x \in X$. Also recall that an isomorphism is an invertible morphism, and that in \catname{set}, morphisms are just maps. So, because $|X| = |\{\star\} \otimes X|$, the two sets are isomorphic in \catname{set}. The associativity isomorphisms are similar.
 \end{examp}
 \begin{examp}\label{cat_real}
 A monoidal category which will be very important here is $\Rr^{\geq 0}$, where there is exactly one morphism $f \in \Rr(a,b)$ if $a \geq b$. The monoidal product is addition, and the unit object is 0. The requirements are easily checked. We will refer to this category as $D$, because soon it will be used to represent distances.
@@ -1252,7 +1302,7 @@ For a full discussion of enriched categories, including a complete description o
 \section{Norms and the Euler--Leinster Characteristic}
 The following constructions can be found in \cite{Nog1, Lein4}.
 
-We would like to generalize the weightings and Euler--Leinster characteristic from Chapter \ref{chap_euler} so we can use them on enriched categories. Recall that in Definition \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
+We would like to generalize the weightings and Euler--Leinster characteristic from Chapter \ref{chap:euler} so we can use them on enriched categories. Recall that in Definition \ref{def_weighting}, we used the function $\zeta$ to require that for $\omega$ to be a weighting on a category $C$, for all $a \in C$,
 \[
 \sum_{b \in C}|C(a,b)|\omega(b) = 1.
 \]
@@ -1272,18 +1322,35 @@ The usual cardinality function on the monoidal category \catname{set} does satis
 
 It's not clear why we require that the norm function be multiplicative. We will see a reason why in Section \ref{sec:prod}, where we will explore a notion of a product category. There, it will be necessary that norms behave in this way.
 
+If we raise a norm to a power, it is still a norm. This will be a useful fact.
+\begin{lemma}\label{lem:exp_norm}
+Let $M$ be a monoidal category. Let $|\cdot|$ be some norm on $M$. Then, for any real number $t$,  $|\cdot|^t$ is a norm on $M$.
+\end{lemma}
+\begin{proof}
+We can check the two requirements. Let $a,b \in M$ be given, and let $u$ be the unit in $M$.
+\[|M|^t = 1^t = 1
+\]
+\begin{align*}
+|a|^t|b|^t &= (|a||b|)^t\\
+&= |ab|^t.
+\end{align*}
+\end{proof}
+
 We can consider some examples of norms.
-\begin{examp}\label{exp_norm}
-Let $D$ be the monoidal category of non-negative real numbers defined in example Example \ref{cat_real}. Then, for all $t \in \Rr$, the function $|\cdot|:D \rightarrow \Rr$ defined by 
+\begin{examp}
+Let \catname{set} be the category of finite sets. Then the usual norm, cardinality, is a norm under this definition. This is the norm we use when we view ordinary categories as categories enriched over \catname{set}. Interestingly, Lemma \ref{lem:exp_norm} tells us that we can raise set cardinality to any power, and we still have a norm. It might be interesting to explore the effect this has on the Euler characteristic of a category over \catname{set}, although we do not explore that here.
+\end{examp}
+\begin{examp}\label{ex:exp_norm}
+Let $D$ be the monoidal category of non-negative real numbers defined in example Example \ref{cat_real}. Then he function $|\cdot|:D \rightarrow \Rr$ defined by 
 \[
-|x| = e^{-tx}
+|x| = e^{-x}
 \]
 is a norm on $D$. We can see that it satisfies the requirements:
 \[|0| = 1
 \]
-\[|x + y| = e^{-tx + ty} = |x||y|.
+\[|x + y| = e^{-x + y} = |x||y|.
 \]
-We will explore this norm in detail shortly.
+Note that by \ref{lem:exp_norm}, this implies that $e^{-tx}$ is a norm on $D$ for any real number $t$. We will explore this family of norms in detail shortly.
 \end{examp}
 
 Now that we know how to replace the norm function on sets, we can redefine the $\zeta$ function, M\"obius inversion, weightings, and the Euler--Leinster characteristic on enriched categories. We go through these definitions, and then we will explore their ramifications.
@@ -1303,7 +1370,7 @@ if $\zeta$ is invertible. If $\mu$ exists, we say that $C$ admits M\"obius inver
 \end{defn}
 
 \begin{defn}
-Let $C$ be a finite category enriched over a monoidal category $M$, with a specificed norm $|\cdot|$. Then $\omega$ is a \emph{weighting} on $C$ if, for all $a \in C$, 
+Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Then $\omega$ is a \emph{weighting} on $C$ if, for all $a \in C$, 
 \[
 \sum_{b \in C}|C(a,b)|\omega(b) = 1,
 \]
@@ -1321,18 +1388,18 @@ Let $C$ be a finite category enriched over a monoidal category $M$, with a speci
 \end{defn}
 In the notation just introduced, we will sometimes omit the subscripts specifying the norm, if the norm is implied.
 \begin{rmk}
-When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we will soon introduce, and continue to refer to the general construction as the Euler--Leinster characteristic or the Euler characteristic of $C$.
+When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we introduce in Definition \ref{def:magn}, and continue to refer to the general construction as the Euler--Leinster characteristic or the Euler characteristic of $C$.
 \end{rmk}
 \begin{rmk}
 As before, it is easy to show by rearranging terms that the value of $\chi_{|\cdot|}(C)$ is independent of the specific weighting chosen. However, it does depend on the norm we choose. This will become very important later.
 \end{rmk}
-%TODO: Examples of euler characteristics of non-metric space enriched categories
+%TODO: Examples of euler characteristics of non-metric space enriched categories?
 
 \section{Magnitude}
 Recall that the motivation for this section was data clustering. So we would like to use the technology from the previous section to process data in the form of a metric space. We will use a particular enriched category for that purpose, called a \emph{generalized metric space}. This is a category enriched over a monoidal category whose objects are non-negative real numbers, allowing us to preserve a notion of distance.  
 
 \begin{defn}[Lawvere, \cite{Lawv1}]\label{gen_met}
-Let $D$ be the monoidal category of non-negative real numbers defined in Example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space}.
+Let $D$ be the monoidal category of non-negative real numbers defined in Example \ref{cat_real}. Let $C$ be a category enriched over $D$. Then we call $C$ a \emph{generalized metric space} (or sometimes a \emph{Lawvere megric space}).
 \end{defn}
 There is a lot of technology buried in that definition, and it can be difficult to untangle definitions involving enriched categories. Luckily, because of the simplicity of $D$, we can simplify the definition of a generalized metric space to one which does not depend on the definition of an enriched category.
 \begin{thm}\label{direct_def}
@@ -1388,18 +1455,10 @@ This looks exactly like the requirement (from Definition \ref{def_weighting}) fo
 
 We now move from our analogy back into the realm of categories. We will model the situation using a generalized metric space. We need a norm $|\cdot|$ on $D$ such that $|x|$ will be close to 1 as $x$ gets small, and will approach zero as it gets large. 
 
-Recall that in Example \ref{exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function. 
-\begin{figure}[h]
-%TODO: Replace plot
-\[
-\includegraphics[width = 0.5\paperwidth]{../Figures/exp.pdf}
-\]
-\caption{A graph of $e^{-x}$ against $x$.}
-\end{figure}
-And the larger the value of $t$, the quicker the function decays. In fact, we will see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
+Recall that in Example \ref{ex:exp_norm}, we observed that the function $|x|=e^{-tx}$ is a norm on $D$. For any positive $t$, this is a decreasing function in $x$. The larger the value of $t$, the quicker the function decays. In fact, we will see that if we use this family of norms, we can view $t$ as a ``zooming'' parameter, which allows us to consider the data at different scales.
 
 We have a special name for the Euler characteristic of a generalized metric space which results from this particular norm:
-\begin{defn}[\cite{Lein4}]
+\begin{defn}[\cite{Lein4, Lein2}]\label{def:magn}
 Let $M$ be a generalized metric space. Let $|\cdot|_t:D \rightarrow \Rr$ be defined by
 \[
 |x|_t = e^{-tx}.
@@ -1425,21 +1484,21 @@ Consider the space $M_2$ of two points separated by distance $1$, shown in Figur
 \caption{$M_2$, a simple generalized metric space with two points.}
 \label{fig:2pt}
 \end{figure}
-If $t$ indeed behaves as a zooming parameter, then we would expect that for small values of $t$, $\chi_t(M_2)$ should have a single cluster, because we are not zoomed in. But for large values of $t$, the number of clusters should approach 2, as the two points fully separate from each other.
+If $t$ indeed behaves as a zooming parameter, then we would expect that for small values of $t$, $\magn_t(M_2)$ should have a single cluster, because we are not zoomed in. But for large values of $t$, the number of clusters should approach 2, as the two points fully separate from each other.
 
 In this case, for $t \in (1,\infty),$ we can let the weighting of each point equal
 \[\frac{1}{1+e^{-t}}.\]
 It is straightforward to check that this is indeed a valid weighting. So for each $t$,
 \[
- \chi_t(M_2) = \frac{2}{1+e^{-t}}.
+ \magn_t(M_2) = \frac{2}{1+e^{-t}}.
 \]
 
-We are varying a parameter, $t$, in the exponent of the norm definition. So it is reasonable to expect that the behavior of the magnitude as $t$ varies will be logarithmic. If we plot $\chi_t(M_2)$ against $t$, we can see that it behaves just as we expect (see Figure \ref{fig:2pt_mag}).
+We are varying a parameter, $t$, in the exponent of the norm definition. So it is reasonable to expect that the behavior of the magnitude as $t$ varies will be logarithmic. If we plot $\magn_t(M_2)$ against $t$, we can see that it behaves just as we expect (see Figure \ref{fig:2pt_mag}).
 \begin{figure}[H]
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/2_point_.png}}
 \]
-\caption{A plot of $\chi_t(M_2)$ against $\log(t)$, where $t$ is the scale factor.}
+\caption{A plot of $\magn_t(M_2)$ against $\log(t)$, where $t$ is the scale factor.}
 \label{fig:2pt_mag}
 \end{figure}
 \end{examp}
@@ -1511,7 +1570,7 @@ Let $A,B$ be categories both enriched over a symmetric monoidal category $M$. Fi
 \item The composition and identity morphisms are defined using Lemma \ref{prod_morph} (the details are not important for this discussion, but they are straightforward).
 \end{itemize}
 \begin{rmk}
-The Cartesian product of two categories enriched over $M$ is indeed a category enriched over $M$. There are many requirements to check, and we do not go through all of them here.
+The Cartesian product of two categories enriched over $M$ is indeed a category enriched over $M$. There are many requirements to check, and we do not go through them here.
 \end{rmk}
 \end{defn}
 
@@ -1691,7 +1750,7 @@ $M$ is very nearly a product space of two 2-points spaces at different scales, o
 \label{fig:2_2pt}
 \end{figure}
 
-In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the magnitudes of the three spaces as we vary $t$. At every value of $t$, $\chi_t(M)$ is almost exactly the product of the magnitudes of the other two spaces at that $t$ value.
+In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the magnitudes of the three spaces as we vary $t$. At every value of $t$, $\magn_t(M)$ is almost exactly the product of the magnitudes of the other two spaces at that $t$ value.
 \begin{figure}[H]
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/prod_mag.png}}
@@ -1734,9 +1793,6 @@ This is one of an infinite number of $L_p$ norms, one for each positive integer 
 ||A||_p = \sqrt[p]{\sum_{i = 1}^n\sum_{j = 1}^n |A_{ij}|^p}.
 \]
 \end{rmk}
-
-
-
 
 
 There are three simple properties of both norms which we will need.
@@ -1855,7 +1911,7 @@ This fact makes sense, in particular if we consider the spectral norm. $||A^{-1}
 
 Next, we use Theorem \ref{thm:approx} to find a closed-form bound on how much a perturbation matrix changes the magnitude of a generalized metric space.
 
-Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\chi(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $||EA^{-1}|| < 1$ for some matrix norm, so we can use Theorem \ref{thm:approx}.
+Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\magn(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $||EA^{-1}|| < 1$ for some matrix norm, so we can use Theorem \ref{thm:approx}.
 
 The magnitude of $A$ is equal to the sum of the entries of $\zeta_A^{-1}$. So the $L_1$ norm of the difference between $\zeta_A$ and $\zeta_A + E$ will be an upper bound on how much adding $E$ changes the magnitude of $A$. We can repeatedly use Lemma \ref{lem:norm_prop} to isolate the error term:
 \begin{align}
@@ -1892,7 +1948,7 @@ This means that we can rewrite \eqref{eq:series} in the following way:
 We have (possibly) reduced the value of the norm, at the price of a factor of $n^2$. We can exchange the $L_1$ norm for other matrix norms in a similar fashion, using different constants.
 
 We demonstrate this approximation of magnitude through an example:
-\begin{examp}
+\begin{examp} %TODO Rework 
 We will consider a situation quite similar to Example \ref{ex:4pt}. Let $M$ be the following generalized metric space:
 \begin{figure}[H]
 \[
@@ -1984,7 +2040,7 @@ If we are interested in bounding the difference in magnitude of $M$ and $A \time
 \mu_M = \mu_{A \times B} + \mu_{A \times B}\sum_{i = 1}^\infty (E_{dt}\zeta_{A \times B}^{-1})^i.
 \]
 
-This formula gives us a way of bounding how different the magnitude of the Euclidean spaces is from the product space. We can numerically calculate values for $\chi_t(M), \chi_t(A \times B)$, and the error term, and plot them.
+This formula gives us a way of bounding how different the magnitude of the Euclidean spaces is from the product space. We can numerically calculate values for $\magn_t(M), \magn_t(A \times B)$, and the error term, and plot them.
 
 If $d = 0.1$, so the scales differ by a factor of ten, then we get the following as we vary $t$:
 \begin{figure}[H]
