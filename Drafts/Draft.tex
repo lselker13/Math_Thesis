@@ -1502,7 +1502,7 @@ We are varying a parameter, $t$, in the exponent of the norm definition. So it i
 \label{fig:2pt_mag}
 \end{figure}
 \end{examp}
-\section{Product Spaces and Approximations}\label{sec:prod}
+\section{Product Spaces}\label{sec:prod}
 In Figure \ref{fig:3+4}, we see two sets of points, $M$ and $N$. $M$ has three points while $N$ has four.
 
 \begin{figure}[h]
@@ -1760,31 +1760,17 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 \end{figure}
 \end{examp}
 
-\section{Approximations and Error Bounding}
-In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. To do that, we need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
+In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. In the next section, we explore one idea for bounding error, but see that it has an important flaw. We then propose a possible route for a more useful error bounding method.
+
+\section{Approximation Attempts and Questions}
+First, we work through an approach to error bounding which has promise, but does not seem to be effective. We need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
 
 There are many norms on matrices. Formally, a matrix norm is simply a function from matrices to the non-negative real numbers which satisfies certain properties.
-
-\begin{defn}\label{def:spec}
-Let $n$ be given. Let $|v|$ denote the Euclidean vector norm. Then the \emph{spectral norm} on real- (or complex-) valued $n \times n$ matrices, denoted $||\cdot ||_s$, is defined by
-\[
-||M||_s = \sup_{0 \neq x \in \Rr^n}\left\{ \frac{|Ax|}{|x|} \right\}.
-\]
-\end{defn}
-\begin{rmk}
-Definition \ref{def:spec} does not tell us how to find the spectral norm of a matrix. However, it is not difficult to do so. For a given $M$, we can find $||M||_s$ as follows:
-
-Let $M^*$ be the adjoint, or conjugate transpose, of $M$. Let $\lambda_1$ be the largest eigenvalue of the matrix $MM^*$. Then $\lambda_1$ will be real-valued, and $||M||_s=\sqrt{\lambda_1}$. 
-
-We will not prove or use this fact - it is simply here to assure readers that the spectral norm can be computed.
-\end{rmk}
-This norm is a common way of determining how ``large'' a matrix is. It will allow us to determine which matrices are ``small enough'' to satisfy some approximation theorems.
-
-We also define a second matrix norm, called the $L_1$ norm.
+We define one called the $L_1$ norm.
 \begin{defn}
-Let $A$ be an $n \times n$ matrix. Then the \emph{$L_1$ norm} of $A$, denoted $||A||_2$, is the sum of the absolute values of entries of $A$. In other words,
+Let $A$ be an $n \times n$ matrix. Then the \emph{$L_1$ norm} of $A$, denoted $||A||_1$, is the sum of the absolute values of entries of $A$. In other words,
 \[
-||A||_2 = \sum_{i = 1}^n\sum_{j = 1}^n |A_{ij}|.
+||A||_1 = \sum_{i = 1}^n\sum_{j = 1}^n |A_{ij}|.
 \]
 \end{defn}
 \begin{rmk}
@@ -1795,46 +1781,25 @@ This is one of an infinite number of $L_p$ norms, one for each positive integer 
 \end{rmk}
 
 
-There are three simple properties of both norms which we will need.
+There are three simple properties of this norm which we will need.
 \begin{lemma}\label{lem:norm_prop}
-Let $A, B$ be $n \times n$ matrices. Let $||\cdot||$ be \emph{either} the spectral norm or the $L_1$ norm. Then
+Let $A, B$ be $n \times n$ matrices. Let $||\cdot||_1$ be the $L_1$ norm. Then
 \begin{enumerate}
 \item \[
-||AB|| \leq ||A||\times ||B||,
+||AB||_1 \leq ||A||_1\times ||B||_1,
 \]
 
 \item
 \[
-||A + B|| \leq ||A|| + ||B||.
+||A + B||_1 \leq ||A||_1 + ||B||_1.
 \]
 \item 
 \[
-||A|| = 0 \iff A = 0.
+||A||_1 = 0 \iff A = 0.
 \]
 \end{enumerate}
 \end{lemma}
 \begin{proof}
-\begin{description}
-\item[Spectral Norm:]
-\begin{enumerate}
-\item By the definition of the spectral norm, for any $v \in \Rr^n$,
-\begin{align*}
-|ABv| &\leq |A(||B||_s \times |v|)|\\
-&\leq (||A||_s \times ||B||_s)|v|.
-\end{align*}
-It follows that 
- \[
-||AB|| \leq ||A||_s\times ||B||.
-\]
-\item For any $v \in \Rr^n$,
-\begin{align*}
-|(A + B)v| &= |Av + Bv|\\
- &\leq |Av| + |Bv|\\
- &\leq ||A||_s + ||B||_s)v.
-\end{align*}
-\item It is clear that if $A=0$ then $||A||_s=0$. Now suppose that $A$ is not zero. Then the column space of $A$ has nonzero dimension, so there exists a $v$ such that $Av \neq 0$. So $||A||_s \geq \frac{|Av|}{|v|} > 0$.
-\end{enumerate}
-\item[$L_1$ Norm:]
 \begin{enumerate}
 \item We have
 \begin{align*}
@@ -1847,15 +1812,14 @@ It follows that
 \item For each $i,j$, $|(A + B)_{ij}| = |A_{ij} + B_{ij}| \leq |A_{ij}| + |B_{ij}|$. The result follows.
 \item If $A=0$ then $||A||_1=0$. On the other hand, if any entry of $A$ is nonzero, then $||A||_1 > 0$ by definition.
 \end{enumerate}
-\end{description}
+
 \end{proof}
-Again, there are many other matrix norms. For our purposes, when a theorem uses an arbitrary matrix norm, we will assume that it satisfies Lemma \ref{lem:norm_prop}. 
 
 Now that we have some basic technology for working with matrix norms, we would like to show some results about limits and series convergence of matrices. To do that, we need to establish some notation. 
 \begin{defn}\label{def:mat_conv}
-Let $A_i$ be an infinite sequence of $m \times n$ matrices, and let $||\cdot||$ be some matrix norm (the spectral norm, the $L_1$ norm, or another matrix norm). Suppose we have an $m \times n$ matrix $L$ such that 
+Let $A_i$ be an infinite sequence of $m \times n$ matrices, and let $||\cdot||_1$ be the $L_1$ matrix norm. Suppose we have an $m \times n$ matrix $L$ such that 
 \[
-\lim_{i \rightarrow \infty} ||A_i - L|| = 0.
+\lim_{i \rightarrow \infty} ||A_i - L||_1 = 0.
 \]
 Then we say that 
 \[
@@ -1867,7 +1831,7 @@ It turns out that if the matrices involved are finite-dimensional, the choice of
 This is an instance of the general definition of a convergent sequence in a metric space, where our chosen norm induces a metric. Furthermore, for this discussion, we will be concerned primarily with norms of matrices, so this definition of convergence makes sense for us to use.
 
 \begin{lemma}\label{lem:lim0}
-Let $E$ be a real-valued $n \times n$ matrix.  Suppose that for some matrix norm $||\cdot||$, $||E|| < 1$. Then:
+Let $E$ be a real-valued $n \times n$ matrix. Suppose that $||\cdot||_1$, $||E|| < 1$. Then:
 \[
 \lim_{i \rightarrow \infty}E^i = 0.
 \]
@@ -1875,10 +1839,10 @@ Let $E$ be a real-valued $n \times n$ matrix.  Suppose that for some matrix norm
 \begin{proof}
 Recall that we are supposing that any norm we use satisfies Lemma \ref{lem:norm_prop}.
 
-Let $||E|| < 1$. Let $\vec{0}$ represent be the zero matrix. We now use Lemma \ref{lem:norm_prop}:
+Let $||E||_1 < 1$. Let $\vec{0}$ represent be the zero matrix. We now use Lemma \ref{lem:norm_prop}:
 \begin{align*}
-\lim_{i \rightarrow \infty}|| E^i - \vec{0}|| &\leq \lim_{i \rightarrow \infty}|| E^i|| - ||\vec{0}|| \\
-&\leq \lim_{i \rightarrow \infty}|| E||^i\\
+\lim_{i \rightarrow \infty}|| E^i - \vec{0}||_1 &\leq \lim_{i \rightarrow \infty}|| E^i||_1 - ||\vec{0}||_1 \\
+&\leq \lim_{i \rightarrow \infty}|| E||_1^i\\
 &= 0.
 \end{align*}
 Then, by Definition \ref{def:mat_conv},
@@ -1889,7 +1853,7 @@ Then, by Definition \ref{def:mat_conv},
 
 This allows us to prove a useful fact which allows us to approximate the inverses of certain matrices.
 \begin{thm}\label{thm:approx}
-Let $A$ be an invertible $n \times n$ matrix, let $||\cdot||$ be some matrix norm, and let $E$ be an $n \times n$ matrix such that $||E|| < \frac 1{||A^{-1}||}$. Then $(A-E)$ is invertible, and
+Let $A$ be an invertible $n \times n$ matrix, and let $E$ be an $n \times n$ matrix such that $||E||_1 < \frac 1{||A^{-1}||_1}$. Then $(A-E)$ is invertible, and
 \begin{align*}
 (A - E)^{-1} &= A^{-1} + A^{-1}EA^{-1} + A^{-1}EA^{-1}EA^{-1} + \cdots\\
 &= A^{-1} + A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i.
@@ -1907,11 +1871,10 @@ We apply Lemma \ref{lem:lim0}
 \begin{rmk}
 Recall that, because we rely on Lemma \ref{lem:lim0}, the meaning of this theorem is governed by Definition \ref{def:mat_conv}. That is what the equals sign really means. 
 \end{rmk}
-This fact makes sense, in particular if we consider the spectral norm. $||A^{-1}||_s$ is the inverse of the smallest eigenvalue of $AA^*$, and it tells us how much $A$ is capable of reducing the euclidean norm of a vector it multiplies. So if that value is very large, $A$ is very nearly not invertible. In that case, it makes sense that adding a relatively small error matrix might change the inverse significantly. 
 
 Next, we use Theorem \ref{thm:approx} to find a closed-form bound on how much a perturbation matrix changes the magnitude of a generalized metric space.
 
-Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\magn(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $||EA^{-1}|| < 1$ for some matrix norm, so we can use Theorem \ref{thm:approx}.
+Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose we know $\magn(A)$, the magnitude of $A$, and we would like to know how much adding $E$, a perturbation matrix, to $\zeta_A$, will change the magnitude. Suppose that $||EA^{-1}||_1 < 1$, so we can use Theorem \ref{thm:approx}.
 
 The magnitude of $A$ is equal to the sum of the entries of $\zeta_A^{-1}$. So the $L_1$ norm of the difference between $\zeta_A$ and $\zeta_A + E$ will be an upper bound on how much adding $E$ changes the magnitude of $A$. We can repeatedly use Lemma \ref{lem:norm_prop} to isolate the error term:
 \begin{align}
@@ -1926,28 +1889,19 @@ Suppose that $||EA^{-1}||_1 <1$. Then we can convert \eqref{eq:series} to a clos
 ||\zeta_A^{-1}||_1 \sum_{i = 1}^\infty||(\zeta_A + E)^{-1}||_1^i\\
  &\leq ||\zeta_A^{-1}||\frac{||EA^{-1}||_1}{1-||EA^{-1}||_1}.
 \end{align*}
+Unfortunately, this approach often does not work. The problem is that we are interested in considering spaces and scales such that some groups of points form clusters, meaning that they are very near each other. This will lead to $\zeta_A$ being very nearly not invertible, which has the effect of causing $\zeta_A^{-1}$ to have very large positive and negative values. These might mostly cancel to give us the magnitude we expect, but when we take the $L_1$ norm, the values no longer cancel. This causes our error bounds to get quite large when the points are not all separated (see Figure \ref{fig:failed_bound}).
 
-However, as we mentioned earlier, all matrix norms are equivalent when it comes to convergence. So if $||EA^{-1}||_1 \geq 1$ but, for example, $||EA^{-1}||_s <1$, the above would no longer work, but we would still expect \eqref{eq:series} to converge. This might be useful, because the spectral norm is often smaller than the $L_1$ norm. To make this work, we will need some way of replacing the $L_2$ norm with a spectral norm. It turns out we can do that:
-\begin{lemma}\label{lem:norm_switch}
-Let $A$ be an $n \times n$ matrix. Then
+\begin{figure}[h]
 \[
-||A||_1 \leq n^2||A||_s.
+\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_1_correct.png}}
 \]
-\end{lemma}
-\begin{proof}
-Let $m$ be the absolute value of the largest element of $A$. Suppose that for some $i,j, |A_{ij}| > ||A||_s$. Let $e_j$ be the column vector with a one in index $j$ and zeros everywhere else. Then $Ae_j$ will have $A_{ij}$ in its $i$'th index, so $|Ae_j| \geq |A_{ij}| >||A||_s$. Because $|e_j|=1$, this is a contradiction. So $m \leq ||A||_1$. $||A||_1 \leq n^2m$, so $||A||_1 \leq n^2||A||_s$.
-\end{proof}
+\caption{A plot of the magnitude of a four-point square space, approximated by the product of two identical two-point spaces, with error bars calculated using the above technique when possible. Until all four points separate, the bounds are not useful or the limit diverges.}
+\label{fig:failed_bound}
+\end{figure}
+One possible solution would be to bound the error on the magnitude without relying on inverting $\zeta_A$: By using weightings or coweightings directly. In particular, we can pose the problem like this: The magnitude of $A$ is the sum of entries of some vector $\omega$ where $\zeta_A\omega = \vec{1}$ (here $\omega$ is a weighting on $A$). Suppose that $E$ is a perturbation matrix, which is small enough that $(\zeta_A + E)\omega' = \vec{1}$ can still be solved for $\omega'$. Can we bound the sum of entries of $\omega' - \omega$? It would be interesting to know how this might be done, depending on what restrictions we put on $E$.
 
-This means that we can rewrite \eqref{eq:series} in the following way:
-\begin{align*}
-||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||EA^{-1}||_1^i &\leq n^2||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})^i||_s^i\\
-&\leq n^2||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})||_s^i\\
-&\leq n^2||\zeta_A^{-1}||\frac{||EA^{-1}||_s}{1-||EA^{-1}||_s}.
-\end{align*}
 
-We have (possibly) reduced the value of the norm, at the price of a factor of $n^2$. We can exchange the $L_1$ norm for other matrix norms in a similar fashion, using different constants.
-
-We demonstrate this approximation of magnitude through an example:
+\iffalse
 \begin{examp} %TODO Rework 
 We will consider a situation quite similar to Example \ref{ex:4pt}. Let $M$ be the following generalized metric space:
 \begin{figure}[H]
@@ -2067,7 +2021,7 @@ Here we see what happens when $d=1$, so our dimensions are identical. Both space
 \end{figure}
 \end{examp}
 However, even if the orange line were removed, we would still have a good idea of the cluster structure of $M$. We would know that $M$ starts with one cluster, and then at a scale factor of approximately $10^{-\frac12} \approx 3$, the points begin to move apart. They smoothly separate until four clusters form. Because of the error bounds, we know that given the behavior of $A \times B$, the magnitude of $M$ can't differ too much from that behavior.
-
+\fi
 \end{chapter}
 
 \bibliographystyle{abbrv}
