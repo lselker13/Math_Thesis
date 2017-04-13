@@ -39,7 +39,7 @@
 
 \maketitle
 
-\begin{abstract} M\"obius inversion is a general approach for reversing certain kinds of sums. We start by defining M\"obius inversion in its usual form, over a partially ordered set. We explore traditional applications in the integer divisibility lattice, including Euler's Totient. We then use the lattice of subgroups to count orbits under a group action. In the last two sections, we explore Tom Leinster's generalization of M\"obius inversion to categories and enriched categories, and investigate a data clustering algorithm.
+\begin{abstract} M\"obius inversion is a general approach for reversing certain kinds of sums. We start by defining M\"obius inversion in its usual form, over a partially ordered set. We explore traditional applications in the integer divisibility lattice, including Euler's Totient. We then use the lattice of subgroups to count orbits under a group action, and use the lattice of subsets to prove the Inclusion-Exclusion Principle. In the last two sections, we explore Tom Leinster's generalization of M\"obius inversion to categories and enriched categories, and investigate a data clustering algorithm.
 \end{abstract}
 
 \pagenumbering{roman}
@@ -108,7 +108,7 @@ Given $x_1, x_2$ in a poset $X$, we write $[x_1, x_2]$ to denote the set
 \[
 \{y \in X: x_1 \leq y \leq x_2\}
 \]
-Replacing one of the square brackets with a parenthesis means we are omitting that element. So
+Replacing one of the square brackets with a parenthesis means we are omitting the bound on that end. So
 \begin{align*}
 [x_1, x_2) &= \{y \in X: x_1 \leq y < x_2\},\\
 (x_1, x_2] &= \{y \in X: x_1 < y \leq x_2\}.
@@ -142,7 +142,7 @@ Each value of $f$, therefore, takes on precisely the structure of a dot product.
 \item Write $\zeta$ as a (possibly infinite) matrix whose $i,j$ entry is equal to $\zeta(a_i, a_j)$, where $a_i, a_j$ are the $i$'th and $j$'th elements of $X$ under the total ordering.
 \end{itemize}
 
-The matrices and vectors we construct in this way might be infinite, so we have to be careful. In this chapter, all possibly infinite matrices we consider will be upper triangular (it is clear from the definition of $\zeta$ that this is the case here). Each term of the product of two upper triangular matrices is can be calculated from a finite number of matrix elements, even if the factor matrices are infinite. The same is true when an upper triangular matrix is left-multiplied by a row vector. Finally, because our matrices will be upper triangular and have ones on the diagonal, they will automatically be invertible (see Lemma \ref{inv_ex}), and can be inverted even if infinite. In subsequent chapters, we will restrict our attention to M\"obius inversion which uses only finite matrices.
+The matrices and vectors we construct in this way might be infinite, so we have to be careful. In this chapter, all possibly infinite matrices we consider will be upper triangular (it is clear from the definition of $\zeta$ that this is the case here). Each term of the product of two upper triangular matrices is can be calculated from a finite number of matrix elements, even if the factor matrices are infinite. The same is true when an upper triangular matrix is left-multiplied by a row vector. Finally, because our matrices will be upper triangular and have ones on the diagonal, they will automatically be invertible (see Lemma \ref{inv_ex}), have upper triangular inverses, and can be inverted even if infinite. In subsequent chapters, we will restrict our attention to M\"obius inversion which uses only finite matrices.
 
 We now are able to define our desired function (or vector) $f$ more succinctly:
 \[
@@ -218,7 +218,7 @@ For any positive integer $n$, the \emph{integer lattice of dimension $n$}, which
 $(\Nn^n, \leq)$ is a lower finite poset for any positive integer $n$. 
 \end{lemma}
 \begin{proof}
-The poset axioms are easily checked. We also observe that for any $x \in (\Nn^n, \leq)$,
+The poset axioms are easily checked. To see why the poset is lower finite, we observe that for any $x \in (\Nn^n, \leq)$,
 \[
 \#\{y \in (\Nn^n, \leq):y \leq x\} = \prod_{i =1}^n x_i.
 \]
@@ -249,7 +249,7 @@ Let $X$ be a lower finite partially ordered set, and let $\zeta, \mu$ be defined
 \]
 \end{lemma}
 \begin{rmk}
-Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is correct - albeit less clear- to just write
+Note that the piecewise form is actually not necessary, because if $a \nleq b$ then the sum will be empty. So it is also correct to just write
 \[
 \mu(a,b) = \delta(a,b)-\sum_{c \in [a,b)}\mu(a,c).
 \]
@@ -321,19 +321,19 @@ Let $\mu_X, \mu_Y$ denote the M\"obius functions on $X$ and $Y$ respectively. Th
 \end{thm}
 This theorem tells us that if we can find a portion of a familiar poset which has identical structure to a portion of an unknown poset, we can transfer what we know about values of $\mu$ on that portion from one to the other.
 \begin{proof}
-We induct on $\#[x_1, x_2]$. Because $x_1 \leq x_2$, if $[x_1, x_2] = 1$, then $x_1 = x_2$. So by Lemma \ref{recurse}, $\mu_X(x_1, x_2) = 1$. Because $\phi(x_1) = \phi(x_2), \mu_Y(\phi(x_1), \phi(x)2) = 1$ also.
+We induct on $\#[x_1, x_2]$, starting with the base case. Because $x_1 \leq x_2$, if $[x_1, x_2] = 1$, then $x_1 = x_2$. So by Lemma \ref{recurse}, $\mu_X(x_1, x_2) = 1$. Because $\phi(x_1) = \phi(x_2)$, we know that $\mu_Y(\phi(x_1), \phi(x)2) = 1$. So the M\"obius functions take the same value.
 
 Suppose the theorem is true if $\#[x_1, x_2] \leq k-1$ for some integer $k$. Fix $x_1, x_2$ such that $\#[x_1, x_2] = k$. Then by Lemma \ref{recurse},
 \[
-\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{y \in [\phi(x_1), \phi(x_2)]}\mu_Y(\phi(x_1), y)
+\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{y \in [\phi(x_1), \phi(x_2))}\mu_Y(\phi(x_1), y)
 \]
 Because $\phi$ is an isomorphism which preserves $\leq$, we can rewrite this sum:
 \[
-\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{x \in [x_1, x_2]}\mu_Y(\phi(x_1), \phi(x))
+\mu_Y(\phi(x_1), \phi(x_2)) = -\sum_{x \in [x_1, x_2)}\mu_Y(\phi(x_1), \phi(x))
 \]
-We can restrict $\phi$ to $[\phi(x_1), \phi(x)]$ to satisfy the hypotheses for all intermediate elements $x$. So we can apply the inductive hypothesis to all the terms of this sum:
+We can restrict $\phi$ to $[x_1, x]$ to satisfy the hypotheses for all intermediate elements $x$. So we can apply the inductive hypothesis to all the terms of this sum:
 \begin{align*}
-\mu_Y(\phi(x_1), \phi(x_2)) &= -\sum_{x \in [x_1, x_2]}\mu_X(x_1, x)\\
+\mu_Y(\phi(x_1), \phi(x_2)) &= -\sum_{x \in [x_1, x_2)}\mu_X(x_1, x)\\
 &= \mu_X(x_1, x_2)
 \end{align*}
 \end{proof}
@@ -374,9 +374,7 @@ Because prime factorizations are unique, this map is well-defined and injective.
 
 Let $x = (x_1,...,x_k) \in [\phi(d), \phi(n)]$ be given. Then $\phi(p_1^{x_1}\cdots p_k^{x_k}) = x$. By above, because $\phi$ preserves $\leq$, $p_1^{x_1}\cdots p_k^{x_k} \in [d,n]$. So $x \in \im(\phi)$. 
 
-So $\phi:[d,n] \leftrightarrow [\phi(d), \phi(n)]$ is a bijection.
-
-This allows us to use Theorem \ref{mapping}, and the result immediately follows.
+So $\phi:[d,n] \leftrightarrow [\phi(d), \phi(n)]$ is a bijection. This allows us to use Theorem \ref{mapping}, and the result immediately follows.
 \end{proof}
 
 This definition of $\mu$ depends only on $\frac nd$, which means that we can abuse notation to write $\mu(\frac nd)$ instead of $\mu(d,n)$. This allows us to use Theorem \ref{mob_inv} to arrive at \eqref{init_mob}:
@@ -522,9 +520,8 @@ Consider the group $S_3$, the symmetric group of order 6. Then we can draw its l
 \end{figure}
 So, for example, $\langle (1,2) \rangle \leq \langle e \rangle$, because $\langle (1,2) \rangle \supseteq \langle e \rangle$. 
 \end{examp}
-\begin{rmk}
-We are ordering the poset this way for reasons that will soon become clear. But to reduce confusion, we will continue to use inclusion notation to define $\zeta$, and so $\mu$, rather than using $\leq$. I will be using $\subseteq$ rather than $\leq$ to denote subgroups, also to reduce confusion with the poset relation.
-\end{rmk}
+
+
 This puts us in the position to apply M\"obius inversion. We first define the usual functions on $\sub(G) \times \sub(G)$:
 \begin{itemize}
 \item Given a group $G$, let $\zeta:\sub(G) \times \sub(G) \rightarrow \Rr$ be defined by
@@ -538,24 +535,24 @@ This puts us in the position to apply M\"obius inversion. We first define the us
 \end{itemize}
 Recall that we manipulate $\zeta, \mu$ as matrices.
 
-Now, Theorem \ref{mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
+Theorem \ref{mob_inv} tells us that, for any row vectors $f,g$ of length $|\sub{G}|$, 
 \[
 f = g\zeta \iff g = f\mu.
 \]
-Now, of course, the challenge is to determine how to formulate the problem such that inverting $\zeta$ will be useful.
+Now, of course, the challenge is to determine how to formulate the problem of counting orbits such that inverting $\zeta$ will be useful.
 \section{Counting Orbits}
-Throughout this section, let $G$ be a finite group acting on a set $\Omega$.
+Throughout this section, let $G$ be a finite group acting on a finite set $\Omega$.
 
 The goal is to count the orbits in $\Omega$ under the action by $G$ - in other words, to find $|\Omega/G|$. We will do that by finding a weighted sum of elements of $\Omega$. If we were to simply count the elements of $\Omega$, we would almost certainly overestimate the number of orbits. We would prefer it if each orbit could ``send a representative.'' If that were possible, counting those representatives would be the same as counting the number of orbits. But there is no clear way of accomplishing this -- how would we choose one element exactly from each orbit? It seems like this would require prior knowledge of the orbit structure of $\Omega$ under $G$, which is exactly what we are seeking.
 
 So we have to change our perspective. Suppose that every element of $\Omega$ were able to provide information telling us the size of its orbit. So suppose that given $x \in \Omega$, we had access to $|\orb_G(x)|$. 
 
-Now suppose that we are counting orbits by checking elements of $\Omega$ one at a time. Each time we see an element $x \in \Omega$, we ask it for the size of its orbit, and then add $\frac 1 {|\orb_G(x)|}$ to a running total. Let $O$ be a single orbit of $\Omega$ under $G$ where $|O|=n$. Then we will see $n$ elements of $\Omega$ which belong to $O$, and for each of them, we will add $\frac 1n$ to our running total. This means we add exactly 1 for $O$. The same is true of all the orbits in $\Omega$. So our final total will be the size of $G/X$.
+Now suppose that we are counting orbits by checking elements of $\Omega$ one at a time. Each time we see an element $x \in \Omega$, we ask it for the size of its orbit, and then add $\frac 1 {|\orb_G(x)|}$ to a running total. Let $O$ be a single orbit of $\Omega$ under $G$ where $|O|=n$. Then we will see $n$ elements of $\Omega$ which belong to $O$, and for each of them, we will add $\frac 1n$ to our running total. This means we add exactly 1 for $O$. The same is true of all the orbits in $\Omega$. So our final total will be the size of $\Omega/G$.
 
 To formalize this, we have the following relationship:
 
 \begin{equation}\label{eq_counting}
-|G/X| = \sum_{x \in \Omega}\frac 1 {|\orb_G(x)|}.
+|\Omega/G| = \sum_{x \in \Omega}\frac 1 {|\orb_G(x)|}.
 \end{equation}
 
 This is the central idea: We want to group elements of $\Omega$ by the size of their orbits. We will use the \emph{Fundamental Counting Principle}, Theorem \ref{fcp}, together with M\"obius inversion, to do this. Although we already justified \eqref{eq_counting}, we will prove it formally as well.
@@ -575,40 +572,40 @@ We will operate with the assumption that we are able to find $\sigma$, which is 
 
 Suppose we are handed $g$. In order to see how to find $|\orb(\Omega, G)|$, we recall Theorem \ref{fcp}:
 
-\[|G| = |G(x)||\stab(x, G)|.\]
+\[|G| = |\orb_G(x)||\stab(x, G)|.\]
 
-Because $G$ is finite, this implies that \[|G(x)| = \frac{|G|}{|\stab(x, G)|}.\]
+Because $G$ is finite, this implies that \begin{equation}|\orb_G(x)| = \frac{|G|}{|\stab(x, G)|}.\end{equation} \label{eq:orb_stab}
 
-Starting from a trivial fact, we have:
+Starting from a trivial fact, we can recover \eqref{eq_counting}:
 \begin{align*}
-|\orb(\Omega, G)| &= \sum_{O \in \orb(\Omega, G)}1\\
-&= \sum_{O \in \orb(\Omega, G)}\left(\sum_{x \in O}\frac{1}{|O|}\right)\\
-&= \sum_{x \in \Omega}\frac{1}{|G(x)|}
+|\Omega/G| &= \sum_{O \in \Omega/G}1\\
+&= \sum_{O \in \Omega/G}\left(\sum_{x \in O}\frac{1}{|O|}\right)\\
+&= \sum_{x \in \Omega}\frac{1}{|\orb_G(x)|}
 \end{align*}
 
-Substituting, we now have the relationship:
+Substituting \eqref{eq:orb_stab}, we now have the relationship:
 \[
-|\orb(\Omega, G)| = \frac{1}{|G|}\sum_{x \in \Omega}|\stab(x, G)|
+|\Omega/G| = \frac{1}{|G|}\sum_{x \in \Omega}|\stab(x, G)|
 \]
 Each element of $\Omega$ has exactly one stabilizer in $G$. This means that we can partition the above sum as follows:
 \[
-|\orb(\Omega, G)| = \frac{1}{|G|}\sum_{A \in \sub(G)}\left(\sum_{x \in \Omega: \stab(x) = A}|A|\right)
+|\Omega/G| = \frac{1}{|G|}\sum_{A \in \sub(G)}\left(\sum_{x \in \Omega: \stab(x) = A}|A|\right)
 \]
 Using the definitions of $g$ and $\sigma$, we can rewrite to get the relationship we need:
 \begin{align*}
-|\orb(\Omega, G)| &= \frac{1}{|G|}\sum_{A \in \sub(G)}g(A)|A|\\
+|\Omega/G| &= \frac{1}{|G|}\sum_{A \in \sub(G)}g(A)|A|\\
 &= \frac {1}{|G|}g \cdot \sigma
 \end{align*}
 
-On to Step 2. It is clear that $f_A = \sum_{B \supseteq A} g_A$. Another way of putting that is that $f = g\zeta$. As usual, this implies that $g = f\mu$. So M\"obius inversion makes this step trivial. Putting it all together:
+On to Step 2. It is clear from our definitions that \[f_A = \sum_{B \supseteq A} g_A.\] Another way of putting it is that $f = g\zeta$. As usual, this implies that $g = f\mu$. So M\"obius inversion makes this step trivial. Putting it all together:
 
-\[|\orb(\Omega, G)| = \frac {1}{|G|}f\mu \cdot \sigma.\]
+\[|\Omega/G| = \frac {1}{|G|}f\mu \cdot \sigma.\]
 
 Recall that $\sigma$ and $\mu$ do not depend on the details of the group action, or on $\Omega$ at all. They only depend on $G$. So it is useful to rearrange this expression to isolate $f$, the only part which does depend on the action. This gives us the central result of this chapter:
 \begin{thm}\label{orbit_count}
 Let $G$ act on a set $\Omega$. Let $f, \mu, \sigma$ be defined as above. Then
 \[
-|\orb(\Omega, G)| = \frac {1}{|G|}(\mu \cdot \sigma)^Tf^T
+|\Omega/G| = \frac {1}{|G|}(\mu \cdot \sigma)^Tf^T
 \]
 \end{thm}
 
@@ -657,13 +654,13 @@ Finally, note that $|C_4|=4$. So
 &= \frac 14 
 \begin{bmatrix} 1 & -1 & 0\\ 0 & 1 & -1 \\ 0 & 0 & 1 \end{bmatrix}
 \begin{bmatrix} 4 \\ 2 \\ 1 \end{bmatrix}\\
-&= \frac 14 \begin{bmatrix} 2 \\ 1 \\ 1\end{bmatrix}
+&= \frac 14 \begin{bmatrix} 2 \\ 1 \\ 1\end{bmatrix}.
 \end{align*}
 We determined $\lambda$ before even deciding what set $G$ might act on. So all the work we have done so far can be reused for a variety of actions.
 
 Let's try a particular action. Suppose we have a $2 \times 2$ chessboard, and we want to place some number of rooks on the board such that none of them attack one another. If one configuration can be obtained from the other by rotating the board (ignoring light and dark squares), then we wish to count them as the same configuration. The goal is to count how many distinct configurations there are, which cannot be obtained from each other by rotation.
 
-We can first solve this problem by inspection, or by "brute force," by just enumerating the possibilities. This way, when we solve it with $\lambda$, we can determine whether we found the right answer.
+We can first solve this problem by inspection, or by ``brute force,'' by just enumerating the possibilities. This way, when we solve it with $\lambda$, we can determine whether we found the right answer.
 \begin{description}
 \item[Zero rooks:] There is one option with zero rooks: The empty board.
 \[
@@ -691,13 +688,13 @@ Luckily, we know how to count orbits. All we have to do is find $f$. We go throu
 Then all we have to do is compute $\lambda f^T$.
 \begin{align*}
 \lambda f^T &= \frac 14 [2, 1, 1] \begin{bmatrix} 1 \\ 3 \\ 7\end{bmatrix} \\
-&= \frac 14 12\\
+&= \frac 14\cdot 12\\
 &=3.
 \end{align*}
 So we indeed get the correct answer. 
 \end{examp}
 
-In this example, it's not clear that using $\lambda$ actually saved work - in fact, it seemed to take longer. But if we were to increase $n$, we could still determine the number of distinct arrangements relatively easily, because $\lambda$ wouldn't change. Furthermore, in many situations (including this one) it is much easier to determine how many \emph{total} arrangements are fixed by a subgroup that it is to count the number of \emph{distinct} arrangements. We can look at another example, which is more difficult to solve by enumeration. 
+In this example, it's not clear that using $\lambda$ actually saved work. But if we were to increase $n$, we could still determine the number of distinct arrangements relatively easily, because $\lambda$ wouldn't change. Furthermore, in many situations (including this one) it is much easier to determine how many \emph{total} arrangements are fixed by a subgroup that it is to count the number of \emph{distinct} arrangements. We can look at another example, which is more difficult to solve by enumeration. 
 \begin{examp}[Example \ref{ex:coloring_init}, cont]\label{ex:coloring}
 We now have the tools to solve the problem from Example \ref{ex:coloring_init}. We briefly restate the setup: Suppose we have a $4 \times 4$ board, and we would like to color each square one of $k$ colors. We would like to consider colorings identical if one can be obtained from the other by rotating the board. The goal is to count the number of distinct colorings.
 
@@ -1145,10 +1142,10 @@ Totally order the simplices of $\sigma$ respecting the partial order of number o
 Now that we know $\mu$ exists, we can inductively determine its value, similarly to how we have done so in previous sections with M\"obius functions on partially ordered sets.
 \begin{lemma}
 \label{mu_lemma}
-Suppose $\sigma$ is a simplicial complex, and $\alpha \subseteq \beta$ are simplices in $\sigma$. Let $\mu$ denote the M\"obius function on $\cat(\sigma)$. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$ (note that $|\alpha|$ simply denotes the size of $\alpha$ as a set).
+Suppose $\sigma$ is a simplicial complex, and $\alpha \subseteq \beta$ are simplices in $\sigma$. Let $\mu$ denote the M\"obius function on $\cat(\sigma)$. Then $\mu(\cat(\alpha), \cat(\beta)) =(-1)^{|\beta - \alpha|} = (-1)^{|\alpha|} (-1)^{|\beta|}$ (note that $|\alpha|$ denotes the size of $\alpha$ as a set).
 \end{lemma}
 \begin{proof}
-We use induction. Base case: $\alpha = \beta$, and $\mu(\alpha, \beta)=1$.
+We use induction. The base case is trivial: If $\alpha \subseteq \beta$ and $|\beta - \alpha| =0$, then $\alpha = \beta$, and so $\mu(\alpha, \beta)=1$.
 
 For the inductive step, suppose that if $|\beta-\alpha| \leq k$, the result is true.
 
@@ -1204,7 +1201,7 @@ In Example \ref{ex:grp_cat}, we saw how a group can be represented in a category
 \end{examp}
 
 \end{chapter}
-\begin{chapter}{Metric Space Magnitude}\label{chap_magnitude}
+\begin{chapter}{Enriched Categories and Magnitude}\label{chap_magnitude}
 \section{Motivation: Hierarchical Clustering}
 A common task in data analysis is clustering. Given a set of data points, it is often desirable to decide how many ``groups'' those data points fall into. Of course, there is usually no clear-cut definition of which points are in groups and which are not. 
 
@@ -1220,7 +1217,7 @@ The idea of hierarchical clustering is that instead of choosing a scale, we capt
 \label{fig:hier}
 \end{figure}
 
-We can see in Figure \ref{fig:hier} that as we ``zoom out'', the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
+We can see in Figure \ref{fig:hier} that as we ``zoom out,'' the structure of this data changes. First the data has first eight clusters of one point each, then four clusters of two points, and finally two clusters of four points. If we kept going, we would end up with a single cluster containing all of the points.
 
 There are many methods of hierarchal clustering. In the above example, explicit clusters are formed by grouping points which are near each other. Methods like this are common; see \cite{Carl1}. We will explore an alternate method of clustering, in which we do not explicitly group points, but instead estimates the number of clusters using a real, rather than integer, value. We will use a generalization of the Euler--Leinster characteristic from Chapter \ref{chap:euler}. We start by building some important definitions.
 
@@ -1376,16 +1373,26 @@ Let $C$ be a finite category enriched over a monoidal category $M$, with a speci
 \]
 or, equivalently, if
 \[
-\sum_{b \in C}\zeta_{|\cdot|}(a,b)\omega(b) = 1.
+\sum_{b \in C}\zeta_{|\cdot|}(a,b)\omega(b) = 1,
+\]
+and $\kappa$ is a \emph{coweighting} on $C$ if, for all $b \in C$,
+
+\[
+\sum_{a \in C}\kappa(a)|C(a,b)|= 1,
+\]
+or, equivalently, if
+\[
+\sum_{b \in C}\kappa(a)\zeta_{|\cdot|}(a,b) = 1.
+\]
+\end{defn}
+As before, the sum of different weightings or coweightings of the same category will always be the same. The proof is identical as in Lemma \ref{lem:weight_eq}.
+\begin{defn}[\cite{Nog1}]
+Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Let $\omega$ be a weighting on $C$ and $\kappa$ a coweighting. Then the \emph{Euler--Leinster characteristic} of $C$, denoted $\chi_{|\cdot|}(C)$, is defined by
+\[
+\chi_{|\cdot|}(C) = \sum_{a \in c} \omega(a) = \sum_{b \in c} \kappa(b).
 \]
 \end{defn}
 
-\begin{defn}[\cite{Nog1}]
-Let $C$ be a finite category enriched over a monoidal category $M$, with a specified norm $|\cdot|$. Let $\omega$ be a weighting on $C$. Then the \emph{Euler--Leinster characteristic} of $C$, denoted $\chi_{|\cdot|}(C)$, is defined by
-\[
-\chi_{|\cdot|}(C) = \sum_{a \in c} \omega(a).
-\]
-\end{defn}
 In the notation just introduced, we will sometimes omit the subscripts specifying the norm, if the norm is implied.
 \begin{rmk}
 When $C$ is an enriched category, $\chi(C)$ is sometimes called the \emph{magnitude} of $C$ (for example, in \cite{Lein4}). We reserve that terminology for a particular class of enriched categories which we introduce in Definition \ref{def:magn}, and continue to refer to the general construction as the Euler--Leinster characteristic or the Euler characteristic of $C$.
@@ -1451,7 +1458,7 @@ Let $M$ be the set of spectators. Suppose that for each spectator $a \in M, \ome
 \sum_{b \in M}\zeta(a,b)\omega(b).
 \]
 
-This looks exactly like the requirement (from Definition \ref{def_weighting}) for $\omega$ to be a weighting on a category $M$! So adding up values of $\omega$ is the same as finding the Euler--Leinster characteristic of $M$, assuming we can properly encode the structure of the spectators into a category. This is the key motivation behind the use of the Euler characteristic to count clusters.
+This looks exactly like the requirement (from Definition \ref{def_weighting}) for $\omega$ to be a weighting on a category $M$. So adding up values of $\omega$ is the same as finding the Euler--Leinster characteristic of $M$, assuming we can properly encode the structure of the spectators into a category. This is the key motivation behind the use of the Euler characteristic to count clusters.
 
 We now move from our analogy back into the realm of categories. We will model the situation using a generalized metric space. We need a norm $|\cdot|$ on $D$ such that $|x|$ will be close to 1 as $x$ gets small, and will approach zero as it gets large. 
 
@@ -1493,7 +1500,7 @@ It is straightforward to check that this is indeed a valid weighting. So for eac
  \magn_t(M_2) = \frac{2}{1+e^{-t}}.
 \]
 
-We are varying a parameter, $t$, in the exponent of the norm definition. So it is reasonable to expect that the behavior of the magnitude as $t$ varies will be logarithmic. If we plot $\magn_t(M_2)$ against $t$, we can see that it behaves just as we expect (see Figure \ref{fig:2pt_mag}).
+We are varying a parameter, $t$, in the exponent of the norm definition. So it is reasonable to expect that the behavior of the magnitude as $t$ varies will be logarithmic. If we plot $\magn_t(M_2)$ against $\log(t)$, we can see that it behaves just as we expect (see Figure \ref{fig:2pt_mag}).
 \begin{figure}[H]
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/2_point_.png}}
@@ -1502,6 +1509,8 @@ We are varying a parameter, $t$, in the exponent of the norm definition. So it i
 \label{fig:2pt_mag}
 \end{figure}
 \end{examp}
+
+In this figure, we can see a good example of what happens in a simple generalized metric space when we vary $t$, the exponent on the norm function. But Lemma \ref{lem:exp_norm} tells us that any norm on a monoidal category can be scaled in this way. Although we don't go into that here, we wonder what effects this scaling might have on other instances of the Euler characteristic, including on ordinary categories. 
 \section{Product Spaces}\label{sec:prod}
 In Figure \ref{fig:3+4}, we see two sets of points, $M$ and $N$. $M$ has three points while $N$ has four.
 
@@ -1760,7 +1769,7 @@ In fact, we observe exactly that behavior. Figure \ref{fig:prod_mag} shows the m
 \end{figure}
 \end{examp}
 
-In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. In the next section, we explore one idea for bounding error, but see that it has an important flaw. We then propose a possible route for a more useful error bounding method.
+In Example \ref{ex:4pt}, $M$ was \emph{almost} a product space, so we expected its magnitude to be very nearly the product of the magnitudes of the two 2-point spaces. It would be useful to quantify how similar the magnitudes of two spaces are, given that we know something about how similar those spaces are. In the next section, we explore one idea for bounding error, but see that it has an important flaw. We then propose a possible route for a more useful error bounding method which could be pursued in the future.
 
 \section{Approximation Attempts and Questions}
 First, we work through an approach to error bounding which has promise, but does not seem to be effective. We need some simple tools from linear algebra involving vector and matrix norms. Note that these norms are not directly related to the norms we defined on monoidal categories - both are non-negative real-valued functions, but they operate on different structures.
@@ -1826,10 +1835,6 @@ Then we say that
 \lim_{i \rightarrow \infty} A_i = L.
 \]
 \end{defn}
-It turns out that if the matrices involved are finite-dimensional, the choice of norm does not matter - a sequence will either always converge or always diverge. So there is no need to specify the norm when stating a fact about matrix convergence.
-
-This is an instance of the general definition of a convergent sequence in a metric space, where our chosen norm induces a metric. Furthermore, for this discussion, we will be concerned primarily with norms of matrices, so this definition of convergence makes sense for us to use.
-
 \begin{lemma}\label{lem:lim0}
 Let $E$ be a real-valued $n \times n$ matrix. Suppose that $||\cdot||_1$, $||E|| < 1$. Then:
 \[
@@ -1878,151 +1883,31 @@ Let $A$ be a generalized metric space which admits M\"obius inversion. Suppose w
 
 The magnitude of $A$ is equal to the sum of the entries of $\zeta_A^{-1}$. So the $L_1$ norm of the difference between $\zeta_A$ and $\zeta_A + E$ will be an upper bound on how much adding $E$ changes the magnitude of $A$. We can repeatedly use Lemma \ref{lem:norm_prop} to isolate the error term:
 \begin{align}
-\left|\left|\zeta_A^{-1} - \zeta_A^{-1} - \zeta_A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i\right|\right|_1 \nonumber 
-&= \left|\left|\zeta_A^{-1}\sum_{i = 1}^\infty (EA^{-1})^i\right|\right|_1 \nonumber \\
-&\leq ||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(EA^{-1})^i||_1. \label{eq:series}
+\left|\left|\zeta_A^{-1} - \zeta_A^{-1} - \zeta_A^{-1}\sum_{i = 1}^\infty (E\zeta_A^{-1})^i\right|\right|_1 \nonumber 
+&= \left|\left|\zeta_A^{-1}\sum_{i = 1}^\infty (E\zeta_A^{-1})^i\right|\right|_1 \nonumber \\
+&\leq ||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(E\zeta_A^{-1})^i||_1. \label{eq:series}
 \end{align}
 
-Suppose that $||EA^{-1}||_1 <1$. Then we can convert \eqref{eq:series} to a closed form. 
+Suppose that $||E\zeta_A^{-1}||_1 <1$. Then we can convert \eqref{eq:series} to a closed form. 
 \begin{align*}
-||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||EA^{-1}||_1^i &\leq
-||\zeta_A^{-1}||_1 \sum_{i = 1}^\infty||(\zeta_A + E)^{-1}||_1^i\\
- &\leq ||\zeta_A^{-1}||\frac{||EA^{-1}||_1}{1-||EA^{-1}||_1}.
+||\zeta_A^{-1}||_1\sum_{i = 1}^\infty ||(E\zeta_A^{-1})^i||_1 &\leq
+||\zeta_A^{-1}||_1 \sum_{i = 1}^\infty||E\zeta_A^{-1}||_1^i\\
+ &= ||\zeta_A^{-1}||\frac{||E\zeta_A^{-1}||_1}{1-||EA^{-1}||_1}.
 \end{align*}
-Unfortunately, this approach often does not work. The problem is that we are interested in considering spaces and scales such that some groups of points form clusters, meaning that they are very near each other. This will lead to $\zeta_A$ being very nearly not invertible, which has the effect of causing $\zeta_A^{-1}$ to have very large positive and negative values. These might mostly cancel to give us the magnitude we expect, but when we take the $L_1$ norm, the values no longer cancel. This causes our error bounds to get quite large when the points are not all separated (see Figure \ref{fig:failed_bound}).
+This is a closed form bound on the error in magnitude of using $\zeta_A + E$ instead of $\zeta_A$, which is what we are looking for.
+
+Unfortunately, this approach has a problem. We are interested in considering spaces and scales such that some groups of points form clusters, meaning that they are very near each other. This will lead to $\zeta_A$ being very nearly not invertible, which has the effect of causing $\zeta_A^{-1}$ to have very large positive and negative values. These might mostly cancel to give us the magnitude we expect, but when we take the $L_1$ norm, the values no longer cancel. This causes our error bounds to get quite large when the points are not all separated (see Figure \ref{fig:failed_bound} for an example).
 
 \begin{figure}[h]
 \[
 \makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_1_correct.png}}
 \]
-\caption{A plot of the magnitude of a four-point square space, approximated by the product of two identical two-point spaces, with error bars calculated using the above technique when possible. Until all four points separate, the bounds are not useful or the limit diverges.}
+\caption{A plot of the magnitude of a four-point square space against the log of the scale factor $t$, approximated by the product of two identical two-point spaces, with error bars calculated using the above technique when possible. Until all four points separate, the bounds are not useful.}
 \label{fig:failed_bound}
 \end{figure}
 One possible solution would be to bound the error on the magnitude without relying on inverting $\zeta_A$: By using weightings or coweightings directly. In particular, we can pose the problem like this: The magnitude of $A$ is the sum of entries of some vector $\omega$ where $\zeta_A\omega = \vec{1}$ (here $\omega$ is a weighting on $A$). Suppose that $E$ is a perturbation matrix, which is small enough that $(\zeta_A + E)\omega' = \vec{1}$ can still be solved for $\omega'$. Can we bound the sum of entries of $\omega' - \omega$? It would be interesting to know how this might be done, depending on what restrictions we put on $E$.
-
-
-\iffalse
-\begin{examp} %TODO Rework 
-We will consider a situation quite similar to Example \ref{ex:4pt}. Let $M$ be the following generalized metric space:
-\begin{figure}[H]
-\[
-\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](1) at (0,0) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](2) at (5,0) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](3) at (0,-.5) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](4) at (5,-.5) {};
-\draw[decoration={brace,raise=7pt},decorate] (1) -- (2) node[midway, above = 10pt] {$d$};
-\draw[decoration={brace, mirror, raise = 7pt},decorate] (1) -- (3) node[midway, left = 10pt] {1};
-% \draw (2) -- (4);
-% \draw (3) -- (4);
-\end{tikzpicture}\]
-\caption{}
-\label{fig:prod}
-\end{figure}
-And define $A,B$ as follows:
-
-\begin{figure}[H]
-\[
-\begin{tikzpicture}[auto, node distance = 3cm, main node/.style={dot}]
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](1) at (9,0) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](2) at (9,-.5) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](3) at (0, -.25) {};
-\node[circle, draw, fill=black,
-                        inner sep=0pt, minimum width=4pt](4) at (5,-.25) {};
-\draw[decoration={brace,mirror, raise=7pt},decorate] (1) -- (2) node[midway, left = 10pt] {1};
-\draw[decoration={brace, raise = 7pt},decorate] (3) -- (4) node[midway, above = 10pt] {d};
-% \draw (2) -- (4);
-% \draw (3) -- (4);
-\end{tikzpicture}\]
-\caption{Again, two spaces whose product should be very similar to $M$.}
-\label{fig:factors}
-\end{figure}
-Suppose that we are trying to approximate $M$ using a product space of $A$ and $B$. We are interested in finding a bound on the error of our estimate.
-
-Let $\zeta_A, \zeta_B, \zeta_{A \times B}, \zeta_M$ be the similarity matrices of $A, B, A \times B$, and $M$ respectively. Recall that we are using the norm $|x| = e^{-tx}$, where we will vary $t$. So the matrices are as follows:
-\begin{align*}
-\zeta_A &= 
-\begin{bmatrix}
-1 & e^{-td} \\
-e^{-td} & 1
-\end{bmatrix}\\
-\zeta_B &= 
-\begin{bmatrix}
-1 & e^{-t} \\
-e^{-t} & 1
-\end{bmatrix}\\
-\zeta_{A \times B} = \zeta_A \otimes \zeta_B &= 
-\begin{bmatrix}
-1 & e^{-t} & e^{- td} & e^{-t(1 + d)}\\
-e^{-t} & 1 & e^{-t(1 + d)}& e^{- td}\\
-e^{-td} & e^{-t(1 + d)} & 1 & e^{-t}\\
-e^{-t(1 + d)} & e^{-td} & e^{-t} & 1
-\end{bmatrix}\\
-\zeta_M &= 
-\begin{bmatrix}
-1 & e^{-t} & e^{- td} & e^{-t\sqrt{1 + d^2}}\\
-e^{-t} & 1 &  e^{-t\sqrt{1 + d^2}}& e^{- td}\\
-e^{-td} &  e^{-t\sqrt{1 + d^2}} & 1 & e^{-t}\\
-e^{-t\sqrt{1 + d^2}}& e^{-td} & e^{-t} & 1
-\end{bmatrix}
-\end{align*}
-The similarity matrices of $A \times B$ and $M$ have most entries identical. We can quantify the difference between them. For any $d, t \in (0, \infty)$, let 
-\begin{align*}
-\ep_{dt} = e^{-t(1 + d)} - e^{-t\sqrt{1 + d^2}}\\
-E_{dt} = \begin{bmatrix}
-0 & 0 & 0 & \ep_{dt} \\
-0 & 0 & \ep_{dt} & 0 \\
-0 & \ep_{dt} & 0 & 0 \\
-\ep_{dt} & 0 & 0 & 0
-\end{bmatrix}
-\end{align*}
-Then for each $d,t$,
-\[
-\zeta_M = \zeta_{A \times B} - E_{dt}.
-\]
-Note that I am omitting the $d,t$ subscripts from the similarity matrices to avoid clutter, but they do depend on $d$ and $t$.
-
-If we are interested in bounding the difference in magnitude of $M$ and $A \times B$, then we can apply Theorem \ref{thm:approx}. We fix a $d$ to determine the relative scales of the spaces. Then, for any $t \in (0, \infty):$
-\[
-\mu_M = \mu_{A \times B} + \mu_{A \times B}\sum_{i = 1}^\infty (E_{dt}\zeta_{A \times B}^{-1})^i.
-\]
-
-This formula gives us a way of bounding how different the magnitude of the Euclidean spaces is from the product space. We can numerically calculate values for $\magn_t(M), \magn_t(A \times B)$, and the error term, and plot them.
-
-If $d = 0.1$, so the scales differ by a factor of ten, then we get the following as we vary $t$:
-\begin{figure}[H]
-\[
-\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_10.png}}
-\]
-\caption{Magnitudes and error bounds, $d = 0.1$, error calculated to third term, against $\log(t)$ where $t$ is the scale factor.}
-\label{fig:approx10}
-\end{figure}
-We can see that the Euclidean space and the product space have very similar magnitude values, and the error bounds are quite tight. Note that the period where there are two clusters is much more subtle now, as the points merge together in faster succession. 
-
-If we were trying to approximate $M$ with $A \times B$, then we would not have access to the orange line in Figure \ref{fig:approx10}. But in this case, we can see that we could determine the line with good accuracy using only $A \times B$ and the error bounds.
-
-As we move the value of $d$ closer to 1, we expect both the error bounds and the actual error to increase. The product space and the Euclidean space will differ more as their scales become more similar. Recall that the only pairs of points which differ at all in distance between $A \times B$ and $M$ are points at opposite corners (see Figure \ref{fig:4pt}). When one dimension is extremely small, that diagonal distance is very close to the length of the longer side. On the other hand, in the product space the distance is the sum of the dimensions. When the small dimension is small enough, that, too, is essentially the distance of the longer side.
-
-On the other hand, as $d$ approaches 1, the space becomes square. If $d=1$, then the distance of opposite points in $M$ will be $\sqrt{2}$, while in the product space the distance will be 2. This is quite a significant difference. In the next example, we look at exactly this case.
-
-Here we see what happens when $d=1$, so our dimensions are identical. Both spaces move smoothly from having a single cluster to having four clusters, and there is more error. 
-\begin{figure}[H]
-\[
-\makebox[\textwidth][c]{\includegraphics[width = 0.9\paperwidth]{../Figures/error_1.png}}
-\]
-\caption{Magnitudes and error bounds, $d = 1$, error calculated to third term, against $\log(t)$ where $t$ is the scale factor.}
-\end{figure}
-\end{examp}
-However, even if the orange line were removed, we would still have a good idea of the cluster structure of $M$. We would know that $M$ starts with one cluster, and then at a scale factor of approximately $10^{-\frac12} \approx 3$, the points begin to move apart. They smoothly separate until four clusters form. Because of the error bounds, we know that given the behavior of $A \times B$, the magnitude of $M$ can't differ too much from that behavior.
-\fi
 \end{chapter}
+
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography.bib}

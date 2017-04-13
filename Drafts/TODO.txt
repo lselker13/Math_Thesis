@@ -1,11 +1,8 @@
 Chapter 1: Mobius Inversion
 Chapter 2: Groups/orbits
 Chapter 3: Inc/exc
-Check over
 Chapter 4: Euler-Leinster characteristic
 Add examples?
 Chapter 5: Enriched categories and magnitude
 Examples of euler char on enriched categories other than over R+
-Questions I still have throughout
-Edit explicit approximation section
 
